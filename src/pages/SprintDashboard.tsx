@@ -7,6 +7,7 @@ export default function SprintDashboard() {
   const [currentSprint, setCurrentSprint] = useState(0);
   const [showImportModal, setShowImportModal] = useState(false);
   const [currentImportSlideId, setCurrentImportSlideId] = useState<number | null>(null);
+  const [pastedData, setPastedData] = useState('');
 
   const MAX_SPRINTS = 5;
 
@@ -23,51 +24,53 @@ export default function SprintDashboard() {
     return sorted.slice(0, MAX_SPRINTS);
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handlePastedData = () => {
+    if (!pastedData.trim()) {
+      alert('Please paste data from your Google Sheet first.');
+      return;
+    }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string;
-        const lines = text.split('\n').filter(row => row.trim());
-        
-        if (lines.length < 2) {
-          alert('CSV file must contain headers and at least one data row.');
-          return;
-        }
-
-        // Parse CSV
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        const dataRows = lines.slice(1).map(line => {
-          const values = line.split(',').map(v => v.trim());
-          const row: any = {};
-          headers.forEach((header, idx) => {
-            const value = values[idx] || '';
-            // Try to convert to number if possible
-            row[header] = isNaN(value as any) || value === '' ? value : Number(value);
-          });
-          return row;
-        });
-
-        // Apply 5-sprint limit - keep only last 5 rows
-        const limitedRows = maintainSprintLimit(dataRows);
-
-        // Update the specific slide with imported data
-        if (currentImportSlideId) {
-          importDataToSlide(currentImportSlideId, headers, limitedRows);
-        }
-
-        alert(`Data imported successfully! ${limitedRows.length} sprint(s) loaded (max 5 sprints maintained).`);
-        setShowImportModal(false);
-        setCurrentImportSlideId(null);
-      } catch (error) {
-        console.error('Import error:', error);
-        alert('Error reading file. Please check the CSV format and try again.');
+    try {
+      const lines = pastedData.split('\n').filter(row => row.trim());
+      
+      if (lines.length < 2) {
+        alert('Please paste at least a header row and one data row.');
+        return;
       }
-    };
-    reader.readAsText(file);
+
+      // Parse tab-separated or comma-separated values
+      // Google Sheets typically copies as tab-separated
+      const firstLine = lines[0];
+      const delimiter = firstLine.includes('\t') ? '\t' : ',';
+      
+      const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+      const dataRows = lines.slice(1).map(line => {
+        const values = line.split(delimiter).map(v => v.trim());
+        const row: any = {};
+        headers.forEach((header, idx) => {
+          const value = values[idx] || '';
+          // Try to convert to number if possible
+          row[header] = isNaN(value as any) || value === '' ? value : Number(value);
+        });
+        return row;
+      });
+
+      // Apply 5-sprint limit - keep only last 5 rows
+      const limitedRows = maintainSprintLimit(dataRows);
+
+      // Update the specific slide with imported data
+      if (currentImportSlideId) {
+        importDataToSlide(currentImportSlideId, headers, limitedRows);
+      }
+
+      alert(`Data imported successfully! ${limitedRows.length} sprint(s) loaded (max 5 sprints maintained).`);
+      setShowImportModal(false);
+      setCurrentImportSlideId(null);
+      setPastedData('');
+    } catch (error) {
+      console.error('Import error:', error);
+      alert('Error parsing data. Please check the format and try again.');
+    }
   };
 
   const importDataToSlide = (slideId, headers, rows) => {
@@ -1337,49 +1340,54 @@ export default function SprintDashboard() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '32px', maxWidth: '600px', width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
             <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#212121', marginBottom: '20px' }}>
-              Update Slide Data from Google Sheet
+              Update Slide Data
             </h2>
             <p style={{ fontSize: '14px', color: '#5A6872', marginBottom: '20px' }}>
-              This will pull data from the Google Sheet URL attached to this slide. The system will intelligently identify and import only the relevant data for this specific slide, maintaining the last 5 sprints automatically.
+              Copy data from your Google Sheet (including headers) and paste it below. The system will automatically import the data and maintain the last 5 sprints.
             </p>
             
             <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#E6F7ED', borderRadius: '6px', border: '1px solid #2DAD70' }}>
               <div style={{ fontSize: '13px', color: '#1D7A47', marginBottom: '8px' }}>
-                <strong>✓ Smart Import:</strong>
+                <strong>📋 How to use:</strong>
               </div>
               <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#1D7A47', lineHeight: '1.6' }}>
-                <li>Automatically identifies correct data from your sheet</li>
-                <li>Ignores additional/irrelevant data in the sheet</li>
-                <li>Maintains 5-sprint limit (removes oldest data)</li>
-                <li>Only updates this specific slide</li>
+                <li>Select cells in your Google Sheet (including header row)</li>
+                <li>Copy (Ctrl+C or Cmd+C)</li>
+                <li>Paste into the box below (Ctrl+V or Cmd+V)</li>
+                <li>Click "Import Data" button</li>
               </ul>
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#212121' }}>Or Upload CSV Manually</label>
-              <input 
-                type="file" 
-                accept=".csv"
-                onChange={handleFileUpload}
-                style={{ width: '100%', padding: '12px', border: '2px dashed #1863DC', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#212121' }}>Paste Table Data Here</label>
+              <textarea 
+                value={pastedData}
+                onChange={(e) => setPastedData(e.target.value)}
+                placeholder="Paste your data here... (e.g., Sprint  Total  Social  Blogs&#10;263     45     12     8)"
+                style={{ 
+                  width: '100%', 
+                  minHeight: '150px', 
+                  padding: '12px', 
+                  border: '2px solid #DBDFE4', 
+                  borderRadius: '6px', 
+                  fontSize: '13px',
+                  fontFamily: 'monospace',
+                  resize: 'vertical'
+                }}
               />
             </div>
 
             <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#EBF3FD', borderRadius: '6px', fontSize: '13px', color: '#134FB0' }}>
-              <strong>💡 Best Practice:</strong> Keep your Google Sheet organized with clear column headers matching the slide data structure. The system will automatically map columns to the correct fields.
+              <strong>💡 Tip:</strong> The system automatically detects tab-separated or comma-separated values. Keep your column headers matching the slide data structure.
             </div>
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button onClick={() => { setShowImportModal(false); setCurrentImportSlideId(null); }} style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600', border: '2px solid #DBDFE4', borderRadius: '6px', backgroundColor: '#fff', color: '#5A6872', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => { setShowImportModal(false); setCurrentImportSlideId(null); setPastedData(''); }} style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600', border: '2px solid #DBDFE4', borderRadius: '6px', backgroundColor: '#fff', color: '#5A6872', cursor: 'pointer' }}>Cancel</button>
               <button 
-                onClick={() => {
-                  alert('Google Sheets API integration: In production, this would fetch data directly from the linked Google Sheet. For now, please use CSV upload.');
-                  setShowImportModal(false);
-                  setCurrentImportSlideId(null);
-                }}
+                onClick={handlePastedData}
                 style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600', border: 'none', borderRadius: '6px', backgroundColor: '#2DAD70', color: '#fff', cursor: 'pointer' }}
               >
-                🔄 Update from Sheet
+                📥 Import Data
               </button>
             </div>
           </div>
