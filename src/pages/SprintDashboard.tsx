@@ -169,11 +169,6 @@ export default function SprintDashboard() {
   };
 
   const openSlideImport = (slideId) => {
-    const slide = sprintData.slides.find(s => s.id === slideId);
-    if (!slide.moreDetailsUrl) {
-      alert('Please add a Google Sheet URL in the "Sheet URL" field first, then use Update Slide to pull data from it.');
-      return;
-    }
     setCurrentImportSlideId(slideId);
     setShowImportModal(true);
   };
