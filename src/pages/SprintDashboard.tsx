@@ -103,12 +103,66 @@ export default function SprintDashboard() {
         return;
       }
 
-      // Try to parse as stats data first
+      const firstLine = lines[0];
+      
+      // Detect if it's table data or stats data
+      // Table data: Has tabs (multiple columns) AND multiple rows with consistent column count
+      // Stats data: Single column OR key-value pairs
+      const hasMultipleColumns = firstLine.includes('\t') && firstLine.split('\t').length > 2;
+      const isMultipleRows = lines.length >= 2;
+      
+      // If it looks like table data (multiple columns and rows), parse as table
+      if (hasMultipleColumns && isMultipleRows) {
+        console.log('Detected as TABLE data');
+        
+        const delimiter = '\t'; // Google Sheets uses tabs
+        console.log('Using TAB delimiter for Google Sheets data');
+        
+        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+        console.log('Parsed headers:', headers);
+        
+        if (headers.length < 2) {
+          alert('Table data must have at least 2 columns. Please check your data.');
+          return;
+        }
+        
+        const dataRows = lines.slice(1).map(line => {
+          const values = line.split(delimiter).map(v => v.trim());
+          const row: any = {};
+          headers.forEach((header, idx) => {
+            const value = values[idx] || '';
+            // Clean and convert numbers (remove $, %, commas)
+            const cleaned = String(value).replace(/[$,%]/g, '').replace(/,/g, '');
+            const numValue = Number(cleaned);
+            row[header] = !isNaN(numValue) && cleaned !== '' ? numValue : value;
+          });
+          return row;
+        });
+        console.log('Parsed data rows:', dataRows);
+
+        // Apply 5-sprint limit
+        const limitedRows = maintainSprintLimit(dataRows);
+        console.log('Limited rows (max 5):', limitedRows);
+
+        // Update the specific slide with imported data
+        if (currentImportSlideId) {
+          console.log('Updating slide ID:', currentImportSlideId);
+          importDataToSlide(currentImportSlideId, headers, limitedRows);
+        }
+
+        alert(`Table data imported successfully! ${limitedRows.length} row(s) loaded.`);
+        setShowImportModal(false);
+        setCurrentImportSlideId(null);
+        setPastedData('');
+        return;
+      }
+      
+      // Otherwise, try to parse as stats data
       if (currentImportSlideId) {
+        console.log('Detected as STATS data');
         const statsData = parseStatsData(lines, currentImportSlideId);
         
         if (statsData) {
-          // This is stats data
           console.log('Parsed as stats data:', statsData);
           importStatsToSlide(currentImportSlideId, statsData);
           alert(`Stats imported successfully! ${Object.keys(statsData).length} stat(s) updated.`);
@@ -118,48 +172,8 @@ export default function SprintDashboard() {
           return;
         }
       }
-
-      // Otherwise, parse as table data
-      if (lines.length < 2) {
-        alert('Please paste at least a header row and one data row for tables.');
-        return;
-      }
-
-      // Parse tab-separated or comma-separated values
-      // Google Sheets typically copies as tab-separated
-      const firstLine = lines[0];
-      const delimiter = firstLine.includes('\t') ? '\t' : ',';
-      console.log('Detected delimiter:', delimiter === '\t' ? 'TAB' : 'COMMA');
       
-      const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
-      console.log('Parsed headers:', headers);
-      
-      const dataRows = lines.slice(1).map(line => {
-        const values = line.split(delimiter).map(v => v.trim());
-        const row: any = {};
-        headers.forEach((header, idx) => {
-          const value = values[idx] || '';
-          // Try to convert to number if possible
-          row[header] = isNaN(value as any) || value === '' ? value : Number(value);
-        });
-        return row;
-      });
-      console.log('Parsed data rows:', dataRows);
-
-      // Apply 5-sprint limit - keep only last 5 rows
-      const limitedRows = maintainSprintLimit(dataRows);
-      console.log('Limited rows (max 5):', limitedRows);
-
-      // Update the specific slide with imported data
-      if (currentImportSlideId) {
-        console.log('Updating slide ID:', currentImportSlideId);
-        importDataToSlide(currentImportSlideId, headers, limitedRows);
-      }
-
-      alert(`Data imported successfully! ${limitedRows.length} sprint(s) loaded (max 5 sprints maintained).`);
-      setShowImportModal(false);
-      setCurrentImportSlideId(null);
-      setPastedData('');
+      alert('Unable to parse data. Please ensure:\n\n• For tables: Copy the entire table from Google Sheets including headers\n• For stats: Use one of the 3 supported formats\n\nSee instructions above for details.');
     } catch (error) {
       console.error('Import error:', error);
       alert('Error parsing data. Please check the format and try again.');
@@ -1589,11 +1603,13 @@ export default function SprintDashboard() {
             
             <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#E6F7ED', borderRadius: '6px', border: '1px solid #2DAD70' }}>
               <div style={{ fontSize: '13px', color: '#1D7A47', marginBottom: '8px' }}>
-                <strong>📊 For Tables (with headers):</strong>
+                <strong>📊 For Tables (Google Sheets):</strong>
               </div>
               <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#1D7A47', lineHeight: '1.6' }}>
-                <li>Select cells including header row in Google Sheet</li>
-                <li>Copy and paste (maintains last 5 sprints automatically)</li>
+                <li><strong>Step 1:</strong> In Google Sheets, select your entire table (header + data rows)</li>
+                <li><strong>Step 2:</strong> Copy (Ctrl+C or Cmd+C)</li>
+                <li><strong>Step 3:</strong> Paste here - data will be tab-separated automatically</li>
+                <li>Keeps last 5 sprints automatically | Numbers cleaned from $, %, commas</li>
               </ul>
             </div>
 
