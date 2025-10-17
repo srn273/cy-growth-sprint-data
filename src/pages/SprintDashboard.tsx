@@ -546,6 +546,7 @@ export default function SprintDashboard() {
         moreDetailsUrl: 'https://docs.google.com/spreadsheets',
         data: {
           target: 1000,
+          targetLabel: 'QUARTER TARGET',
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
             { key: 'newAff', header: 'New Affiliates' },
@@ -1153,7 +1154,7 @@ export default function SprintDashboard() {
         return (
           <div>
             <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#EBF3FD', borderRadius: '6px', border: '1px solid #1863DC' }}>
-              <strong style={{ color: '#212121', fontSize: '14px' }}>SPRINT TARGET: </strong>
+              <strong style={{ color: '#212121', fontSize: '14px' }}>{slide.data.targetLabel || 'SPRINT TARGET'}: </strong>
               {isEditMode ? <input type="number" value={slide.data.target} onChange={(e) => updateSlideData(slide.id, ['target'], e.target.value)} style={{ padding: '6px 8px', width: '80px', border: '1px solid #1863DC', borderRadius: '4px' }} /> : <span style={{ fontWeight: '600', color: '#1863DC', fontSize: '16px' }}>{slide.data.target}</span>}
             </div>
             <EditableTable slide={slide} />
