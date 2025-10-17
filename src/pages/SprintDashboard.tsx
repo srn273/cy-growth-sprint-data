@@ -13,15 +13,23 @@ export default function SprintDashboard() {
 
   const maintainSprintLimit = (rows) => {
     if (!rows || rows.length <= MAX_SPRINTS) return rows;
-    
-    // Sort by sprint number (descending) and keep only last 5
-    const sorted = [...rows].sort((a, b) => {
+
+    const isSpecial = (r: any) => {
+      const s = String(r?.sprint ?? '').toLowerCase();
+      return s === 'qtd' || s === 'total' || s === 'lifetime' || s.includes('qtd');
+    };
+
+    const specialRows = rows.filter(isSpecial);
+    const numericRows = rows.filter(r => !isSpecial(r));
+
+    // Sort by sprint number (descending) and keep only last 5 numeric sprints
+    const sorted = [...numericRows].sort((a, b) => {
       const sprintA = typeof a.sprint === 'number' ? a.sprint : parseInt(a.sprint) || 0;
       const sprintB = typeof b.sprint === 'number' ? b.sprint : parseInt(b.sprint) || 0;
       return sprintB - sprintA;
     });
-    
-    return sorted.slice(0, MAX_SPRINTS);
+
+    return [...sorted.slice(0, MAX_SPRINTS), ...specialRows];
   };
 
   const handlePastedData = () => {
