@@ -81,6 +81,53 @@ export default function SprintDashboard() {
   };
 
   const importDataToSlide = (slideId, headers, rows) => {
+    const normalize = (s: string) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // Build a lookup from normalized header -> original header
+    const headerLookup: Record<string, string> = {};
+    headers.forEach((h: string) => {
+      headerLookup[normalize(h)] = h;
+    });
+
+    const synonymMap: Record<string, string[]> = {
+      sprint: ['sprint', 'sprintid', 'sprintno', 'sprintnumber', 'sprint#'],
+      blog: ['blog', 'blogs', 'blogposts', 'blogpost', 'blogarticles', 'blogposts'],
+      infographics: ['infographics', 'infographic'],
+      kb: ['kb', 'kbar ticles', 'kbarticles', 'knowledgebase', 'knowledge base', 'docs', 'documentation', 'articles'],
+      videos: ['videos', 'video', 'youtube', 'yt'],
+      total: ['total', 'totalpaid', 'paidtotal', 'totalrevenue', 'total paid'],
+      direct: ['direct', 'directplans', 'direct plans'],
+      social: ['social', 'socialmedia'],
+      blogs: ['blogs', 'blogmentions', 'blog mentions'],
+      youtube: ['youtube', 'yt'],
+      negative: ['negative', 'neg'],
+      position: ['position', 'pluginposition', 'plugin position', 'rank', 'ranking'],
+    };
+
+    const findHeaderForKey = (key: string): string | null => {
+      const keyN = normalize(key);
+      // 1) exact key match
+      if (headerLookup[keyN]) return headerLookup[keyN];
+      // 2) synonyms
+      const syns = synonymMap[key] || [];
+      for (const s of syns) {
+        const sN = normalize(s);
+        if (headerLookup[sN]) return headerLookup[sN];
+      }
+      // 3) fuzzy contains
+      const found = Object.keys(headerLookup).find(hN => hN.includes(keyN) || keyN.includes(hN));
+      return found ? headerLookup[found] : null;
+    };
+
+    const coerceNumber = (val: any) => {
+      if (val === null || val === undefined) return val;
+      const str = String(val).trim();
+      // e.g., "$1,234", "45%", "1,234"
+      const cleaned = str.replace(/[$,%]/g, '').replace(/,/g, '');
+      const num = Number(cleaned);
+      return isNaN(num) ? val : num;
+    };
+
     setSprintData(prev => ({
       ...prev,
       slides: prev.slides.map(slide => {
@@ -90,9 +137,27 @@ export default function SprintDashboard() {
 
         // Handle different slide types
         if (slide.type === 'table' || slide.type === 'pluginRanking') {
-          // Direct table import
-          if (newSlide.data.rows) {
-            newSlide.data.rows = rows;
+          if (newSlide.data?.columns && newSlide.data?.rows) {
+            const expectedKeys: string[] = newSlide.data.columns.map((c: any) => c.key);
+
+            const mapped = rows.map((r: any) => {
+              const out: Record<string, any> = {};
+              expectedKeys.forEach((k) => {
+                const header = findHeaderForKey(k);
+                let v = header ? r[header] : undefined;
+                if (k === 'sprint' && v !== undefined) {
+                  // Allow values like "Sprint 263"
+                  const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
+                  v = isNaN(parsed) ? v : parsed;
+                } else {
+                  v = coerceNumber(v);
+                }
+                out[k] = v !== undefined ? v : r[k];
+              });
+              return out;
+            });
+
+            newSlide.data.rows = mapped;
           }
         } else if (slide.type === 'supportData') {
           // Check if importing tickets or live chat based on headers
