@@ -1043,6 +1043,12 @@ export default function SprintDashboard() {
 
   const Slide = ({ slide }) => (
     <div className="slide-section" style={{ backgroundColor: '#fff', padding: '32px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '24px', pageBreakAfter: 'always' }}>
+      {currentSprint > 0 && (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', backgroundColor: '#EBF3FD', borderRadius: '6px', border: '2px solid #1863DC', marginBottom: '16px' }}>
+          <span style={{ fontSize: '14px', fontWeight: '600', color: '#5A6872' }}>Sprint:</span>
+          <span style={{ fontSize: '18px', fontWeight: '700', color: '#1863DC' }}>{currentSprint}</span>
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #EAEEF2', paddingBottom: '12px' }}>
         <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#212121', margin: 0, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', flex: 1 }}>
           {isEditMode ? (
@@ -1535,6 +1541,12 @@ export default function SprintDashboard() {
             <div style={{ maxWidth: '1400px', width: '100%', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', overflow: 'auto', maxHeight: '90vh' }}>
               {sprintData.slides[currentSlide - 1] && (
                 <div style={{ padding: '48px' }}>
+                  {currentSprint > 0 && (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', backgroundColor: '#EBF3FD', borderRadius: '8px', border: '2px solid #1863DC', marginBottom: '24px' }}>
+                      <span style={{ fontSize: '16px', fontWeight: '600', color: '#5A6872' }}>Sprint:</span>
+                      <span style={{ fontSize: '24px', fontWeight: '700', color: '#1863DC' }}>{currentSprint}</span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', borderBottom: '3px solid #1863DC', paddingBottom: '16px' }}>
                     <h2 style={{ fontSize: '28px', fontWeight: '700', color: '#212121', margin: 0 }}>
                       {sprintData.slides[currentSlide - 1].title}
