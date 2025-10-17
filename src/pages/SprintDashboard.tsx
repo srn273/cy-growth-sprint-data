@@ -32,6 +32,62 @@ export default function SprintDashboard() {
     return [...sorted.slice(0, MAX_SPRINTS), ...specialRows];
   };
 
+  const parseStatsData = (lines: string[], slideId: number) => {
+    // Detect which slide type and get expected stat keys
+    const slide = sprintData.slides.find(s => s.id === slideId);
+    if (!slide) return null;
+
+    let expectedKeys: string[] = [];
+    if (slide.type === 'quarterStats' && slide.data.quarterStats) {
+      expectedKeys = Object.keys(slide.data.quarterStats);
+    } else if (slide.type === 'withTarget' && slide.data.total) {
+      expectedKeys = Object.keys(slide.data.total);
+    } else if (slide.type === 'referral' && slide.data.lifetime) {
+      expectedKeys = Object.keys(slide.data.lifetime);
+    } else if (slide.type === 'wixApp' && slide.data.lifetime) {
+      expectedKeys = Object.keys(slide.data.lifetime);
+    }
+
+    if (expectedKeys.length === 0) return null;
+
+    const normalize = (s: string) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+    const statsData: Record<string, number> = {};
+
+    // Try to detect format
+    const firstLine = lines[0];
+    
+    // Option 1 & 2: Key-value format (tab/colon separated or two-column)
+    if (firstLine.includes('\t') || firstLine.includes(':')) {
+      const delimiter = firstLine.includes('\t') ? '\t' : ':';
+      lines.forEach(line => {
+        const parts = line.split(delimiter).map(p => p.trim());
+        if (parts.length >= 2) {
+          const key = normalize(parts[0]);
+          const value = parseFloat(parts[1].replace(/[$,%]/g, '').replace(/,/g, ''));
+          
+          // Match to expected keys
+          const matchedKey = expectedKeys.find(k => normalize(k) === key || key.includes(normalize(k)) || normalize(k).includes(key));
+          if (matchedKey && !isNaN(value)) {
+            statsData[matchedKey] = value;
+          }
+        }
+      });
+    } 
+    // Option 3: Just values (one per line, in order)
+    else if (lines.every(line => !isNaN(parseFloat(line.replace(/[$,%]/g, '').replace(/,/g, ''))))) {
+      lines.forEach((line, idx) => {
+        if (idx < expectedKeys.length) {
+          const value = parseFloat(line.replace(/[$,%]/g, '').replace(/,/g, ''));
+          if (!isNaN(value)) {
+            statsData[expectedKeys[idx]] = value;
+          }
+        }
+      });
+    }
+
+    return Object.keys(statsData).length > 0 ? statsData : null;
+  };
+
   const handlePastedData = () => {
     if (!pastedData.trim()) {
       alert('Please paste data from your Google Sheet first.');
@@ -42,8 +98,30 @@ export default function SprintDashboard() {
       console.log('Raw pasted data:', pastedData);
       const lines = pastedData.split('\n').filter(row => row.trim());
       
+      if (lines.length < 1) {
+        alert('Please paste at least one row of data.');
+        return;
+      }
+
+      // Try to parse as stats data first
+      if (currentImportSlideId) {
+        const statsData = parseStatsData(lines, currentImportSlideId);
+        
+        if (statsData) {
+          // This is stats data
+          console.log('Parsed as stats data:', statsData);
+          importStatsToSlide(currentImportSlideId, statsData);
+          alert(`Stats imported successfully! ${Object.keys(statsData).length} stat(s) updated.`);
+          setShowImportModal(false);
+          setCurrentImportSlideId(null);
+          setPastedData('');
+          return;
+        }
+      }
+
+      // Otherwise, parse as table data
       if (lines.length < 2) {
-        alert('Please paste at least a header row and one data row.');
+        alert('Please paste at least a header row and one data row for tables.');
         return;
       }
 
@@ -86,6 +164,39 @@ export default function SprintDashboard() {
       console.error('Import error:', error);
       alert('Error parsing data. Please check the format and try again.');
     }
+  };
+
+  const importStatsToSlide = (slideId: number, statsData: Record<string, number>) => {
+    setSprintData(prev => ({
+      ...prev,
+      slides: prev.slides.map(slide => {
+        if (slide.id !== slideId) return slide;
+
+        const newSlide = JSON.parse(JSON.stringify(slide));
+
+        if (slide.type === 'quarterStats' && newSlide.data.quarterStats) {
+          Object.keys(statsData).forEach(key => {
+            if (newSlide.data.quarterStats[key] !== undefined) {
+              newSlide.data.quarterStats[key] = statsData[key];
+            }
+          });
+        } else if (slide.type === 'withTarget' && newSlide.data.total) {
+          Object.keys(statsData).forEach(key => {
+            if (newSlide.data.total[key] !== undefined) {
+              newSlide.data.total[key] = statsData[key];
+            }
+          });
+        } else if ((slide.type === 'referral' || slide.type === 'wixApp') && newSlide.data.lifetime) {
+          Object.keys(statsData).forEach(key => {
+            if (newSlide.data.lifetime[key] !== undefined) {
+              newSlide.data.lifetime[key] = statsData[key];
+            }
+          });
+        }
+
+        return newSlide;
+      })
+    }));
   };
 
   const importDataToSlide = (slideId, headers, rows) => {
@@ -1473,27 +1584,36 @@ export default function SprintDashboard() {
               Update Slide Data
             </h2>
             <p style={{ fontSize: '14px', color: '#5A6872', marginBottom: '20px' }}>
-              Copy data from your Google Sheet (including headers) and paste it below. The system will automatically import the data and maintain the last 5 sprints.
+              Copy data from your Google Sheet and paste it below. The system automatically detects the format and imports accordingly.
             </p>
             
             <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#E6F7ED', borderRadius: '6px', border: '1px solid #2DAD70' }}>
               <div style={{ fontSize: '13px', color: '#1D7A47', marginBottom: '8px' }}>
-                <strong>📋 How to use:</strong>
+                <strong>📊 For Tables (with headers):</strong>
               </div>
               <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#1D7A47', lineHeight: '1.6' }}>
-                <li>Select cells in your Google Sheet (including header row)</li>
-                <li>Copy (Ctrl+C or Cmd+C)</li>
-                <li>Paste into the box below (Ctrl+V or Cmd+V)</li>
-                <li>Click "Import Data" button</li>
+                <li>Select cells including header row in Google Sheet</li>
+                <li>Copy and paste (maintains last 5 sprints automatically)</li>
+              </ul>
+            </div>
+
+            <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#EBF3FD', borderRadius: '6px', border: '1px solid #1863DC' }}>
+              <div style={{ fontSize: '13px', color: '#134FB0', marginBottom: '8px' }}>
+                <strong>📈 For Stats (3 supported formats):</strong>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#134FB0', lineHeight: '1.6' }}>
+                <li><strong>Format 1:</strong> Key-value with tab: <code>total&nbsp;&nbsp;&nbsp;&nbsp;150</code></li>
+                <li><strong>Format 2:</strong> Key-value with colon: <code>Total: 150</code></li>
+                <li><strong>Format 3:</strong> Just values (one per line in order)</li>
               </ul>
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#212121' }}>Paste Table Data Here</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#212121' }}>Paste Data Here</label>
               <textarea 
                 value={pastedData}
                 onChange={(e) => setPastedData(e.target.value)}
-                placeholder="Paste your data here... (e.g., Sprint  Total  Social  Blogs&#10;263     45     12     8)"
+                placeholder="Paste your data here...&#10;&#10;Tables: Sprint  Total  Social&#10;        263     45     12&#10;&#10;Stats:  total   150&#10;        direct  45"
                 style={{ 
                   width: '100%', 
                   minHeight: '150px', 
@@ -1505,10 +1625,6 @@ export default function SprintDashboard() {
                   resize: 'vertical'
                 }}
               />
-            </div>
-
-            <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#EBF3FD', borderRadius: '6px', fontSize: '13px', color: '#134FB0' }}>
-              <strong>💡 Tip:</strong> The system automatically detects tab-separated or comma-separated values. Keep your column headers matching the slide data structure.
             </div>
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
