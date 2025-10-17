@@ -8,6 +8,8 @@ export default function SprintDashboard() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [currentImportSlideId, setCurrentImportSlideId] = useState<number | null>(null);
   const [pastedData, setPastedData] = useState('');
+  const [editingTableId, setEditingTableId] = useState<number | null>(null);
+  const [editingStatsId, setEditingStatsId] = useState<number | null>(null);
 
   const MAX_SPRINTS = 5;
 
@@ -1019,6 +1021,67 @@ export default function SprintDashboard() {
     });
   };
 
+  const updateCellValue = (slideId, rowIndex, colKey, newValue) => {
+    const scrollPosition = window.scrollY;
+    setSprintData(prev => ({
+      ...prev,
+      slides: prev.slides.map(s => {
+        const isNested = slideId > 1000;
+        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        
+        if (s.id !== actualId) return s;
+        const newSlide = JSON.parse(JSON.stringify(s));
+        
+        let targetData = newSlide.data;
+        if (s.type === 'supportData') {
+          targetData = slideId > 1000 ? newSlide.data.liveChat : newSlide.data.tickets;
+        } else if (s.type === 'agencyLeads') {
+          targetData = slideId > 2000 ? newSlide.data.q3Performance : newSlide.data.leadsConversion;
+        } else if (s.type === 'rankings' && slideId === s.id) {
+          targetData = newSlide.data.positionChanges;
+        }
+        
+        if (targetData.rows && targetData.rows[rowIndex]) {
+          const parsedValue = isNaN(newValue) || newValue === '' ? newValue : Number(newValue);
+          targetData.rows[rowIndex][colKey] = parsedValue;
+        }
+        return newSlide;
+      })
+    }));
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition);
+    });
+  };
+
+  const deleteLastRow = (slideId) => {
+    setSprintData(prev => ({
+      ...prev,
+      slides: prev.slides.map(s => {
+        const isNested = slideId > 1000;
+        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        
+        if (s.id !== actualId) return s;
+        const newSlide = JSON.parse(JSON.stringify(s));
+        
+        let targetData = newSlide.data;
+        if (s.type === 'supportData') {
+          targetData = slideId > 1000 ? newSlide.data.liveChat : newSlide.data.tickets;
+        } else if (s.type === 'agencyLeads') {
+          targetData = slideId > 2000 ? newSlide.data.q3Performance : newSlide.data.leadsConversion;
+        } else if (s.type === 'rankings' && slideId === s.id) {
+          targetData = newSlide.data.positionChanges;
+        }
+        
+        if (targetData.rows && targetData.rows.length > 1) {
+          targetData.rows.pop();
+        } else {
+          alert('Cannot delete the last row. At least one row is required.');
+        }
+        return newSlide;
+      })
+    }));
+  };
+
   const exportToPDF = () => {
     if (isEditMode) {
       alert('Please save your changes (exit Edit mode) before exporting to PDF');
@@ -1096,11 +1159,48 @@ export default function SprintDashboard() {
     const data = slide.data;
     if (!data || !data.rows || !data.columns) return null;
     const lastIdx = data.rows.length - 1;
+    const isEditing = editingTableId === slide.id;
 
     return (
       <div style={{ marginBottom: '12px' }}>
         {isEditMode && (
           <div style={{ marginBottom: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {!isEditing && (
+              <button
+                onClick={() => setEditingTableId(slide.id)}
+                style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#1863DC', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >
+                ✏️ Edit Table
+              </button>
+            )}
+            {isEditing && (
+              <>
+                <button
+                  onClick={() => setEditingTableId(null)}
+                  style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  ✓ Done
+                </button>
+                <button
+                  onClick={() => addRow(slide.id)}
+                  style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#7F56D9', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  + Add Row
+                </button>
+                <button
+                  onClick={() => addColumn(slide.id)}
+                  style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#FF9A3C', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  + Add Column
+                </button>
+                <button
+                  onClick={() => deleteLastRow(slide.id)}
+                  style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#DC2143', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  🗑 Delete Last Row
+                </button>
+              </>
+            )}
             <button
               onClick={() => openSlideImport(slide.id)}
               style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
@@ -1115,7 +1215,16 @@ export default function SprintDashboard() {
               <tr style={{ backgroundColor: '#F8FAFB', borderBottom: '2px solid #1863DC' }}>
                 {data.columns.map((col) => (
                   <th key={col.key} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#212121' }}>
-                    {col.header}
+                    {isEditing && !col.locked ? (
+                      <input
+                        type="text"
+                        defaultValue={col.header}
+                        onBlur={(e) => updateColumnHeader(slide.id, col.key, e.target.value)}
+                        style={{ width: '100%', padding: '4px', border: '1px solid #1863DC', borderRadius: '4px', fontWeight: '600' }}
+                      />
+                    ) : (
+                      col.header
+                    )}
                   </th>
                 ))}
               </tr>
@@ -1131,7 +1240,16 @@ export default function SprintDashboard() {
                     
                     return (
                       <td key={col.key} style={{ padding: '12px 16px', fontWeight: isLatestRow ? '600' : '400', color: '#212121', borderLeft: isFirstCol && isLatestRow ? '3px solid #1863DC' : 'none', borderRight: isLastCol && isLatestRow ? '3px solid #1863DC' : 'none' }}>
-                        {col.key === 'sprint' ? `Sprint ${currentValue}` : currentValue}
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            defaultValue={currentValue}
+                            onBlur={(e) => updateCellValue(slide.id, rowIdx, col.key, e.target.value)}
+                            style={{ width: '100%', padding: '4px', border: '1px solid #DBDFE4', borderRadius: '4px' }}
+                          />
+                        ) : (
+                          col.key === 'sprint' ? `Sprint ${currentValue}` : currentValue
+                        )}
                       </td>
                     );
                   })}
@@ -1299,19 +1417,46 @@ export default function SprintDashboard() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>Quarter Stats</h3>
                 {isEditMode && (
-                  <button
-                    onClick={() => openSlideImport(slide.id)}
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    🔄 Update Stats
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {editingStatsId !== slide.id && (
+                      <button
+                        onClick={() => setEditingStatsId(slide.id)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#1863DC', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit Stats
+                      </button>
+                    )}
+                    {editingStatsId === slide.id && (
+                      <button
+                        onClick={() => setEditingStatsId(null)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✓ Done
+                      </button>
+                    )}
+                    <button
+                      onClick={() => openSlideImport(slide.id)}
+                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      🔄 Update Stats
+                    </button>
+                  </div>
                 )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
                 {Object.entries(slide.data.quarterStats).map(([key, value]) => (
                   <div key={key} style={{ padding: '20px', backgroundColor: '#EBF3FD', borderRadius: '8px', textAlign: 'center', border: '1px solid #4682E1' }}>
                     <div style={{ fontSize: '36px', fontWeight: '700', color: '#1863DC', marginBottom: '8px' }}>
-                      <span>{String(value)}</span>
+                      {editingStatsId === slide.id ? (
+                        <input
+                          type="number"
+                          defaultValue={Number(value)}
+                          onBlur={(e) => updateSlideData(slide.id, ['quarterStats', key], e.target.value)}
+                          style={{ width: '100%', fontSize: '32px', padding: '4px', border: '2px solid #1863DC', borderRadius: '4px', textAlign: 'center' }}
+                        />
+                      ) : (
+                        <span>{String(value)}</span>
+                      )}
                     </div>
                     <div style={{ fontSize: '11px', color: '#5A6872', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</div>
                   </div>
@@ -1335,19 +1480,46 @@ export default function SprintDashboard() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>QTD Stats</h3>
                   {isEditMode && (
-                    <button
-                      onClick={() => openSlideImport(slide.id)}
-                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      🔄 Update Stats
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {editingStatsId !== slide.id + 100 && (
+                        <button
+                          onClick={() => setEditingStatsId(slide.id + 100)}
+                          style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#1863DC', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                          ✏️ Edit Stats
+                        </button>
+                      )}
+                      {editingStatsId === slide.id + 100 && (
+                        <button
+                          onClick={() => setEditingStatsId(null)}
+                          style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                          ✓ Done
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openSlideImport(slide.id)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        🔄 Update Stats
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                   {Object.entries(slide.data.total).map(([key, value]) => (
                     <div key={key} style={{ padding: '20px', backgroundColor: '#EBF3FD', borderRadius: '8px', textAlign: 'center', border: '1px solid #4682E1' }}>
                       <div style={{ fontSize: '36px', fontWeight: '700', color: '#1863DC', marginBottom: '8px' }}>
-                        <span>{String(value)}</span>
+                        {editingStatsId === slide.id + 100 ? (
+                          <input
+                            type="number"
+                            defaultValue={Number(value)}
+                            onBlur={(e) => updateSlideData(slide.id, ['total', key], e.target.value)}
+                            style={{ width: '100%', fontSize: '32px', padding: '4px', border: '2px solid #1863DC', borderRadius: '4px', textAlign: 'center' }}
+                          />
+                        ) : (
+                          <span>{String(value)}</span>
+                        )}
                       </div>
                       <div style={{ fontSize: '11px', color: '#5A6872', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>{key}</div>
                     </div>
@@ -1380,19 +1552,46 @@ export default function SprintDashboard() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>App Lifetime Stats</h3>
                 {isEditMode && (
-                  <button
-                    onClick={() => openSlideImport(slide.id)}
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    🔄 Update Stats
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {editingStatsId !== slide.id + 200 && (
+                      <button
+                        onClick={() => setEditingStatsId(slide.id + 200)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#1863DC', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit Stats
+                      </button>
+                    )}
+                    {editingStatsId === slide.id + 200 && (
+                      <button
+                        onClick={() => setEditingStatsId(null)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✓ Done
+                      </button>
+                    )}
+                    <button
+                      onClick={() => openSlideImport(slide.id)}
+                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      🔄 Update Stats
+                    </button>
+                  </div>
                 )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
                 {Object.entries(slide.data.lifetime).map(([key, value]) => (
                   <div key={key} style={{ padding: '20px', backgroundColor: '#EBF3FD', borderRadius: '8px', textAlign: 'center', border: '1px solid #4682E1' }}>
                     <div style={{ fontSize: '36px', fontWeight: '700', color: '#1863DC', marginBottom: '8px' }}>
-                      <span>{String(value)}</span>
+                      {editingStatsId === slide.id + 200 ? (
+                        <input
+                          type="number"
+                          defaultValue={Number(value)}
+                          onBlur={(e) => updateSlideData(slide.id, ['lifetime', key], e.target.value)}
+                          style={{ width: '100%', fontSize: '32px', padding: '4px', border: '2px solid #1863DC', borderRadius: '4px', textAlign: 'center' }}
+                        />
+                      ) : (
+                        <span>{String(value)}</span>
+                      )}
                     </div>
                     <div style={{ fontSize: '11px', color: '#5A6872', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>{key === 'paid' ? 'Paid Signups' : key}</div>
                   </div>
@@ -1424,19 +1623,46 @@ export default function SprintDashboard() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>App Lifetime Stats</h3>
                 {isEditMode && (
-                  <button
-                    onClick={() => openSlideImport(slide.id)}
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    🔄 Update Stats
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {editingStatsId !== slide.id + 300 && (
+                      <button
+                        onClick={() => setEditingStatsId(slide.id + 300)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#1863DC', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit Stats
+                      </button>
+                    )}
+                    {editingStatsId === slide.id + 300 && (
+                      <button
+                        onClick={() => setEditingStatsId(null)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✓ Done
+                      </button>
+                    )}
+                    <button
+                      onClick={() => openSlideImport(slide.id)}
+                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      🔄 Update Stats
+                    </button>
+                  </div>
                 )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                 {Object.entries(slide.data.lifetime).map(([key, value]) => (
                   <div key={key} style={{ padding: '20px', backgroundColor: '#EBF3FD', borderRadius: '8px', textAlign: 'center', border: '1px solid #4682E1' }}>
                     <div style={{ fontSize: '36px', fontWeight: '700', color: '#1863DC', marginBottom: '8px' }}>
-                      <span>{String(value)}</span>
+                      {editingStatsId === slide.id + 300 ? (
+                        <input
+                          type="number"
+                          defaultValue={Number(value)}
+                          onBlur={(e) => updateSlideData(slide.id, ['lifetime', key], e.target.value)}
+                          style={{ width: '100%', fontSize: '32px', padding: '4px', border: '2px solid #1863DC', borderRadius: '4px', textAlign: 'center' }}
+                        />
+                      ) : (
+                        <span>{String(value)}</span>
+                      )}
                     </div>
                     <div style={{ fontSize: '11px', color: '#5A6872', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>{key}</div>
                   </div>
