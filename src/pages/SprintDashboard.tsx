@@ -1207,21 +1207,6 @@ export default function SprintDashboard() {
                 ))}
               </div>
             </div>
-            {slide.data.total && (
-              <div style={{ marginTop: '20px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#212121' }}>QTD Stats</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-                  {Object.entries(slide.data.total).map(([key, value]) => (
-                    <div key={key} style={{ padding: '20px', backgroundColor: '#EBF3FD', borderRadius: '8px', textAlign: 'center', border: '1px solid #4682E1' }}>
-                      <div style={{ fontSize: '36px', fontWeight: '700', color: '#1863DC', marginBottom: '8px' }}>
-                        {isEditMode ? <input type="number" value={value as number} onChange={(e) => updateSlideData(slide.id, ['total', key], e.target.value)} style={{ width: '100px', fontSize: '36px', padding: '4px', textAlign: 'center', border: '2px solid #1863DC', borderRadius: '4px' }} /> : <span>{String(value)}</span>}
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#5A6872', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>{key}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         );
 
