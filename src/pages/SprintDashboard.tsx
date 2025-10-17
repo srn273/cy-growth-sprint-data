@@ -213,7 +213,7 @@ export default function SprintDashboard() {
         id: 2,
         title: 'Content Publishing Stats',
         type: 'table',
-        moreDetailsUrl: 'https://docs.google.com/spreadsheets',
+        moreDetailsUrl: 'https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1006810399#gid=1006810399',
         data: {
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
@@ -254,7 +254,7 @@ export default function SprintDashboard() {
         id: 4,
         title: 'WP Popular Plugin Ranking',
         type: 'pluginRanking',
-        moreDetailsUrl: 'https://docs.google.com/spreadsheets',
+        moreDetailsUrl: 'https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1464999886#gid=1464999886',
         data: {
           quarterTarget: 0,
           columns: [
@@ -272,7 +272,7 @@ export default function SprintDashboard() {
         id: 5,
         title: 'Plugin Paid Connections',
         type: 'table',
-        moreDetailsUrl: 'https://docs.google.com/spreadsheets',
+        moreDetailsUrl: 'https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=929138315#gid=929138315',
         data: {
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
