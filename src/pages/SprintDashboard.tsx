@@ -174,14 +174,21 @@ export default function SprintDashboard() {
             newSlide.data.q3Performance.rows = rows;
           }
         } else if (slide.type === 'quarterStats') {
-          // Import sprint data and quarter stats
-          const sprintRows = rows.filter(r => r.sprint);
+          // Separate sprint rows from quarter stats rows
+          const sprintRows = rows.filter(r => {
+            const sprint = String(r.sprint || '').toLowerCase();
+            return r.sprint && sprint !== 'total' && sprint !== 'qtd' && sprint !== 'lifetime' && sprint !== 'quarter stats';
+          });
           if (sprintRows.length > 0) {
             newSlide.data.rows = sprintRows;
           }
-          // Update quarter stats if present
-          if (rows[0] && !rows[0].sprint) {
-            const statsRow = rows[0];
+          
+          // Update quarter stats if present - look for row without sprint or with special markers
+          const statsRow = rows.find(r => {
+            const sprint = String(r.sprint || '').toLowerCase();
+            return !r.sprint || sprint === 'quarter stats' || sprint === 'qtd' || sprint === 'total';
+          });
+          if (statsRow && newSlide.data.quarterStats) {
             Object.keys(newSlide.data.quarterStats).forEach(key => {
               if (statsRow[key] !== undefined) {
                 newSlide.data.quarterStats[key] = statsRow[key];
@@ -189,9 +196,18 @@ export default function SprintDashboard() {
             });
           }
         } else if (slide.type === 'withTarget') {
-          newSlide.data.rows = rows;
+          // Separate sprint rows from totals/qtd rows
+          const sprintRows = rows.filter(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint !== 'total' && sprint !== 'qtd' && sprint !== 'lifetime';
+          });
+          newSlide.data.rows = sprintRows;
+          
           // Update totals if present
-          const totalsRow = rows.find(r => r.sprint === 'total' || r.sprint === 'qtd');
+          const totalsRow = rows.find(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint === 'total' || sprint === 'qtd';
+          });
           if (totalsRow && newSlide.data.total) {
             Object.keys(newSlide.data.total).forEach(key => {
               if (totalsRow[key] !== undefined) {
@@ -200,11 +216,18 @@ export default function SprintDashboard() {
             });
           }
         } else if (slide.type === 'referral') {
-          const sprintRows = rows.filter(r => typeof r.sprint === 'number' || !isNaN(parseInt(r.sprint)));
+          // Separate sprint rows from lifetime rows
+          const sprintRows = rows.filter(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint !== 'lifetime' && sprint !== 'total' && sprint !== 'qtd' && (typeof r.sprint === 'number' || !isNaN(parseInt(r.sprint)));
+          });
           newSlide.data.rows = sprintRows;
           
           // Update lifetime stats if present
-          const lifetimeRow = rows.find(r => r.sprint === 'lifetime' || r.type === 'lifetime');
+          const lifetimeRow = rows.find(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint === 'lifetime';
+          });
           if (lifetimeRow && newSlide.data.lifetime) {
             Object.keys(newSlide.data.lifetime).forEach(key => {
               if (lifetimeRow[key] !== undefined) {
@@ -213,15 +236,35 @@ export default function SprintDashboard() {
             });
           }
         } else if (slide.type === 'wixApp') {
-          const sprintRows = rows.filter(r => typeof r.sprint === 'number' || !isNaN(parseInt(r.sprint)));
+          // Separate sprint rows from lifetime rows
+          const sprintRows = rows.filter(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint !== 'lifetime' && sprint !== 'total' && sprint !== 'qtd' && (typeof r.sprint === 'number' || !isNaN(parseInt(r.sprint)));
+          });
           newSlide.data.rows = sprintRows;
           
-          // Update lifetime stats
-          const lifetimeRow = rows.find(r => r.sprint === 'lifetime' || r.type === 'lifetime');
+          // Update lifetime stats and total stats
+          const lifetimeRow = rows.find(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint === 'lifetime';
+          });
           if (lifetimeRow && newSlide.data.lifetime) {
             Object.keys(newSlide.data.lifetime).forEach(key => {
               if (lifetimeRow[key] !== undefined) {
                 newSlide.data.lifetime[key] = lifetimeRow[key];
+              }
+            });
+          }
+          
+          // Update total stats if present
+          const totalsRow = rows.find(r => {
+            const sprint = String(r.sprint).toLowerCase();
+            return sprint === 'total' || sprint === 'qtd';
+          });
+          if (totalsRow && newSlide.data.total) {
+            Object.keys(newSlide.data.total).forEach(key => {
+              if (totalsRow[key] !== undefined) {
+                newSlide.data.total[key] = totalsRow[key];
               }
             });
           }
