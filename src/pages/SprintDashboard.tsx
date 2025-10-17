@@ -524,6 +524,8 @@ export default function SprintDashboard() {
         moreDetailsUrl: 'https://docs.google.com/spreadsheets',
         data: {
           target: 27,
+          targetLabel: 'SPRINT PAID TARGET',
+          hideQtdStats: true,
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
             { key: 'signups', header: 'Signups' },
@@ -1158,7 +1160,7 @@ export default function SprintDashboard() {
               {isEditMode ? <input type="number" value={slide.data.target} onChange={(e) => updateSlideData(slide.id, ['target'], e.target.value)} style={{ padding: '6px 8px', width: '80px', border: '1px solid #1863DC', borderRadius: '4px' }} /> : <span style={{ fontWeight: '600', color: '#1863DC', fontSize: '16px' }}>{slide.data.target}</span>}
             </div>
             <EditableTable slide={slide} />
-            {slide.data.total && (
+            {slide.data.total && !slide.data.hideQtdStats && (
               <div style={{ marginTop: '20px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#212121' }}>QTD Stats</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
