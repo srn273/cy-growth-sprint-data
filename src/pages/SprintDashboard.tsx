@@ -31,6 +31,7 @@ export default function SprintDashboard() {
     }
 
     try {
+      console.log('Raw pasted data:', pastedData);
       const lines = pastedData.split('\n').filter(row => row.trim());
       
       if (lines.length < 2) {
@@ -42,8 +43,11 @@ export default function SprintDashboard() {
       // Google Sheets typically copies as tab-separated
       const firstLine = lines[0];
       const delimiter = firstLine.includes('\t') ? '\t' : ',';
+      console.log('Detected delimiter:', delimiter === '\t' ? 'TAB' : 'COMMA');
       
       const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+      console.log('Parsed headers:', headers);
+      
       const dataRows = lines.slice(1).map(line => {
         const values = line.split(delimiter).map(v => v.trim());
         const row: any = {};
@@ -54,12 +58,15 @@ export default function SprintDashboard() {
         });
         return row;
       });
+      console.log('Parsed data rows:', dataRows);
 
       // Apply 5-sprint limit - keep only last 5 rows
       const limitedRows = maintainSprintLimit(dataRows);
+      console.log('Limited rows (max 5):', limitedRows);
 
       // Update the specific slide with imported data
       if (currentImportSlideId) {
+        console.log('Updating slide ID:', currentImportSlideId);
         importDataToSlide(currentImportSlideId, headers, limitedRows);
       }
 
