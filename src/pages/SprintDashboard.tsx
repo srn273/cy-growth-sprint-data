@@ -979,12 +979,20 @@ export default function SprintDashboard() {
       <div>
         <div style={{ marginBottom: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           {!isTableEditing ? (
-            <button 
-              onClick={() => setEditingTableId(slide.id)} 
-              style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-            >
-              ✏️ Edit Table
-            </button>
+            <>
+              <button 
+                onClick={() => setEditingTableId(slide.id)} 
+                style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                ✏️ Edit Table
+              </button>
+              <button
+                onClick={() => openSlideImport(slide.id)}
+                style={{ padding: '8px 16px', fontSize: '13px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >
+                🔄 Update Table Data
+              </button>
+            </>
           ) : (
             <>
               <button 
@@ -1213,21 +1221,31 @@ export default function SprintDashboard() {
             <div style={{ marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>Quarter Stats</h3>
-                {editingStatsId !== slide.id ? (
-                  <button 
-                    onClick={() => setEditingStatsId(slide.id)} 
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    ✏️ Edit Stats
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => setEditingStatsId(null)} 
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    ✓ Done
-                  </button>
-                )}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {editingStatsId !== slide.id ? (
+                    <>
+                      <button 
+                        onClick={() => setEditingStatsId(slide.id)} 
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit Stats
+                      </button>
+                      <button
+                        onClick={() => openSlideImport(slide.id)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        🔄 Update Stats
+                      </button>
+                    </>
+                  ) : (
+                    <button 
+                      onClick={() => setEditingStatsId(null)} 
+                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      ✓ Done
+                    </button>
+                  )}
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
                 {Object.entries(slide.data.quarterStats).map(([key, value]) => (
@@ -1256,21 +1274,31 @@ export default function SprintDashboard() {
               <div style={{ marginTop: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>QTD Stats</h3>
-                  {editingStatsId !== slide.id ? (
-                    <button 
-                      onClick={() => setEditingStatsId(slide.id)} 
-                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      ✏️ Edit Stats
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => setEditingStatsId(null)} 
-                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      ✓ Done
-                    </button>
-                  )}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {editingStatsId !== slide.id ? (
+                      <>
+                        <button 
+                          onClick={() => setEditingStatsId(slide.id)} 
+                          style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                          ✏️ Edit Stats
+                        </button>
+                        <button
+                          onClick={() => openSlideImport(slide.id)}
+                          style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                          🔄 Update Stats
+                        </button>
+                      </>
+                    ) : (
+                      <button 
+                        onClick={() => setEditingStatsId(null)} 
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✓ Done
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                   {Object.entries(slide.data.total).map(([key, value]) => (
@@ -1308,21 +1336,31 @@ export default function SprintDashboard() {
             <div style={{ marginTop: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>App Lifetime Stats</h3>
-                {editingStatsId !== slide.id ? (
-                  <button 
-                    onClick={() => setEditingStatsId(slide.id)} 
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    ✏️ Edit Stats
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => setEditingStatsId(null)} 
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    ✓ Done
-                  </button>
-                )}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {editingStatsId !== slide.id ? (
+                    <>
+                      <button 
+                        onClick={() => setEditingStatsId(slide.id)} 
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit Stats
+                      </button>
+                      <button
+                        onClick={() => openSlideImport(slide.id)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        🔄 Update Stats
+                      </button>
+                    </>
+                  ) : (
+                    <button 
+                      onClick={() => setEditingStatsId(null)} 
+                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      ✓ Done
+                    </button>
+                  )}
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
                 {Object.entries(slide.data.lifetime).map(([key, value]) => (
@@ -1359,21 +1397,31 @@ export default function SprintDashboard() {
             <div style={{ marginTop: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#212121' }}>App Lifetime Stats</h3>
-                {editingStatsId !== slide.id ? (
-                  <button 
-                    onClick={() => setEditingStatsId(slide.id)} 
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    ✏️ Edit Stats
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => setEditingStatsId(null)} 
-                    style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    ✓ Done
-                  </button>
-                )}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {editingStatsId !== slide.id ? (
+                    <>
+                      <button 
+                        onClick={() => setEditingStatsId(slide.id)} 
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#F59E0B', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit Stats
+                      </button>
+                      <button
+                        onClick={() => openSlideImport(slide.id)}
+                        style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        🔄 Update Stats
+                      </button>
+                    </>
+                  ) : (
+                    <button 
+                      onClick={() => setEditingStatsId(null)} 
+                      style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '600', backgroundColor: '#2DAD70', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      ✓ Done
+                    </button>
+                  )}
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                 {Object.entries(slide.data.lifetime).map(([key, value]) => (
