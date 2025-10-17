@@ -326,7 +326,7 @@ export default function SprintDashboard() {
         type: 'pluginRanking',
         moreDetailsUrl: 'https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1464999886#gid=1464999886',
         data: {
-          quarterTarget: 0,
+          quarterTarget: 21,
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
             { key: 'position', header: 'Plugin Position*' }
@@ -523,7 +523,7 @@ export default function SprintDashboard() {
         type: 'withTarget',
         moreDetailsUrl: 'https://docs.google.com/spreadsheets',
         data: {
-          target: 0,
+          target: 27,
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
             { key: 'signups', header: 'Signups' },
@@ -545,7 +545,7 @@ export default function SprintDashboard() {
         type: 'withTarget',
         moreDetailsUrl: 'https://docs.google.com/spreadsheets',
         data: {
-          target: 0,
+          target: 1000,
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
             { key: 'newAff', header: 'New Affiliates' },
@@ -567,7 +567,7 @@ export default function SprintDashboard() {
         moreDetailsUrl: 'https://docs.google.com/spreadsheets',
         data: {
           lifetime: { advocates: 0, paid: 0 },
-          target: 0,
+          target: 100,
           current: 0,
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
@@ -591,7 +591,7 @@ export default function SprintDashboard() {
         moreDetailsUrl: 'https://docs.google.com/spreadsheets',
         data: {
           lifetime: { installs: 0, active: 0, paid: 0, rating: 0 },
-          target: 0,
+          target: 100,
           current: 0,
           columns: [
             { key: 'sprint', header: 'Sprint', locked: true },
