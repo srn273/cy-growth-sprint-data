@@ -8,6 +8,8 @@ export default function SprintDashboard() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [currentImportSlideId, setCurrentImportSlideId] = useState<number | null>(null);
   const [pastedData, setPastedData] = useState("");
+  const [pastedImage, setPastedImage] = useState<string | null>(null);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [editingTableId, setEditingTableId] = useState<number | null>(null);
   const [editingStatsId, setEditingStatsId] = useState<number | null>(null);
 
@@ -95,9 +97,92 @@ export default function SprintDashboard() {
     return Object.keys(statsData).length > 0 ? statsData : null;
   };
 
+  const handleImageExtraction = async (imageData: string) => {
+    setIsProcessingImage(true);
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.0-flash-exp",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Extract all data from this table/spreadsheet screenshot. Return ONLY the raw data in tab-separated format, exactly as it appears. Include the header row first, then all data rows. Do not add any explanations, markdown formatting, or extra text - just the plain tab-separated values."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: imageData
+                  }
+                }
+              ]
+            }
+          ]
+        })
+      });
+
+      const result = await response.json();
+      const extractedText = result.choices?.[0]?.message?.content || "";
+      
+      if (extractedText.trim()) {
+        setPastedData(extractedText);
+        setPastedImage(null);
+        alert("✅ Data extracted from screenshot! Review and click Import Data to proceed.");
+      } else {
+        alert("Could not extract data from the image. Please try pasting text data directly.");
+      }
+    } catch (error) {
+      console.error("Error processing image:", error);
+      alert("Error processing screenshot. Please try pasting text data directly.");
+    } finally {
+      setIsProcessingImage(false);
+    }
+  };
+
+  const handlePasteEvent = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        e.preventDefault();
+        const blob = items[i].getAsFile();
+        if (blob) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const imageData = event.target?.result as string;
+            setPastedImage(imageData);
+            handleImageExtraction(imageData);
+          };
+          reader.readAsDataURL(blob);
+        }
+        return;
+      }
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        setPastedImage(imageData);
+        handleImageExtraction(imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handlePastedData = () => {
     if (!pastedData.trim()) {
-      alert("Please paste data from your Google Sheet first.");
+      alert("Please paste data from your Google Sheet or upload a screenshot first.");
       return;
     }
 
@@ -442,6 +527,8 @@ export default function SprintDashboard() {
 
   const openSlideImport = (slideId) => {
     setCurrentImportSlideId(slideId);
+    setPastedData("");
+    setPastedImage(null);
     setShowImportModal(true);
   };
 
@@ -2845,9 +2932,27 @@ export default function SprintDashboard() {
               Update Slide Data
             </h2>
             <p style={{ fontSize: "14px", color: "#5A6872", marginBottom: "20px" }}>
-              Copy data from your Google Sheet and paste it below. The system automatically detects the format and
-              imports accordingly.
+              Copy data from your Google Sheet and paste it below, OR paste/upload a screenshot to extract data automatically.
             </p>
+
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "16px",
+                backgroundColor: "#FEF3E6",
+                borderRadius: "6px",
+                border: "1px solid #FF8800",
+              }}
+            >
+              <div style={{ fontSize: "13px", color: "#994D00", marginBottom: "8px" }}>
+                <strong>📸 Screenshot Upload (NEW!):</strong>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#994D00", lineHeight: "1.6" }}>
+                <li>Take a screenshot of your Google Sheet or table</li>
+                <li>Paste directly (Ctrl+V) in the textarea below OR use the upload button</li>
+                <li>AI will automatically extract and format the data for you</li>
+              </ul>
+            </div>
 
             <div
               style={{
@@ -2859,7 +2964,7 @@ export default function SprintDashboard() {
               }}
             >
               <div style={{ fontSize: "13px", color: "#1D7A47", marginBottom: "8px" }}>
-                <strong>📊 For Tables (Google Sheets):</strong>
+                <strong>📊 For Tables (Text Paste):</strong>
               </div>
               <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#1D7A47", lineHeight: "1.6" }}>
                 <li>
@@ -2901,15 +3006,67 @@ export default function SprintDashboard() {
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label
-                style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600", color: "#212121" }}
-              >
-                Paste Data Here
-              </label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <label
+                  style={{ fontSize: "14px", fontWeight: "600", color: "#212121" }}
+                >
+                  Paste Data or Screenshot Here
+                </label>
+                <label
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    backgroundColor: "#FF8800",
+                    color: "#fff",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    display: isProcessingImage ? "none" : "inline-block",
+                  }}
+                >
+                  📸 Upload Screenshot
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+              {isProcessingImage && (
+                <div
+                  style={{
+                    padding: "12px",
+                    backgroundColor: "#EBF3FD",
+                    borderRadius: "6px",
+                    marginBottom: "12px",
+                    fontSize: "13px",
+                    color: "#1863DC",
+                    textAlign: "center",
+                  }}
+                >
+                  🔄 Processing screenshot with AI... This may take a few seconds.
+                </div>
+              )}
+              {pastedImage && !isProcessingImage && (
+                <div style={{ marginBottom: "12px" }}>
+                  <img
+                    src={pastedImage}
+                    alt="Pasted screenshot"
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "200px",
+                      borderRadius: "6px",
+                      border: "2px solid #2DAD70",
+                    }}
+                  />
+                </div>
+              )}
               <textarea
                 value={pastedData}
                 onChange={(e) => setPastedData(e.target.value)}
-                placeholder="Paste your data here...&#10;&#10;Tables: Sprint  Total  Social&#10;        263     45     12&#10;&#10;Stats:  total   150&#10;        direct  45"
+                onPaste={handlePasteEvent}
+                placeholder="Paste your data OR screenshot here (Ctrl+V)...&#10;&#10;Text: Sprint  Total  Social&#10;      263     45     12&#10;&#10;Screenshot: Just paste from clipboard!"
                 style={{
                   width: "100%",
                   minHeight: "150px",
@@ -2920,6 +3077,7 @@ export default function SprintDashboard() {
                   fontFamily: "monospace",
                   resize: "vertical",
                 }}
+                disabled={isProcessingImage}
               />
             </div>
 
@@ -2929,6 +3087,7 @@ export default function SprintDashboard() {
                   setShowImportModal(false);
                   setCurrentImportSlideId(null);
                   setPastedData("");
+                  setPastedImage(null);
                 }}
                 style={{
                   padding: "12px 24px",
@@ -2945,15 +3104,17 @@ export default function SprintDashboard() {
               </button>
               <button
                 onClick={handlePastedData}
+                disabled={isProcessingImage}
                 style={{
                   padding: "12px 24px",
                   fontSize: "14px",
                   fontWeight: "600",
                   border: "none",
                   borderRadius: "6px",
-                  backgroundColor: "#2DAD70",
+                  backgroundColor: isProcessingImage ? "#DBDFE4" : "#2DAD70",
                   color: "#fff",
-                  cursor: "pointer",
+                  cursor: isProcessingImage ? "not-allowed" : "pointer",
+                  opacity: isProcessingImage ? 0.6 : 1,
                 }}
               >
                 📥 Import Data
