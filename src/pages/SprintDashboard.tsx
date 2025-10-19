@@ -12,6 +12,7 @@ export default function SprintDashboard() {
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [editingTableId, setEditingTableId] = useState<number | null>(null);
   const [editingStatsId, setEditingStatsId] = useState<number | null>(null);
+  const [isGlobalImport, setIsGlobalImport] = useState(false);
 
   const MAX_SPRINTS = 5;
 
@@ -507,7 +508,48 @@ export default function SprintDashboard() {
     setCurrentImportSlideId(slideId);
     setPastedData("");
     setPastedImage(null);
+    setIsGlobalImport(false);
     setShowImportModal(true);
+  };
+
+  const openGlobalImport = () => {
+    setCurrentImportSlideId(null);
+    setPastedData("");
+    setPastedImage(null);
+    setIsGlobalImport(true);
+    setShowImportModal(true);
+  };
+
+  const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const importedData = JSON.parse(content);
+
+        // Check if it's a full export
+        if (importedData.version && importedData.slides && Array.isArray(importedData.slides)) {
+          // Full presentation import
+          if (importedData.currentSprint) {
+            setCurrentSprint(importedData.currentSprint);
+          }
+
+          setSprintData({ slides: importedData.slides });
+          alert(`✅ Full presentation imported successfully! ${importedData.slides.length} slides loaded.`);
+          setShowImportModal(false);
+        } else {
+          alert("Invalid import file format. Please use a valid export file.");
+        }
+      } catch (error) {
+        console.error("Import error:", error);
+        alert("Error reading import file. Please ensure it's a valid JSON export file.");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = ""; // Reset input
   };
 
   const [sprintData, setSprintData] = useState({
@@ -1259,6 +1301,33 @@ export default function SprintDashboard() {
         return newSlide;
       }),
     }));
+  };
+
+  const exportToJSON = () => {
+    try {
+      const exportData = {
+        version: "1.0",
+        exportDate: new Date().toISOString(),
+        currentSprint,
+        slides: sprintData.slides,
+      };
+
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sprint-dashboard-export-${currentSprint}-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      alert("✅ Data exported successfully! You can use this file to import and update your presentation later.");
+    } catch (error) {
+      console.error("Export error:", error);
+      alert("An error occurred while exporting data. Please try again.");
+    }
   };
 
   const exportToPDF = () => {
@@ -2811,7 +2880,7 @@ export default function SprintDashboard() {
                 {isEditMode ? "✓ Save" : "✎ Edit"}
               </button>
               <button
-                onClick={() => setShowImportModal(true)}
+                onClick={openGlobalImport}
                 style={{
                   padding: "12px 20px",
                   fontSize: "14px",
@@ -2825,6 +2894,22 @@ export default function SprintDashboard() {
                 }}
               >
                 📊 Import Data
+              </button>
+              <button
+                onClick={exportToJSON}
+                style={{
+                  padding: "12px 20px",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  border: "none",
+                  borderRadius: "6px",
+                  backgroundColor: "#FF8800",
+                  color: "#fff",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                💾 Export Data
               </button>
               <button
                 onClick={exportToPDF}
@@ -2907,11 +2992,44 @@ export default function SprintDashboard() {
             }}
           >
             <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#212121", marginBottom: "20px" }}>
-              Update Slide Data
+              {isGlobalImport ? "Import Full Presentation" : "Update Slide Data"}
             </h2>
             <p style={{ fontSize: "14px", color: "#5A6872", marginBottom: "20px" }}>
-              Copy data from your Google Sheet and paste it below, OR paste/upload a screenshot to extract data automatically.
+              {isGlobalImport 
+                ? "Upload a previously exported JSON file to restore your entire presentation data."
+                : "Copy data from your Google Sheet and paste it below, OR paste/upload a screenshot to extract data automatically."}
             </p>
+
+            {isGlobalImport && (
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  style={{
+                    display: "inline-block",
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    backgroundColor: "#2DAD70",
+                    color: "#fff",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  📁 Select JSON Export File
+                  <input
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={handleFileImport}
+                    style={{ display: "none" }}
+                  />
+                </label>
+                <p style={{ fontSize: "13px", color: "#5A6872", marginTop: "12px" }}>
+                  Choose a JSON file exported from this dashboard to restore all slides and data.
+                </p>
+              </div>
+            )}
+
+            {!isGlobalImport && (
+              <>
 
             <div
               style={{
@@ -3044,6 +3162,7 @@ export default function SprintDashboard() {
                   setCurrentImportSlideId(null);
                   setPastedData("");
                   setPastedImage(null);
+                  setIsGlobalImport(false);
                 }}
                 style={{
                   padding: "12px 24px",
@@ -3058,24 +3177,28 @@ export default function SprintDashboard() {
               >
                 Cancel
               </button>
-              <button
-                onClick={handlePastedData}
-                disabled={isProcessingImage}
-                style={{
-                  padding: "12px 24px",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  border: "none",
-                  borderRadius: "6px",
-                  backgroundColor: isProcessingImage ? "#DBDFE4" : "#2DAD70",
-                  color: "#fff",
-                  cursor: isProcessingImage ? "not-allowed" : "pointer",
-                  opacity: isProcessingImage ? 0.6 : 1,
-                }}
-              >
-                📥 Import Data
-              </button>
+              {!isGlobalImport && (
+                <button
+                  onClick={handlePastedData}
+                  disabled={isProcessingImage}
+                  style={{
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    border: "none",
+                    borderRadius: "6px",
+                    backgroundColor: isProcessingImage ? "#DBDFE4" : "#2DAD70",
+                    color: "#fff",
+                    cursor: isProcessingImage ? "not-allowed" : "pointer",
+                    opacity: isProcessingImage ? 0.6 : 1,
+                  }}
+                >
+                  📥 Import Data
+                </button>
+              )}
             </div>
+            </>
+            )}
           </div>
         </div>
       )}
