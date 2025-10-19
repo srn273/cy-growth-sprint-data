@@ -886,7 +886,7 @@ export default function SprintDashboard() {
             { channel: "New Subscription (Direct)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0 },
             { channel: "New Subscription (Agency)", totalTarget: 315, targetAsOnDate: 0, actual: 0, percentage: 0 },
             { channel: "Affiliate (paid signups)", totalTarget: 1000, targetAsOnDate: 0, actual: 0, percentage: 0 },
-            { channel: "Ads", totalTarget: 0, targetAsOnDate: 800, actual: 0, percentage: 0 },
+            { channel: "Ads", totalTarget: 800, targetAsOnDate: 0, actual: 0, percentage: 0 },
           ],
         },
       },
