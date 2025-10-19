@@ -1139,7 +1139,35 @@ export default function SprintDashboard() {
     });
   };
 
-  const deleteLastRow = (slideId) => {
+  const deleteRow = (slideId, rowIdx) => {
+    setSprintData((prev) => ({
+      ...prev,
+      slides: prev.slides.map((s) => {
+        const isNested = slideId > 1000;
+        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+
+        if (s.id !== actualId) return s;
+        const newSlide = JSON.parse(JSON.stringify(s));
+
+        let targetData = newSlide.data;
+        if (s.type === "supportData") {
+          targetData = slideId > 1000 ? newSlide.data.liveChat : newSlide.data.tickets;
+        } else if (s.type === "agencyLeads") {
+          targetData = slideId > 2000 ? newSlide.data.q3Performance : newSlide.data.leadsConversion;
+        } else if (s.type === "rankings" && slideId === s.id) {
+          targetData = newSlide.data.positionChanges;
+        }
+
+        if (targetData.rows && targetData.rows.length > 1) {
+          targetData.rows.splice(rowIdx, 1);
+        }
+
+        return newSlide;
+      }),
+    }));
+  };
+
+  const deleteColumn = (slideId, colKey) => {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1319,22 +1347,6 @@ export default function SprintDashboard() {
                 >
                   + Add Column
                 </button>
-                <button
-                  onClick={() => deleteLastRow(slide.id)}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "13px",
-                    fontWeight: "600",
-                    backgroundColor: "#DC2143",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "20px",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  🗑 Delete Last Row
-                </button>
               </>
             )}
             <button
@@ -1366,27 +1378,50 @@ export default function SprintDashboard() {
           >
             <thead>
               <tr style={{ backgroundColor: "#F8FAFB", borderBottom: "2px solid #1863DC" }}>
+                {isEditing && (
+                  <th style={{ padding: "12px 8px", textAlign: "center", fontWeight: "600", color: "#212121", width: "40px" }}>
+                    
+                  </th>
+                )}
                 {data.columns.map((col) => (
                   <th
                     key={col.key}
                     style={{ padding: "12px 16px", textAlign: "left", fontWeight: "600", color: "#212121" }}
                   >
-                    {isEditing && !col.locked ? (
-                      <input
-                        type="text"
-                        defaultValue={col.header}
-                        onBlur={(e) => updateColumnHeader(slide.id, col.key, e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "4px",
-                          border: "1px solid #1863DC",
-                          borderRadius: "4px",
-                          fontWeight: "600",
-                        }}
-                      />
-                    ) : (
-                      col.header
-                    )}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {isEditing && !col.locked ? (
+                        <input
+                          type="text"
+                          defaultValue={col.header}
+                          onBlur={(e) => updateColumnHeader(slide.id, col.key, e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "4px",
+                            border: "1px solid #1863DC",
+                            borderRadius: "4px",
+                            fontWeight: "600",
+                          }}
+                        />
+                      ) : (
+                        col.header
+                      )}
+                      {isEditing && !col.locked && data.columns.length > 1 && (
+                        <button
+                          onClick={() => deleteColumn(slide.id, col.key)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: "16px",
+                            padding: "4px",
+                            color: "#DC2143",
+                          }}
+                          title="Delete column"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -1401,6 +1436,26 @@ export default function SprintDashboard() {
                     borderTop: rowIdx === lastIdx ? "3px solid #1863DC" : "none",
                   }}
                 >
+                  {isEditing && (
+                    <td style={{ padding: "12px 8px", textAlign: "center", width: "40px" }}>
+                      {data.rows.length > 1 && (
+                        <button
+                          onClick={() => deleteRow(slide.id, rowIdx)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: "16px",
+                            padding: "0",
+                            color: "#DC2143",
+                          }}
+                          title="Delete row"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </td>
+                  )}
                   {data.columns.map((col, colIdx) => {
                     const currentValue = row[col.key];
                     const isLatestRow = rowIdx === lastIdx;
