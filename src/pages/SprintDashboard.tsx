@@ -527,7 +527,7 @@ export default function SprintDashboard() {
           quarterTarget: 21,
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
-            { key: "position", header: "Plugin Position*" },
+            { key: "position", header: "Plugin Position" },
           ],
           rows: [
             { sprint: 263, position: 0 },
