@@ -167,18 +167,6 @@ export default function SprintDashboard() {
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setPastedImage(imageData);
-        handleImageExtraction(imageData);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handlePastedData = () => {
     if (!pastedData.trim()) {
@@ -3006,33 +2994,11 @@ export default function SprintDashboard() {
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <label
-                  style={{ fontSize: "14px", fontWeight: "600", color: "#212121" }}
-                >
-                  Paste Data or Screenshot Here
-                </label>
-                <label
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "13px",
-                    fontWeight: "600",
-                    backgroundColor: "#FF8800",
-                    color: "#fff",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    display: isProcessingImage ? "none" : "inline-block",
-                  }}
-                >
-                  📸 Upload Screenshot
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    style={{ display: "none" }}
-                  />
-                </label>
-              </div>
+              <label
+                style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600", color: "#212121" }}
+              >
+                Paste Data or Screenshot Here
+              </label>
               {isProcessingImage && (
                 <div
                   style={{
