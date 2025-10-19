@@ -100,35 +100,25 @@ export default function SprintDashboard() {
   const handleImageExtraction = async (imageData: string) => {
     setIsProcessingImage(true);
     try {
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.0-flash-exp",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: "Extract all data from this table/spreadsheet screenshot. Return ONLY the raw data in tab-separated format, exactly as it appears. Include the header row first, then all data rows. Do not add any explanations, markdown formatting, or extra text - just the plain tab-separated values."
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: imageData
-                  }
-                }
-              ]
-            }
-          ]
-        })
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-screenshot-data`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ imageData }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to extract data from screenshot");
+      }
 
       const result = await response.json();
-      const extractedText = result.choices?.[0]?.message?.content || "";
+      const extractedText = result.extractedText || "";
       
       if (extractedText.trim()) {
         setPastedData(extractedText);
@@ -139,7 +129,7 @@ export default function SprintDashboard() {
       }
     } catch (error) {
       console.error("Error processing image:", error);
-      alert("Error processing screenshot. Please try pasting text data directly.");
+      alert(error instanceof Error ? error.message : "Error processing screenshot. Please try pasting text data directly.");
     } finally {
       setIsProcessingImage(false);
     }
