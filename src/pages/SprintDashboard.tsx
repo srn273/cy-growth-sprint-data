@@ -528,26 +528,42 @@ export default function SprintDashboard() {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
+        console.log("File content loaded, parsing JSON...");
         const importedData = JSON.parse(content);
+        console.log("Parsed import data:", importedData);
 
         // Check if it's a full export
         if (importedData.version && importedData.slides && Array.isArray(importedData.slides)) {
           // Full presentation import
-          if (importedData.currentSprint) {
+          console.log(`Importing ${importedData.slides.length} slides...`);
+          
+          if (importedData.currentSprint !== undefined) {
+            console.log("Setting current sprint to:", importedData.currentSprint);
             setCurrentSprint(importedData.currentSprint);
           }
 
+          console.log("Updating sprint data...");
           setSprintData({ slides: importedData.slides });
-          alert(`✅ Full presentation imported successfully! ${importedData.slides.length} slides loaded.`);
+          
+          // Close modal and reset state
           setShowImportModal(false);
+          setIsGlobalImport(false);
+          
+          alert(`✅ Full presentation imported successfully!\n\n${importedData.slides.length} slides loaded\nCurrent Sprint: ${importedData.currentSprint || 'Not set'}`);
         } else {
-          alert("Invalid import file format. Please use a valid export file.");
+          console.error("Invalid file format - missing required fields");
+          alert("Invalid import file format. Please use a valid export file.\n\nRequired: version, slides (array)");
         }
       } catch (error) {
         console.error("Import error:", error);
-        alert("Error reading import file. Please ensure it's a valid JSON export file.");
+        alert(`Error reading import file: ${error.message}\n\nPlease ensure it's a valid JSON export file.`);
       }
     };
+    
+    reader.onerror = () => {
+      alert("Error reading file. Please try again.");
+    };
+    
     reader.readAsText(file);
     event.target.value = ""; // Reset input
   };
