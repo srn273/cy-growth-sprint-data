@@ -574,32 +574,53 @@ export default function SprintDashboard() {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const lines = content.split('\n').map(l => l.trim()).filter(l => l);
+        const lines = content.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
         
         if (lines.length < 2) {
           alert("CSV file is empty or invalid.");
           return;
         }
 
-        // Parse CSV
-        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        // Parse CSV - handle quoted values properly
+        const parseCSVLine = (line: string) => {
+          const values: string[] = [];
+          let current = '';
+          let inQuotes = false;
+          
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              values.push(current.trim());
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          values.push(current.trim());
+          return values;
+        };
+
+        const headers = parseCSVLine(lines[0]);
         const rows = lines.slice(1).map(line => {
-          const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+          const values = parseCSVLine(line);
           const row: any = {};
           headers.forEach((header, idx) => {
             row[header] = values[idx] || '';
           });
           return row;
-        });
+        }).filter(row => row.SlideID && row.Sprint); // Only keep rows with SlideID and Sprint
 
-        // Detect format and apply data
-        if (headers.includes('SlideID') || headers.includes('slideId')) {
-          // Multi-slide format
-          applyMultiSlideCSVData(rows);
-        } else {
-          alert("CSV format not recognized. Please use the provided template format.");
+        if (rows.length === 0) {
+          alert("No valid data rows found in CSV. Make sure SlideID and Sprint columns are filled.");
+          return;
         }
+
+        // Apply the CSV data
+        applyMultiSlideCSVData(rows);
       } catch (error) {
+        console.error("CSV Import Error:", error);
         alert(`Error reading CSV file: ${error.message}`);
       }
     };
@@ -608,28 +629,25 @@ export default function SprintDashboard() {
 
   const applyMultiSlideCSVData = (rows: any[]) => {
     let updatedCount = 0;
+    let updatedSlides = new Set<number>();
     const newSlides = [...sprintData.slides];
 
     rows.forEach(row => {
       const slideId = parseInt(row.SlideID || row.slideId);
       const slideIndex = newSlides.findIndex(s => s.id === slideId);
       
-      if (slideIndex === -1) return;
+      if (slideIndex === -1) {
+        console.warn(`Slide ${slideId} not found, skipping row`);
+        return;
+      }
 
       const slide = newSlides[slideIndex];
-      const dataType = row.DataType || row.dataType;
       
       try {
-        // Update based on data type
-        if (dataType === 'table' && row.TableName) {
-          updateSlideTable(slide, row);
+        const updated = updateSlideFromCSVRow(slide, row);
+        if (updated) {
           updatedCount++;
-        } else if (dataType === 'stats' && row.StatsType) {
-          updateSlideStats(slide, row);
-          updatedCount++;
-        } else if (dataType === 'config') {
-          updateSlideConfig(slide, row);
-          updatedCount++;
+          updatedSlides.add(slideId);
         }
       } catch (error) {
         console.error(`Error updating slide ${slideId}:`, error);
@@ -637,142 +655,197 @@ export default function SprintDashboard() {
     });
 
     if (updatedCount > 0) {
-      setSprintData({ slides: newSlides });
+      setSprintData({ slides: [...newSlides] });
       setShowImportModal(false);
       setIsGlobalImport(false);
-      alert(`✅ CSV imported successfully!\n\n${updatedCount} data items updated across slides.`);
+      alert(`✅ CSV imported successfully!\n\n${updatedCount} rows updated across ${updatedSlides.size} slides.`);
     } else {
-      alert("No data was imported. Please check your CSV format.");
+      alert("No data was imported. Please check your CSV format and make sure SlideID, TableName, and Sprint columns are correct.");
     }
   };
 
-  const updateSlideTable = (slide: any, row: any) => {
-    const tableName = row.TableName || row.tableName;
-    let targetTable;
+  const updateSlideFromCSVRow = (slide: any, row: any): boolean => {
+    const tableName = row.TableName || row.tableName || 'main';
+    const sprintNum = parseInt(row.Sprint);
     
-    // Handle different table structures
+    if (isNaN(sprintNum)) {
+      console.warn(`Invalid sprint number for slide ${slide.id}`);
+      return false;
+    }
+
+    // Find the target table/data structure
+    let targetTable;
     if (tableName === 'main') {
-      // For simple slides, data is directly under slide.data
       targetTable = slide.data;
-    } else if (tableName && slide.data[tableName]) {
-      // For named tables (e.g., positionChanges, tickets)
+    } else if (slide.data[tableName]) {
       targetTable = slide.data[tableName];
     } else {
-      // Fallback: assume data is directly under slide.data
-      targetTable = slide.data;
+      console.warn(`Table "${tableName}" not found in slide ${slide.id}`);
+      return false;
     }
-    
-    if (!targetTable || !targetTable.rows || !targetTable.columns) return;
 
-    // Find or create row
-    const sprintNum = parseInt(row.Sprint);
-    if (isNaN(sprintNum)) return;
-    
+    // Check if this is a table with rows
+    if (!targetTable.rows || !targetTable.columns) {
+      console.warn(`Slide ${slide.id} doesn't have a rows/columns structure`);
+      return false;
+    }
+
+    // Find or create row for this sprint
     const rowIndex = targetTable.rows.findIndex((r: any) => r.sprint === sprintNum);
-    
     const newRow: any = { sprint: sprintNum };
+    
+    // Map CSV columns to table columns
+    let hasData = false;
     targetTable.columns.forEach((col: any) => {
-      if (col.key !== 'sprint' && row[col.header] !== undefined && row[col.header] !== '') {
-        const value = row[col.header];
-        // Try to parse as number, but keep as string if it contains text
-        const numValue = parseFloat(String(value).replace(/[$,%]/g, '').replace(/,/g, ''));
-        newRow[col.key] = isNaN(numValue) ? value : numValue;
+      if (col.key === 'sprint') return;
+      
+      // Try to find matching CSV column
+      const csvValue = row[col.header];
+      if (csvValue !== undefined && csvValue !== '') {
+        hasData = true;
+        // Parse value - handle numbers, percentages, times
+        const cleanValue = String(csvValue).replace(/[$,%]/g, '').replace(/,/g, '');
+        const numValue = parseFloat(cleanValue);
+        newRow[col.key] = isNaN(numValue) ? csvValue : numValue;
       }
     });
 
+    if (!hasData) {
+      console.warn(`No matching data found for slide ${slide.id}, sprint ${sprintNum}`);
+      return false;
+    }
+
+    // Update or add the row
     if (rowIndex >= 0) {
       targetTable.rows[rowIndex] = { ...targetTable.rows[rowIndex], ...newRow };
     } else {
       targetTable.rows.push(newRow);
       targetTable.rows = maintainSprintLimit(targetTable.rows);
     }
-  };
 
-  const updateSlideStats = (slide: any, row: any) => {
-    const statsType = row.StatsType || row.statsType;
-    const targetStats = slide.data[statsType];
-    
-    if (!targetStats) return;
-
-    Object.keys(targetStats).forEach(key => {
-      if (row[key] !== undefined && row[key] !== '') {
-        const value = parseFloat(row[key].replace(/[$,%]/g, '').replace(/,/g, ''));
-        if (!isNaN(value)) {
-          targetStats[key] = value;
-        }
-      }
-    });
-  };
-
-  const updateSlideConfig = (slide: any, row: any) => {
-    if (row.Title) slide.title = row.Title;
-    if (row.MoreDetailsUrl) slide.moreDetailsUrl = row.MoreDetailsUrl;
+    return true;
   };
 
   const downloadSampleCSV = () => {
-    const sampleCSV = `SlideID,DataType,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating
-1,table,positionChanges,263,15,45
-1,table,positionChanges,264,18,42
-1,table,positionChanges,265,20,40
-2,table,main,263,5,3,8,2
-2,table,main,264,6,4,9,3
-3,table,main,263,120,45,30,15,5
-3,table,main,264,125,50,32,18,3
-4,table,main,263,22
-4,table,main,264,21
-5,table,main,263,1500,450
-5,table,main,264,1600,475
+    // Generate comprehensive CSV with all columns
+    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Avg full resolution time,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,New Affiliates,Trial Signups,Paid Signups,Advocates Onboarded,Referrals Generated,Active Trial Signups,Installs,Uninstalls,Active Installs,Free Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
+1,positionChanges,263,15,45
+1,positionChanges,264,18,42
+2,main,263,5,3,8,2
+2,main,264,6,4,9,3
+3,main,263,120,45,30,15,5
+3,main,264,125,50,32,18,3
+4,main,263,22
+4,main,264,21
+5,main,263,1500,450
+5,main,264,1600,475
+7,tickets,263,350,2h 30m,5h 45m,95%,125,8,45,12,Good
+7,tickets,264,375,2h 15m,5h 30m,96%,130,10,50,15,Excellent
+7,liveChat,263,200,15m,45m,92%,Poor
+7,liveChat,264,220,12m,40m,94%,Good
+9,main,263,450,85,25
+9,main,264,475,90,28
+11,main,263,150,35,8
+11,main,264,165,38,10
+12,main,263,45,12,8,3
+12,main,264,50,15,10,4
+13,main,263,125,18,67,9
+13,main,264,135,22,81,5
+14,main,263,25,150,12
+14,main,264,30,175,15
+15,main,263,15,45,25,8
+15,main,264,18,52,30,10
+16,main,263,350,25,325,120,15
+16,main,264,375,30,345,135,18
 
-# SPRINT DASHBOARD - CSV BULK IMPORT TEMPLATE
-# ============================================
-# 
-# HOW TO USE:
-# 1. Fill in the rows below with your data
-# 2. Only fill columns relevant to each slide (leave others empty)
-# 3. Save as CSV and import via "Import Data" button
-# 
-# REQUIRED COLUMNS FOR ALL ROWS:
-# - SlideID: Slide number (1-16)
-# - DataType: Must be "table" (for table data)
-# - TableName: Use "main" for simple slides, see specific names below
-# - Sprint: Sprint number (e.g., 263, 264, 265)
-# 
-# SLIDE REFERENCE & COLUMNS:
-# ===========================
-# 
+# ========================================
+# SPRINT DASHBOARD - CSV IMPORT TEMPLATE
+# ========================================
+#
+# INSTRUCTIONS:
+# 1. Fill your data in rows below (one row per sprint per table)
+# 2. Only fill columns relevant to each slide
+# 3. Leave other columns empty
+# 4. Import via "Import Data" button in dashboard
+#
+# COLUMN GUIDE:
+# - SlideID: Required - Slide number (see guide below)
+# - TableName: Required for slides with tables (see guide below)  
+# - Sprint: Required - Sprint number (e.g., 263, 264, 265)
+# - Other columns: Match exact column names from your slides
+#
+# ========================================
+# SLIDE REFERENCE GUIDE
+# ========================================
+#
 # Slide 1: Top 25 Major Rankings and Movements
-# TableName: positionChanges
-# Columns: Position 1-2, Position 3-10
-# 
-# Slide 2: Content Publishing Stats  
-# TableName: main
-# Columns: Blog Posts, Infographics, KB Articles, Videos
-# 
+#   TableName: positionChanges
+#   Columns: Position 1-2, Position 3-10
+#
+# Slide 2: Content Publishing Stats
+#   TableName: main
+#   Columns: Blog Posts, Infographics, KB Articles, Videos
+#
 # Slide 3: Brand Mentions
-# TableName: main
-# Columns: Total, Social, Blogs, YouTube, Negative
-# 
+#   TableName: main
+#   Columns: Total, Social, Blogs, YouTube, Negative
+#
 # Slide 4: WP Popular Plugin Ranking
-# TableName: main
-# Columns: Plugin Position
-# 
+#   TableName: main
+#   Columns: Plugin Position
+#
 # Slide 5: Plugin Paid Connections
-# TableName: main
-# Columns: Total Paid, Direct Plans
-# 
-# Slide 7: Support Data
-# TableName: tickets
-# Columns: Total Tickets Solved, Avg First Response Time, Avg Full Resolution time, 
-#          CSAT Score, Pre-sales Tickets, Converted Tickets (Unique customers),
-#          Total Paid subscriptions (websites), Agency Tickets, Bad Rating
-# 
+#   TableName: main
+#   Columns: Total Paid, Direct Plans
+#
+# Slide 7: Support Data (has 2 tables)
+#   TableName: tickets
+#   Columns: Total Tickets Solved, Avg First Response Time, 
+#            Avg Full Resolution time, CSAT Score, Pre-sales Tickets,
+#            Converted Tickets (Unique customers), 
+#            Total Paid subscriptions (websites), Agency Tickets, Bad Rating
+#   
+#   TableName: liveChat
+#   Columns: Conversations assigned, Avg teammate assignment to first response,
+#            Avg full resolution time, CSAT Score, Bad Rating
+#
+# Slide 9: Paid Acquisition - Google Ads
+#   TableName: main
+#   Columns: Total Accounts, Paid Trials, Paying Users
+#
+# Slide 11: Paid Acquisition - Bing Ads
+#   TableName: main
+#   Columns: Total Accounts, Paid Trials, Paying Users
+#
+# Slide 12: Paid Acquisition - Agency Data
+#   TableName: main
+#   Columns: Form Fills, Demo, Signups, Paying Agencies
+#
+# Slide 13: Agency - Signups & Paid Users
+#   TableName: main
+#   Columns: Signups, Paid, Percentage, Shortfall
+#
+# Slide 14: Partnerships - Affiliate Partner Program
+#   TableName: main
+#   Columns: New Affiliates, Trial Signups, Paid Signups
+#
+# Slide 15: Referral Partner Program
+#   TableName: main
+#   Columns: Advocates Onboarded, Referrals Generated, 
+#            Active Trial Signups, Paid Signups
+#
+# Slide 16: Strategic Partner Program - Wix App
+#   TableName: main
+#   Columns: Installs, Uninstalls, Active Installs, 
+#            Free Signups, Paid Signups
+#
+# ========================================
 # TIPS:
-# - You can add multiple rows for the same slide (different sprints)
-# - Leave columns empty if not applicable
-# - For time fields (e.g., Avg First Response Time), use format like "2h 30m" or "45m"
-# - For percentages (e.g., CSAT Score), use format like "95%" or just "95"
-# - The import will automatically update existing sprint rows or add new ones
-# - Maximum 5 sprint rows will be kept per table (oldest removed automatically)
+# - Add multiple rows for same slide (different sprints)
+# - Max 5 sprint rows kept per table (oldest auto-removed)
+# - Time format: "2h 30m" or "45m"
+# - Percentages: "95%" or "95"
+# - Leave empty cells blank (don't use 0 unless intentional)
 `;
 
     const blob = new Blob([sampleCSV], { type: 'text/csv;charset=utf-8' });
