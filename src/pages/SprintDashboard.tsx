@@ -524,48 +524,222 @@ export default function SprintDashboard() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    if (fileExtension === 'csv') {
+      handleCSVImport(file);
+    } else if (fileExtension === 'json') {
+      handleJSONImport(file);
+    } else {
+      alert("Unsupported file format. Please upload a JSON or CSV file.");
+    }
+    
+    event.target.value = ""; // Reset input
+  };
+
+  const handleJSONImport = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        console.log("File content loaded, parsing JSON...");
         const importedData = JSON.parse(content);
-        console.log("Parsed import data:", importedData);
 
-        // Check if it's a full export
         if (importedData.version && importedData.slides && Array.isArray(importedData.slides)) {
-          // Full presentation import
-          console.log(`Importing ${importedData.slides.length} slides...`);
+          // Force a complete state reset with new data
+          setSprintData({ slides: [...importedData.slides] });
           
           if (importedData.currentSprint !== undefined) {
-            console.log("Setting current sprint to:", importedData.currentSprint);
             setCurrentSprint(importedData.currentSprint);
           }
-
-          console.log("Updating sprint data...");
-          setSprintData({ slides: importedData.slides });
           
-          // Close modal and reset state
           setShowImportModal(false);
           setIsGlobalImport(false);
           
+          // Force re-render by navigating to first slide
+          setCurrentSlide(1);
+          
           alert(`✅ Full presentation imported successfully!\n\n${importedData.slides.length} slides loaded\nCurrent Sprint: ${importedData.currentSprint || 'Not set'}`);
         } else {
-          console.error("Invalid file format - missing required fields");
           alert("Invalid import file format. Please use a valid export file.\n\nRequired: version, slides (array)");
         }
       } catch (error) {
-        console.error("Import error:", error);
         alert(`Error reading import file: ${error.message}\n\nPlease ensure it's a valid JSON export file.`);
       }
     };
-    
-    reader.onerror = () => {
-      alert("Error reading file. Please try again.");
-    };
-    
     reader.readAsText(file);
-    event.target.value = ""; // Reset input
+  };
+
+  const handleCSVImport = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const lines = content.split('\n').map(l => l.trim()).filter(l => l);
+        
+        if (lines.length < 2) {
+          alert("CSV file is empty or invalid.");
+          return;
+        }
+
+        // Parse CSV
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        const rows = lines.slice(1).map(line => {
+          const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+          const row: any = {};
+          headers.forEach((header, idx) => {
+            row[header] = values[idx] || '';
+          });
+          return row;
+        });
+
+        // Detect format and apply data
+        if (headers.includes('SlideID') || headers.includes('slideId')) {
+          // Multi-slide format
+          applyMultiSlideCSVData(rows);
+        } else {
+          alert("CSV format not recognized. Please use the provided template format.");
+        }
+      } catch (error) {
+        alert(`Error reading CSV file: ${error.message}`);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const applyMultiSlideCSVData = (rows: any[]) => {
+    let updatedCount = 0;
+    const newSlides = [...sprintData.slides];
+
+    rows.forEach(row => {
+      const slideId = parseInt(row.SlideID || row.slideId);
+      const slideIndex = newSlides.findIndex(s => s.id === slideId);
+      
+      if (slideIndex === -1) return;
+
+      const slide = newSlides[slideIndex];
+      const dataType = row.DataType || row.dataType;
+      
+      try {
+        // Update based on data type
+        if (dataType === 'table' && row.TableName) {
+          updateSlideTable(slide, row);
+          updatedCount++;
+        } else if (dataType === 'stats' && row.StatsType) {
+          updateSlideStats(slide, row);
+          updatedCount++;
+        } else if (dataType === 'config') {
+          updateSlideConfig(slide, row);
+          updatedCount++;
+        }
+      } catch (error) {
+        console.error(`Error updating slide ${slideId}:`, error);
+      }
+    });
+
+    if (updatedCount > 0) {
+      setSprintData({ slides: newSlides });
+      setShowImportModal(false);
+      setIsGlobalImport(false);
+      alert(`✅ CSV imported successfully!\n\n${updatedCount} data items updated across slides.`);
+    } else {
+      alert("No data was imported. Please check your CSV format.");
+    }
+  };
+
+  const updateSlideTable = (slide: any, row: any) => {
+    const tableName = row.TableName || row.tableName;
+    const targetTable = slide.data[tableName];
+    
+    if (!targetTable || !targetTable.rows) return;
+
+    // Find or create row
+    const sprintNum = parseInt(row.Sprint);
+    const rowIndex = targetTable.rows.findIndex((r: any) => r.sprint === sprintNum);
+    
+    const newRow: any = { sprint: sprintNum };
+    targetTable.columns.forEach((col: any) => {
+      if (col.key !== 'sprint' && row[col.header]) {
+        const value = row[col.header];
+        newRow[col.key] = isNaN(parseFloat(value)) ? value : parseFloat(value);
+      }
+    });
+
+    if (rowIndex >= 0) {
+      targetTable.rows[rowIndex] = { ...targetTable.rows[rowIndex], ...newRow };
+    } else {
+      targetTable.rows.push(newRow);
+      targetTable.rows = maintainSprintLimit(targetTable.rows);
+    }
+  };
+
+  const updateSlideStats = (slide: any, row: any) => {
+    const statsType = row.StatsType || row.statsType;
+    const targetStats = slide.data[statsType];
+    
+    if (!targetStats) return;
+
+    Object.keys(targetStats).forEach(key => {
+      if (row[key] !== undefined && row[key] !== '') {
+        const value = parseFloat(row[key].replace(/[$,%]/g, '').replace(/,/g, ''));
+        if (!isNaN(value)) {
+          targetStats[key] = value;
+        }
+      }
+    });
+  };
+
+  const updateSlideConfig = (slide: any, row: any) => {
+    if (row.Title) slide.title = row.Title;
+    if (row.MoreDetailsUrl) slide.moreDetailsUrl = row.MoreDetailsUrl;
+  };
+
+  const downloadSampleCSV = () => {
+    const sampleCSV = `SlideID,DataType,TableName,Sprint,Position 1-2,Position 3-10
+1,table,positionChanges,263,15,45
+1,table,positionChanges,264,18,42
+2,stats,quarterStats,,250000,1500000,125000,75
+2,config,,,New Slide Title,https://example.com
+3,table,sprintMetrics,263,500000,1200,25000,1500
+4,stats,total,,850000,2500,15000
+5,table,conversionFunnel,263,100000,50000,25000,12500
+
+# CSV Import Format Guide
+# 
+# Required Columns:
+# - SlideID: The slide number to update (1-16)
+# - DataType: Type of data (table, stats, or config)
+# 
+# For DataType = "table":
+# - TableName: Name of the table (e.g., positionChanges, sprintMetrics, conversionFunnel)
+# - Sprint: Sprint number for the row
+# - [Column Headers]: Use exact column names from the slide
+# 
+# For DataType = "stats":
+# - StatsType: Type of stats (quarterStats, total, lifetime)
+# - [Stat Names]: Use exact stat names (e.g., Revenue, Users, etc.)
+# 
+# For DataType = "config":
+# - Title: New slide title
+# - MoreDetailsUrl: Link for "More Details" button
+#
+# Slide Reference:
+# 1: Rankings & Movements
+# 2: Revenue Overview
+# 3: Sprint Metrics
+# 4: Conversion Funnel
+# 5: Revenue with Target
+# 6-16: Additional slides (check your dashboard)
+`;
+
+    const blob = new Blob([sampleCSV], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'sprint-dashboard-import-template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const [sprintData, setSprintData] = useState({
@@ -2928,6 +3102,22 @@ export default function SprintDashboard() {
                 💾 Export Data
               </button>
               <button
+                onClick={downloadSampleCSV}
+                style={{
+                  padding: "12px 20px",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  border: "none",
+                  borderRadius: "6px",
+                  backgroundColor: "#6366F1",
+                  color: "#fff",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                📋 Download CSV Template
+              </button>
+              <button
                 onClick={exportToPDF}
                 style={{
                   padding: "12px 20px",
@@ -3012,7 +3202,7 @@ export default function SprintDashboard() {
             </h2>
             <p style={{ fontSize: "14px", color: "#5A6872", marginBottom: "20px" }}>
               {isGlobalImport 
-                ? "Upload a previously exported JSON file to restore your entire presentation data."
+                ? "Upload a JSON export to restore complete data, or CSV file to bulk update tables and stats across all slides."
                 : "Copy data from your Google Sheet and paste it below, OR paste/upload a screenshot to extract data automatically."}
             </p>
 
@@ -3028,19 +3218,37 @@ export default function SprintDashboard() {
                     color: "#fff",
                     borderRadius: "6px",
                     cursor: "pointer",
+                    marginRight: "12px",
                   }}
                 >
-                  📁 Select JSON Export File
+                  📁 Select JSON/CSV File
                   <input
                     type="file"
-                    accept=".json,application/json"
+                    accept=".json,.csv,application/json,text/csv"
                     onChange={handleFileImport}
                     style={{ display: "none" }}
                   />
                 </label>
-                <p style={{ fontSize: "13px", color: "#5A6872", marginTop: "12px" }}>
-                  Choose a JSON file exported from this dashboard to restore all slides and data.
-                </p>
+                <button
+                  onClick={downloadSampleCSV}
+                  style={{
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    backgroundColor: "#6366F1",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  📋 Download CSV Template
+                </button>
+                <div style={{ fontSize: "13px", color: "#5A6872", marginTop: "12px", lineHeight: "1.6" }}>
+                  <strong>JSON:</strong> Complete backup/restore of all slides and data
+                  <br />
+                  <strong>CSV:</strong> Bulk update tables and stats - download template to see format
+                </div>
               </div>
             )}
 
