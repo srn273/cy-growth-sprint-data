@@ -648,19 +648,35 @@ export default function SprintDashboard() {
 
   const updateSlideTable = (slide: any, row: any) => {
     const tableName = row.TableName || row.tableName;
-    const targetTable = slide.data[tableName];
+    let targetTable;
     
-    if (!targetTable || !targetTable.rows) return;
+    // Handle different table structures
+    if (tableName === 'main') {
+      // For simple slides, data is directly under slide.data
+      targetTable = slide.data;
+    } else if (tableName && slide.data[tableName]) {
+      // For named tables (e.g., positionChanges, tickets)
+      targetTable = slide.data[tableName];
+    } else {
+      // Fallback: assume data is directly under slide.data
+      targetTable = slide.data;
+    }
+    
+    if (!targetTable || !targetTable.rows || !targetTable.columns) return;
 
     // Find or create row
     const sprintNum = parseInt(row.Sprint);
+    if (isNaN(sprintNum)) return;
+    
     const rowIndex = targetTable.rows.findIndex((r: any) => r.sprint === sprintNum);
     
     const newRow: any = { sprint: sprintNum };
     targetTable.columns.forEach((col: any) => {
-      if (col.key !== 'sprint' && row[col.header]) {
+      if (col.key !== 'sprint' && row[col.header] !== undefined && row[col.header] !== '') {
         const value = row[col.header];
-        newRow[col.key] = isNaN(parseFloat(value)) ? value : parseFloat(value);
+        // Try to parse as number, but keep as string if it contains text
+        const numValue = parseFloat(String(value).replace(/[$,%]/g, '').replace(/,/g, ''));
+        newRow[col.key] = isNaN(numValue) ? value : numValue;
       }
     });
 
@@ -694,48 +710,76 @@ export default function SprintDashboard() {
   };
 
   const downloadSampleCSV = () => {
-    const sampleCSV = `SlideID,DataType,TableName,Sprint,Position 1-2,Position 3-10
+    const sampleCSV = `SlideID,DataType,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating
 1,table,positionChanges,263,15,45
 1,table,positionChanges,264,18,42
-2,stats,quarterStats,,250000,1500000,125000,75
-2,config,,,New Slide Title,https://example.com
-3,table,sprintMetrics,263,500000,1200,25000,1500
-4,stats,total,,850000,2500,15000
-5,table,conversionFunnel,263,100000,50000,25000,12500
+1,table,positionChanges,265,20,40
+2,table,main,263,5,3,8,2
+2,table,main,264,6,4,9,3
+3,table,main,263,120,45,30,15,5
+3,table,main,264,125,50,32,18,3
+4,table,main,263,22
+4,table,main,264,21
+5,table,main,263,1500,450
+5,table,main,264,1600,475
 
-# CSV Import Format Guide
+# SPRINT DASHBOARD - CSV BULK IMPORT TEMPLATE
+# ============================================
 # 
-# Required Columns:
-# - SlideID: The slide number to update (1-16)
-# - DataType: Type of data (table, stats, or config)
+# HOW TO USE:
+# 1. Fill in the rows below with your data
+# 2. Only fill columns relevant to each slide (leave others empty)
+# 3. Save as CSV and import via "Import Data" button
 # 
-# For DataType = "table":
-# - TableName: Name of the table (e.g., positionChanges, sprintMetrics, conversionFunnel)
-# - Sprint: Sprint number for the row
-# - [Column Headers]: Use exact column names from the slide
+# REQUIRED COLUMNS FOR ALL ROWS:
+# - SlideID: Slide number (1-16)
+# - DataType: Must be "table" (for table data)
+# - TableName: Use "main" for simple slides, see specific names below
+# - Sprint: Sprint number (e.g., 263, 264, 265)
 # 
-# For DataType = "stats":
-# - StatsType: Type of stats (quarterStats, total, lifetime)
-# - [Stat Names]: Use exact stat names (e.g., Revenue, Users, etc.)
+# SLIDE REFERENCE & COLUMNS:
+# ===========================
 # 
-# For DataType = "config":
-# - Title: New slide title
-# - MoreDetailsUrl: Link for "More Details" button
-#
-# Slide Reference:
-# 1: Rankings & Movements
-# 2: Revenue Overview
-# 3: Sprint Metrics
-# 4: Conversion Funnel
-# 5: Revenue with Target
-# 6-16: Additional slides (check your dashboard)
+# Slide 1: Top 25 Major Rankings and Movements
+# TableName: positionChanges
+# Columns: Position 1-2, Position 3-10
+# 
+# Slide 2: Content Publishing Stats  
+# TableName: main
+# Columns: Blog Posts, Infographics, KB Articles, Videos
+# 
+# Slide 3: Brand Mentions
+# TableName: main
+# Columns: Total, Social, Blogs, YouTube, Negative
+# 
+# Slide 4: WP Popular Plugin Ranking
+# TableName: main
+# Columns: Plugin Position
+# 
+# Slide 5: Plugin Paid Connections
+# TableName: main
+# Columns: Total Paid, Direct Plans
+# 
+# Slide 7: Support Data
+# TableName: tickets
+# Columns: Total Tickets Solved, Avg First Response Time, Avg Full Resolution time, 
+#          CSAT Score, Pre-sales Tickets, Converted Tickets (Unique customers),
+#          Total Paid subscriptions (websites), Agency Tickets, Bad Rating
+# 
+# TIPS:
+# - You can add multiple rows for the same slide (different sprints)
+# - Leave columns empty if not applicable
+# - For time fields (e.g., Avg First Response Time), use format like "2h 30m" or "45m"
+# - For percentages (e.g., CSAT Score), use format like "95%" or just "95"
+# - The import will automatically update existing sprint rows or add new ones
+# - Maximum 5 sprint rows will be kept per table (oldest removed automatically)
 `;
 
-    const blob = new Blob([sampleCSV], { type: 'text/csv' });
+    const blob = new Blob([sampleCSV], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'sprint-dashboard-import-template.csv';
+    link.download = 'sprint-dashboard-bulk-import-template.csv';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -3195,9 +3239,45 @@ export default function SprintDashboard() {
               maxWidth: "600px",
               width: "90%",
               boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+              position: "relative",
             }}
           >
-            <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#212121", marginBottom: "20px" }}>
+            <button
+              onClick={() => {
+                setShowImportModal(false);
+                setCurrentImportSlideId(null);
+                setPastedData("");
+                setPastedImage(null);
+                setIsGlobalImport(false);
+              }}
+              style={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                width: "32px",
+                height: "32px",
+                border: "none",
+                borderRadius: "6px",
+                backgroundColor: "#F1F3F5",
+                color: "#5A6872",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "700",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#E1E4E8";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#F1F3F5";
+              }}
+            >
+              ×
+            </button>
+            <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#212121", marginBottom: "20px", paddingRight: "40px" }}>
               {isGlobalImport ? "Import Full Presentation" : "Update Slide Data"}
             </h2>
             <p style={{ fontSize: "14px", color: "#5A6872", marginBottom: "20px" }}>
