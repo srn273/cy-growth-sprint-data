@@ -2105,18 +2105,43 @@ export default function SprintDashboard() {
               </div>
             </div>
             <div style={{ marginBottom: "24px" }}>
-              <h3
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                  color: "#5A6872",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                #1 Rankings by Region
-              </h3>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    color: "#5A6872",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  #1 Rankings by Region
+                </h3>
+                {isEditMode && (
+                  <button
+                    onClick={() => {
+                      const newSlides = sprintData.slides.map((s) => {
+                        if (s.id === slide.id && s.type === "rankings") {
+                          return { ...s, data: { ...s.data, byRegion: [...s.data.byRegion, { region: "New Region", count: 0, keywords: "" }] } };
+                        }
+                        return s;
+                      }) as any;
+                      setSprintData({ slides: newSlides });
+                    }}
+                    style={{
+                      padding: "6px 12px",
+                      backgroundColor: "#1863DC",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                    }}
+                  >
+                    + Add Region
+                  </button>
+                )}
+              </div>
               {slide.data.byRegion.map((item, idx) => (
                 <div
                   key={idx}
@@ -2126,13 +2151,92 @@ export default function SprintDashboard() {
                     backgroundColor: "#F8FAFB",
                     borderRadius: "6px",
                     border: "1px solid #EAEEF2",
+                    position: "relative",
                   }}
                 >
-                  <strong style={{ color: "#212121", fontSize: "14px" }}>
-                    {item.region} ({item.count})
-                  </strong>
-                  <br />
-                  <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                  {isEditMode ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <input
+                          type="text"
+                          defaultValue={item.region}
+                          onBlur={(e) => {
+                            const newRegion = [...slide.data.byRegion];
+                            newRegion[idx].region = e.target.value;
+                            updateSlideData(slide.id, ["byRegion"], newRegion);
+                          }}
+                          placeholder="Region"
+                          style={{
+                            padding: "6px",
+                            fontSize: "14px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            fontWeight: "600",
+                            flex: "1",
+                          }}
+                        />
+                        <input
+                          type="number"
+                          defaultValue={item.count}
+                          onBlur={(e) => {
+                            const newRegion = [...slide.data.byRegion];
+                            newRegion[idx].count = parseInt(e.target.value) || 0;
+                            updateSlideData(slide.id, ["byRegion"], newRegion);
+                          }}
+                          placeholder="Count"
+                          style={{
+                            padding: "6px",
+                            fontSize: "14px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            width: "80px",
+                          }}
+                        />
+                        <button
+                          onClick={() => {
+                            const newRegion = slide.data.byRegion.filter((_, i) => i !== idx);
+                            updateSlideData(slide.id, ["byRegion"], newRegion);
+                          }}
+                          style={{
+                            padding: "6px 10px",
+                            backgroundColor: "#DC2143",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <textarea
+                        defaultValue={item.keywords}
+                        onBlur={(e) => {
+                          const newRegion = [...slide.data.byRegion];
+                          newRegion[idx].keywords = e.target.value;
+                          updateSlideData(slide.id, ["byRegion"], newRegion);
+                        }}
+                        placeholder="Keywords (comma separated)"
+                        style={{
+                          padding: "6px",
+                          fontSize: "12px",
+                          border: "1px solid #DBDFE4",
+                          borderRadius: "4px",
+                          minHeight: "60px",
+                          resize: "vertical",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <strong style={{ color: "#212121", fontSize: "14px" }}>
+                        {item.region} ({item.count})
+                      </strong>
+                      <br />
+                      <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -2153,9 +2257,35 @@ export default function SprintDashboard() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
               <div>
-                <h3 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "12px", color: "#2DAD70" }}>
-                  ↑ Improved
-                </h3>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                  <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#2DAD70" }}>
+                    ↑ Improved
+                  </h3>
+                  {isEditMode && (
+                    <button
+                      onClick={() => {
+                        const newSlides = sprintData.slides.map((s) => {
+                          if (s.id === slide.id && s.type === "rankings") {
+                            return { ...s, data: { ...s.data, improved: [...s.data.improved, { region: "New Region", count: 0, keywords: "" }] } };
+                          }
+                          return s;
+                        }) as any;
+                        setSprintData({ slides: newSlides });
+                      }}
+                      style={{
+                        padding: "4px 8px",
+                        backgroundColor: "#2DAD70",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "11px",
+                      }}
+                    >
+                      + Add
+                    </button>
+                  )}
+                </div>
                 {slide.data.improved.map((item, idx) => (
                   <div
                     key={idx}
@@ -2167,18 +2297,121 @@ export default function SprintDashboard() {
                       border: "1px solid #2DAD70",
                     }}
                   >
-                    <strong style={{ color: "#212121", fontSize: "14px" }}>
-                      {item.region} ({item.count})
-                    </strong>
-                    <br />
-                    <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                    {isEditMode ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          <input
+                            type="text"
+                            defaultValue={item.region}
+                            onBlur={(e) => {
+                              const newImproved = [...slide.data.improved];
+                              newImproved[idx].region = e.target.value;
+                              updateSlideData(slide.id, ["improved"], newImproved);
+                            }}
+                            placeholder="Region"
+                            style={{
+                              padding: "6px",
+                              fontSize: "12px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              flex: "1",
+                            }}
+                          />
+                          <input
+                            type="number"
+                            defaultValue={item.count}
+                            onBlur={(e) => {
+                              const newImproved = [...slide.data.improved];
+                              newImproved[idx].count = parseInt(e.target.value) || 0;
+                              updateSlideData(slide.id, ["improved"], newImproved);
+                            }}
+                            placeholder="Count"
+                            style={{
+                              padding: "6px",
+                              fontSize: "12px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              width: "60px",
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              const newImproved = slide.data.improved.filter((_, i) => i !== idx);
+                              updateSlideData(slide.id, ["improved"], newImproved);
+                            }}
+                            style={{
+                              padding: "4px 8px",
+                              backgroundColor: "#DC2143",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "11px",
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <textarea
+                          defaultValue={item.keywords}
+                          onBlur={(e) => {
+                            const newImproved = [...slide.data.improved];
+                            newImproved[idx].keywords = e.target.value;
+                            updateSlideData(slide.id, ["improved"], newImproved);
+                          }}
+                          placeholder="Keywords"
+                          style={{
+                            padding: "6px",
+                            fontSize: "11px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            minHeight: "50px",
+                            resize: "vertical",
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <strong style={{ color: "#212121", fontSize: "14px" }}>
+                          {item.region} ({item.count})
+                        </strong>
+                        <br />
+                        <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
               <div>
-                <h3 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "12px", color: "#DC2143" }}>
-                  ↓ Declined
-                </h3>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                  <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#DC2143" }}>
+                    ↓ Declined
+                  </h3>
+                  {isEditMode && (
+                    <button
+                      onClick={() => {
+                        const newSlides = sprintData.slides.map((s) => {
+                          if (s.id === slide.id && s.type === "rankings") {
+                            return { ...s, data: { ...s.data, declined: [...s.data.declined, { region: "New Region", count: 0, keywords: "" }] } };
+                          }
+                          return s;
+                        }) as any;
+                        setSprintData({ slides: newSlides });
+                      }}
+                      style={{
+                        padding: "4px 8px",
+                        backgroundColor: "#DC2143",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "11px",
+                      }}
+                    >
+                      + Add
+                    </button>
+                  )}
+                </div>
                 {slide.data.declined.map((item, idx) => (
                   <div
                     key={idx}
@@ -2190,11 +2423,88 @@ export default function SprintDashboard() {
                       border: "1px solid #DC2143",
                     }}
                   >
-                    <strong style={{ color: "#212121", fontSize: "14px" }}>
-                      {item.region} ({item.count})
-                    </strong>
-                    <br />
-                    <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                    {isEditMode ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          <input
+                            type="text"
+                            defaultValue={item.region}
+                            onBlur={(e) => {
+                              const newDeclined = [...slide.data.declined];
+                              newDeclined[idx].region = e.target.value;
+                              updateSlideData(slide.id, ["declined"], newDeclined);
+                            }}
+                            placeholder="Region"
+                            style={{
+                              padding: "6px",
+                              fontSize: "12px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              flex: "1",
+                            }}
+                          />
+                          <input
+                            type="number"
+                            defaultValue={item.count}
+                            onBlur={(e) => {
+                              const newDeclined = [...slide.data.declined];
+                              newDeclined[idx].count = parseInt(e.target.value) || 0;
+                              updateSlideData(slide.id, ["declined"], newDeclined);
+                            }}
+                            placeholder="Count"
+                            style={{
+                              padding: "6px",
+                              fontSize: "12px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              width: "60px",
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              const newDeclined = slide.data.declined.filter((_, i) => i !== idx);
+                              updateSlideData(slide.id, ["declined"], newDeclined);
+                            }}
+                            style={{
+                              padding: "4px 8px",
+                              backgroundColor: "#DC2143",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "11px",
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <textarea
+                          defaultValue={item.keywords}
+                          onBlur={(e) => {
+                            const newDeclined = [...slide.data.declined];
+                            newDeclined[idx].keywords = e.target.value;
+                            updateSlideData(slide.id, ["declined"], newDeclined);
+                          }}
+                          placeholder="Keywords"
+                          style={{
+                            padding: "6px",
+                            fontSize: "11px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            minHeight: "50px",
+                            resize: "vertical",
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <strong style={{ color: "#212121", fontSize: "14px" }}>
+                          {item.region} ({item.count})
+                        </strong>
+                        <br />
+                        <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
