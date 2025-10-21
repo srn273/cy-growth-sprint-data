@@ -2233,8 +2233,10 @@ export default function SprintDashboard() {
                       <strong style={{ color: "#212121", fontSize: "14px" }}>
                         {item.region} ({item.count})
                       </strong>
-                      <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.6", wordWrap: "break-word", whiteSpace: "normal" }}>
-                        {item.keywords}
+                      <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
+                        {item.keywords.split(',').map((keyword, i) => (
+                          <div key={i}>{keyword.trim()}</div>
+                        ))}
                       </div>
                     </>
                   )}
@@ -2376,8 +2378,10 @@ export default function SprintDashboard() {
                         <strong style={{ color: "#212121", fontSize: "14px" }}>
                           {item.region} ({item.count})
                         </strong>
-                        <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.6", wordWrap: "break-word", whiteSpace: "normal" }}>
-                          {item.keywords}
+                        <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
+                          {item.keywords.split(',').map((keyword, i) => (
+                            <div key={i}>{keyword.trim()}</div>
+                          ))}
                         </div>
                       </>
                     )}
@@ -2503,8 +2507,10 @@ export default function SprintDashboard() {
                         <strong style={{ color: "#212121", fontSize: "14px" }}>
                           {item.region} ({item.count})
                         </strong>
-                        <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.6", wordWrap: "break-word", whiteSpace: "normal" }}>
-                          {item.keywords}
+                        <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
+                          {item.keywords.split(',').map((keyword, i) => (
+                            <div key={i}>{keyword.trim()}</div>
+                          ))}
                         </div>
                       </>
                     )}
