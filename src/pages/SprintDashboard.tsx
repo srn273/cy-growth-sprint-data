@@ -2233,8 +2233,9 @@ export default function SprintDashboard() {
                       <strong style={{ color: "#212121", fontSize: "14px" }}>
                         {item.region} ({item.count})
                       </strong>
-                      <br />
-                      <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                      <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.6", wordWrap: "break-word", whiteSpace: "normal" }}>
+                        {item.keywords}
+                      </div>
                     </>
                   )}
                 </div>
@@ -2375,8 +2376,9 @@ export default function SprintDashboard() {
                         <strong style={{ color: "#212121", fontSize: "14px" }}>
                           {item.region} ({item.count})
                         </strong>
-                        <br />
-                        <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                        <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.6", wordWrap: "break-word", whiteSpace: "normal" }}>
+                          {item.keywords}
+                        </div>
                       </>
                     )}
                   </div>
@@ -2501,8 +2503,9 @@ export default function SprintDashboard() {
                         <strong style={{ color: "#212121", fontSize: "14px" }}>
                           {item.region} ({item.count})
                         </strong>
-                        <br />
-                        <span style={{ fontSize: "12px", color: "#5A6872" }}>{item.keywords}</span>
+                        <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.6", wordWrap: "break-word", whiteSpace: "normal" }}>
+                          {item.keywords}
+                        </div>
                       </>
                     )}
                   </div>
