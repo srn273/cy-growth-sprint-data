@@ -868,12 +868,12 @@ export default function SprintDashboard() {
         moreDetailsUrl: "https://docs.google.com/spreadsheets",
         data: {
           sprints: [
-            { sprintNumber: 263, paidUsers: 586, totalPaidQTD: 693 },
-            { sprintNumber: 264, paidUsers: 521, totalPaidQTD: 1214 },
+            { sprintNumber: 0, paidUsers: 0, totalPaidQTD: 0 },
+            { sprintNumber: 0, paidUsers: 0, totalPaidQTD: 0 },
           ],
           quarters: [
-            { quarter: "Q1", total: 5278, average: 468 },
-            { quarter: "Q2", total: 6247, average: 475 },
+            { quarter: "Q1", total: 0, average: 0 },
+            { quarter: "Q2", total: 0, average: 0 },
           ],
         },
       },
@@ -2090,47 +2090,66 @@ export default function SprintDashboard() {
             {/* Bar Chart */}
             <div style={{ marginBottom: "32px" }}>
               <div style={{ 
-                display: "flex", 
-                gap: "60px", 
-                alignItems: "flex-end", 
-                justifyContent: "center",
-                padding: "40px 20px",
-                backgroundColor: "#F8FAFB",
+                display: "flex",
+                gap: "20px",
+                padding: "40px 40px 40px 80px",
+                backgroundColor: "#FFFFFF",
                 borderRadius: "8px",
-                minHeight: "400px",
+                position: "relative",
               }}>
+                {/* Y-Axis */}
+                <div style={{
+                  position: "absolute",
+                  left: "10px",
+                  top: "40px",
+                  bottom: "80px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  fontSize: "14px",
+                  color: "#5A6872",
+                }}>
+                  {[1400, 1050, 700, 350, 0].map((value) => (
+                    <div key={value} style={{ textAlign: "right", width: "50px" }}>
+                      {value}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Grid Lines */}
+                <div style={{
+                  position: "absolute",
+                  left: "70px",
+                  right: "40px",
+                  top: "40px",
+                  bottom: "80px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}>
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <div key={i} style={{ borderTop: "1px solid #EAEEF2", width: "100%" }} />
+                  ))}
+                </div>
+
+                {/* Chart Content */}
+                <div style={{
+                  display: "flex",
+                  gap: "120px",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  flex: 1,
+                  paddingBottom: "60px",
+                  minHeight: "350px",
+                  position: "relative",
+                }}>
                 {slide.data.sprints.map((sprint, idx) => (
                   <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
-                    {/* Sprint Label */}
-                    <div style={{ fontSize: "16px", fontWeight: "600", color: "#212121", marginBottom: "12px" }}>
-                      {isEditMode ? (
-                        <input
-                          type="number"
-                          defaultValue={sprint.sprintNumber}
-                          onBlur={(e) => {
-                            const newSprints = [...slide.data.sprints];
-                            newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
-                            updateSlideData(slide.id, ["sprints"], newSprints);
-                          }}
-                          style={{
-                            width: "100px",
-                            padding: "4px 8px",
-                            fontSize: "16px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                            textAlign: "center",
-                          }}
-                        />
-                      ) : (
-                        `Sprint ${sprint.sprintNumber}`
-                      )}
-                    </div>
-                    
                     {/* Bars Container */}
-                    <div style={{ display: "flex", gap: "24px", alignItems: "flex-end" }}>
+                    <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
                       {/* Blue Bar - Paid users (this sprint) */}
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div style={{ fontSize: "14px", fontWeight: "600", color: "#1863DC", marginBottom: "8px" }}>
+                        <div style={{ fontSize: "13px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
                           {isEditMode ? (
                             <input
                               type="number"
@@ -2141,35 +2160,31 @@ export default function SprintDashboard() {
                                 updateSlideData(slide.id, ["sprints"], newSprints);
                               }}
                               style={{
-                                width: "70px",
+                                width: "60px",
                                 padding: "4px",
-                                fontSize: "14px",
-                                border: "1px solid #1863DC",
+                                fontSize: "13px",
+                                border: "1px solid #4A90E2",
                                 borderRadius: "4px",
                                 textAlign: "center",
                               }}
                             />
                           ) : (
-                            sprint.paidUsers
+                            sprint.paidUsers || ""
                           )}
                         </div>
                         <div
                           style={{
-                            width: "80px",
-                            height: `${(sprint.paidUsers / 1400) * 300}px`,
-                            minHeight: "40px",
-                            backgroundColor: "#1863DC",
-                            borderRadius: "8px 8px 0 0",
-                            display: "flex",
-                            alignItems: "flex-end",
-                            justifyContent: "center",
+                            width: "70px",
+                            height: `${Math.max((sprint.paidUsers / 1400) * 280, sprint.paidUsers > 0 ? 20 : 0)}px`,
+                            backgroundColor: "#4A90E2",
+                            borderRadius: "4px 4px 0 0",
                           }}
                         />
                       </div>
                       
                       {/* Green Bar - Total paid users QTD */}
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div style={{ fontSize: "14px", fontWeight: "600", color: "#2DAD70", marginBottom: "8px" }}>
+                        <div style={{ fontSize: "13px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
                           {isEditMode ? (
                             <input
                               type="number"
@@ -2180,31 +2195,66 @@ export default function SprintDashboard() {
                                 updateSlideData(slide.id, ["sprints"], newSprints);
                               }}
                               style={{
-                                width: "70px",
+                                width: "60px",
                                 padding: "4px",
-                                fontSize: "14px",
-                                border: "1px solid #2DAD70",
+                                fontSize: "13px",
+                                border: "1px solid #5CB85C",
                                 borderRadius: "4px",
                                 textAlign: "center",
                               }}
                             />
                           ) : (
-                            sprint.totalPaidQTD
+                            sprint.totalPaidQTD || ""
                           )}
                         </div>
                         <div
                           style={{
-                            width: "80px",
-                            height: `${(sprint.totalPaidQTD / 1400) * 300}px`,
-                            minHeight: "40px",
-                            backgroundColor: "#2DAD70",
-                            borderRadius: "8px 8px 0 0",
+                            width: "70px",
+                            height: `${Math.max((sprint.totalPaidQTD / 1400) * 280, sprint.totalPaidQTD > 0 ? 20 : 0)}px`,
+                            backgroundColor: "#5CB85C",
+                            borderRadius: "4px 4px 0 0",
                           }}
                         />
                       </div>
                     </div>
+                    
+                    {/* Sprint Label at bottom */}
+                    <div style={{ 
+                      fontSize: "15px", 
+                      fontWeight: "600", 
+                      color: "#5A6872", 
+                      marginTop: "16px",
+                      position: "absolute",
+                      bottom: "20px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                    }}>
+                      {isEditMode ? (
+                        <input
+                          type="text"
+                          placeholder="Sprint #"
+                          defaultValue={sprint.sprintNumber || ""}
+                          onBlur={(e) => {
+                            const newSprints = [...slide.data.sprints];
+                            newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
+                            updateSlideData(slide.id, ["sprints"], newSprints);
+                          }}
+                          style={{
+                            width: "100px",
+                            padding: "4px 8px",
+                            fontSize: "15px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            textAlign: "center",
+                          }}
+                        />
+                      ) : (
+                        sprint.sprintNumber ? `Sprint ${sprint.sprintNumber}` : ""
+                      )}
+                    </div>
                   </div>
                 ))}
+                </div>
               </div>
               
               {/* Legend */}
@@ -2213,14 +2263,14 @@ export default function SprintDashboard() {
                 justifyContent: "center", 
                 gap: "32px", 
                 marginTop: "20px",
-                fontSize: "14px",
+                fontSize: "13px",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div style={{ width: "16px", height: "16px", backgroundColor: "#1863DC", borderRadius: "3px" }} />
+                  <div style={{ width: "14px", height: "14px", backgroundColor: "#4A90E2", borderRadius: "2px" }} />
                   <span style={{ color: "#5A6872" }}>Paid users (this sprint)</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div style={{ width: "16px", height: "16px", backgroundColor: "#2DAD70", borderRadius: "3px" }} />
+                  <div style={{ width: "14px", height: "14px", backgroundColor: "#5CB85C", borderRadius: "2px" }} />
                   <span style={{ color: "#5A6872" }}>Total paid users QTD</span>
                 </div>
               </div>
