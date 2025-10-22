@@ -2116,7 +2116,75 @@ export default function SprintDashboard() {
           <div>
             {/* Bar Chart */}
             <div style={{ marginBottom: "32px" }}>
-              <div style={{ 
+              {isEditMode && (
+                <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
+                  <button
+                    onClick={() => {
+                      if (slide.data.sprints.length >= 5) {
+                        alert("Maximum 5 sprints allowed");
+                        return;
+                      }
+                      const newSlides = sprintData.slides.map((s) => {
+                        if (s.id === slide.id && s.type === "comparison") {
+                          return {
+                            ...s,
+                            data: {
+                              ...s.data,
+                              sprints: [...s.data.sprints, { sprintNumber: 0, paidUsers: 0, totalPaidQTD: 0 }],
+                            },
+                          };
+                        }
+                        return s;
+                      }) as any;
+                      setSprintData({ slides: newSlides });
+                    }}
+                    style={{
+                      padding: "8px 16px",
+                      backgroundColor: "#1863DC",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "13px",
+                      fontWeight: "600",
+                    }}
+                  >
+                    + Add Sprint ({slide.data.sprints.length}/5)
+                  </button>
+                  {slide.data.sprints.length > 1 && (
+                    <button
+                      onClick={() => {
+                        const newSlides = sprintData.slides.map((s) => {
+                          if (s.id === slide.id && s.type === "comparison") {
+                            return {
+                              ...s,
+                              data: {
+                                ...s.data,
+                                sprints: s.data.sprints.slice(0, -1),
+                              },
+                            };
+                          }
+                          return s;
+                        }) as any;
+                        setSprintData({ slides: newSlides });
+                      }}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#DC2143",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      − Remove Last Sprint
+                    </button>
+                  )}
+                </div>
+              )}
+              <div style={{
                 display: "flex",
                 gap: "20px",
                 padding: "40px 40px 40px 80px",
@@ -2301,7 +2369,72 @@ export default function SprintDashboard() {
             </div>
 
             {/* Quarter Stats */}
-            <div style={{ display: "flex", gap: "24px", justifyContent: "center" }}>
+            <div>
+              {isEditMode && (
+                <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
+                  <button
+                    onClick={() => {
+                      const newSlides = sprintData.slides.map((s) => {
+                        if (s.id === slide.id && s.type === "comparison") {
+                          return {
+                            ...s,
+                            data: {
+                              ...s.data,
+                              quarters: [...s.data.quarters, { quarter: `Q${s.data.quarters.length + 1}`, total: 0, average: 0 }],
+                            },
+                          };
+                        }
+                        return s;
+                      }) as any;
+                      setSprintData({ slides: newSlides });
+                    }}
+                    style={{
+                      padding: "8px 16px",
+                      backgroundColor: "#2DAD70",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "13px",
+                      fontWeight: "600",
+                    }}
+                  >
+                    + Add Quarter
+                  </button>
+                  {slide.data.quarters.length > 1 && (
+                    <button
+                      onClick={() => {
+                        const newSlides = sprintData.slides.map((s) => {
+                          if (s.id === slide.id && s.type === "comparison") {
+                            return {
+                              ...s,
+                              data: {
+                                ...s.data,
+                                quarters: s.data.quarters.slice(0, -1),
+                              },
+                            };
+                          }
+                          return s;
+                        }) as any;
+                        setSprintData({ slides: newSlides });
+                      }}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#DC2143",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      − Remove Last Quarter
+                    </button>
+                  )}
+                </div>
+              )}
+              <div style={{ display: "flex", gap: "24px", justifyContent: "center" }}>
               {slide.data.quarters.map((quarter, idx) => (
                 <div
                   key={idx}
@@ -2403,6 +2536,7 @@ export default function SprintDashboard() {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           </div>
         );
