@@ -2160,7 +2160,7 @@ export default function SprintDashboard() {
                               ...s,
                               data: {
                                 ...s.data,
-                                sprints: s.data.sprints.slice(0, -1),
+                                sprints: s.data.sprints.slice(1), // Remove first (oldest) sprint
                               },
                             };
                           }
@@ -2179,7 +2179,7 @@ export default function SprintDashboard() {
                         fontWeight: "600",
                       }}
                     >
-                      − Remove Last Sprint
+                      − Remove Oldest Sprint
                     </button>
                   )}
                 </div>
