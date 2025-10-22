@@ -308,7 +308,7 @@ export default function SprintDashboard() {
       blogs: ["blogs", "blogmentions", "blog mentions"],
       youtube: ["youtube", "yt"],
       negative: ["negative", "neg"],
-      position: ["position", "pluginposition", "Plugin_Position", "rank", "ranking"],
+      position: ["position", "pluginposition", "plugin position", "rank", "ranking"],
     };
 
     const findHeaderForKey = (key: string): string | null => {
@@ -797,7 +797,7 @@ export default function SprintDashboard() {
 
   const downloadSampleCSV = () => {
     // Generate comprehensive CSV with all columns
-    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin_Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Avg full resolution time,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,New Affiliates,Trial Signups,Paid Signups,Advocates Onboarded,Referrals Generated,Active Trial Signups,Installs,Uninstalls,Active Installs,Free Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
+    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Avg full resolution time,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,New Affiliates,Trial Signups,Paid Signups,Advocates Onboarded,Referrals Generated,Active Trial Signups,Installs,Uninstalls,Active Installs,Free Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
 1,positionChanges,263,15,45
 1,positionChanges,264,18,42
 2,main,263,5,3,8,2
@@ -861,7 +861,7 @@ export default function SprintDashboard() {
 #
 # Slide 4: WP Popular Plugin Ranking
 #   TableName: main
-#   Columns: Plugin_Position
+#   Columns: Plugin Position
 #
 # Slide 5: Plugin Paid Connections
 #   TableName: main
@@ -1026,7 +1026,7 @@ export default function SprintDashboard() {
           quarterTarget: 21,
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
-            { key: "position", header: "Plugin_Position" },
+            { key: "position", header: "Plugin Position" },
           ],
           rows: [
             { sprint: 263, position: 0 },
