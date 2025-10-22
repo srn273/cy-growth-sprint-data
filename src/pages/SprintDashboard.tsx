@@ -726,10 +726,16 @@ export default function SprintDashboard() {
       return false;
     }
 
-    // Check if this is a table with rows
+    // ✅ Ensure every slide can update, even if structure differs
     if (!targetTable.rows || !targetTable.columns) {
-      console.warn(`Slide ${slide.id} doesn't have a rows/columns structure`);
-      return false;
+      // Auto-build rows and columns if missing
+      targetTable.rows = targetTable.rows || [];
+      targetTable.columns =
+        targetTable.columns ||
+        Object.keys(row).map((key) => ({
+          key,
+          header: key,
+        }));
     }
 
     // Find or create row for this sprint
