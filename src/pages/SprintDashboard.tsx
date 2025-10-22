@@ -497,6 +497,33 @@ export default function SprintDashboard() {
           if (sprintRows.length > 0) {
             newSlide.data.positionChanges.rows = sprintRows;
           }
+        } else if (slide.type === "comparison") {
+          // Handle comparison slide - separate sprint data from quarter data
+          const sprintRows = rows.filter((r) => {
+            const type = String(r.type || "").toLowerCase();
+            return type === "sprint" || (!r.type && r.sprint && !r.quarter);
+          });
+          
+          const quarterRows = rows.filter((r) => {
+            const type = String(r.type || "").toLowerCase();
+            return type === "quarter" || (!r.type && r.quarter);
+          });
+
+          if (sprintRows.length > 0) {
+            newSlide.data.sprints = sprintRows.map((r: any) => ({
+              sprintNumber: coerceNumber(r.sprint || r.sprintnumber),
+              paidUsers: coerceNumber(r.paidusers || r.paid),
+              totalPaidQTD: coerceNumber(r.totalpaidqtd || r.totalqtd || r.qtd),
+            }));
+          }
+
+          if (quarterRows.length > 0) {
+            newSlide.data.quarters = quarterRows.map((r: any) => ({
+              quarter: r.quarter || r.q,
+              total: coerceNumber(r.total),
+              average: coerceNumber(r.average || r.avg),
+            }));
+          }
         }
 
         return newSlide;
@@ -2144,7 +2171,7 @@ export default function SprintDashboard() {
                   position: "relative",
                 }}>
                 {slide.data.sprints.map((sprint, idx) => (
-                  <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+                  <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
                     {/* Bars Container */}
                     <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
                       {/* Blue Bar - Paid users (this sprint) */}
@@ -2218,16 +2245,13 @@ export default function SprintDashboard() {
                       </div>
                     </div>
                     
-                    {/* Sprint Label at bottom */}
+                    {/* Sprint Label at bottom - relative to this pair */}
                     <div style={{ 
                       fontSize: "15px", 
                       fontWeight: "600", 
                       color: "#5A6872", 
                       marginTop: "16px",
-                      position: "absolute",
-                      bottom: "20px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
+                      textAlign: "center",
                     }}>
                       {isEditMode ? (
                         <input
