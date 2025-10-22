@@ -675,6 +675,27 @@ export default function SprintDashboard() {
       }
 
       const slide = newSlides[slideIndex];
+      // ✅ Ensure table structure exists and always allow updates
+      const tableName = row.TableName || "main";
+      const targetTable = slide.data[tableName] || slide.data;
+
+      if (!targetTable.rows || !targetTable.columns) {
+        targetTable.rows = targetTable.rows || [];
+        targetTable.columns =
+          targetTable.columns ||
+          Object.keys(row).map((key) => ({
+            key,
+            header: key,
+          }));
+      }
+
+      // Universal update logic - add or update matching Sprint rows
+      const existingRow = targetTable.rows.find((r: any) => r.Sprint == row.Sprint);
+      if (existingRow) {
+        Object.assign(existingRow, row);
+      } else {
+        targetTable.rows.push(row);
+      }
 
       try {
         const updated = updateSlideFromCSVRow(slide, row);
