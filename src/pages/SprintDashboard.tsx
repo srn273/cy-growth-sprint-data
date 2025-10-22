@@ -862,6 +862,22 @@ export default function SprintDashboard() {
   const [sprintData, setSprintData] = useState({
     slides: [
       {
+        id: 0,
+        title: "Sprint Comparison - Paid Users Overview",
+        type: "comparison",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        data: {
+          sprints: [
+            { sprintNumber: 263, paidUsers: 586, totalPaidQTD: 693 },
+            { sprintNumber: 264, paidUsers: 521, totalPaidQTD: 1214 },
+          ],
+          quarters: [
+            { quarter: "Q1", total: 5278, average: 468 },
+            { quarter: "Q2", total: 6247, average: 475 },
+          ],
+        },
+      },
+      {
         id: 1,
         title: "Top 25 Major Rankings and Movements",
         type: "rankings",
@@ -2068,6 +2084,254 @@ export default function SprintDashboard() {
 
   const renderSlideContent = (slide) => {
     switch (slide.type) {
+      case "comparison":
+        return (
+          <div>
+            {/* Bar Chart */}
+            <div style={{ marginBottom: "32px" }}>
+              <div style={{ 
+                display: "flex", 
+                gap: "60px", 
+                alignItems: "flex-end", 
+                justifyContent: "center",
+                padding: "40px 20px",
+                backgroundColor: "#F8FAFB",
+                borderRadius: "8px",
+                minHeight: "400px",
+              }}>
+                {slide.data.sprints.map((sprint, idx) => (
+                  <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+                    {/* Sprint Label */}
+                    <div style={{ fontSize: "16px", fontWeight: "600", color: "#212121", marginBottom: "12px" }}>
+                      {isEditMode ? (
+                        <input
+                          type="number"
+                          defaultValue={sprint.sprintNumber}
+                          onBlur={(e) => {
+                            const newSprints = [...slide.data.sprints];
+                            newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
+                            updateSlideData(slide.id, ["sprints"], newSprints);
+                          }}
+                          style={{
+                            width: "100px",
+                            padding: "4px 8px",
+                            fontSize: "16px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            textAlign: "center",
+                          }}
+                        />
+                      ) : (
+                        `Sprint ${sprint.sprintNumber}`
+                      )}
+                    </div>
+                    
+                    {/* Bars Container */}
+                    <div style={{ display: "flex", gap: "24px", alignItems: "flex-end" }}>
+                      {/* Blue Bar - Paid users (this sprint) */}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div style={{ fontSize: "14px", fontWeight: "600", color: "#1863DC", marginBottom: "8px" }}>
+                          {isEditMode ? (
+                            <input
+                              type="number"
+                              defaultValue={sprint.paidUsers}
+                              onBlur={(e) => {
+                                const newSprints = [...slide.data.sprints];
+                                newSprints[idx].paidUsers = parseInt(e.target.value) || 0;
+                                updateSlideData(slide.id, ["sprints"], newSprints);
+                              }}
+                              style={{
+                                width: "70px",
+                                padding: "4px",
+                                fontSize: "14px",
+                                border: "1px solid #1863DC",
+                                borderRadius: "4px",
+                                textAlign: "center",
+                              }}
+                            />
+                          ) : (
+                            sprint.paidUsers
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            width: "80px",
+                            height: `${(sprint.paidUsers / 1400) * 300}px`,
+                            minHeight: "40px",
+                            backgroundColor: "#1863DC",
+                            borderRadius: "8px 8px 0 0",
+                            display: "flex",
+                            alignItems: "flex-end",
+                            justifyContent: "center",
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Green Bar - Total paid users QTD */}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div style={{ fontSize: "14px", fontWeight: "600", color: "#2DAD70", marginBottom: "8px" }}>
+                          {isEditMode ? (
+                            <input
+                              type="number"
+                              defaultValue={sprint.totalPaidQTD}
+                              onBlur={(e) => {
+                                const newSprints = [...slide.data.sprints];
+                                newSprints[idx].totalPaidQTD = parseInt(e.target.value) || 0;
+                                updateSlideData(slide.id, ["sprints"], newSprints);
+                              }}
+                              style={{
+                                width: "70px",
+                                padding: "4px",
+                                fontSize: "14px",
+                                border: "1px solid #2DAD70",
+                                borderRadius: "4px",
+                                textAlign: "center",
+                              }}
+                            />
+                          ) : (
+                            sprint.totalPaidQTD
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            width: "80px",
+                            height: `${(sprint.totalPaidQTD / 1400) * 300}px`,
+                            minHeight: "40px",
+                            backgroundColor: "#2DAD70",
+                            borderRadius: "8px 8px 0 0",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Legend */}
+              <div style={{ 
+                display: "flex", 
+                justifyContent: "center", 
+                gap: "32px", 
+                marginTop: "20px",
+                fontSize: "14px",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ width: "16px", height: "16px", backgroundColor: "#1863DC", borderRadius: "3px" }} />
+                  <span style={{ color: "#5A6872" }}>Paid users (this sprint)</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ width: "16px", height: "16px", backgroundColor: "#2DAD70", borderRadius: "3px" }} />
+                  <span style={{ color: "#5A6872" }}>Total paid users QTD</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quarter Stats */}
+            <div style={{ display: "flex", gap: "24px", justifyContent: "center" }}>
+              {slide.data.quarters.map((quarter, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: "24px 32px",
+                    backgroundColor: "#FFFFFF",
+                    border: "2px solid #1863DC",
+                    borderRadius: "8px",
+                    minWidth: "200px",
+                  }}
+                >
+                  <div style={{ 
+                    fontSize: "18px", 
+                    fontWeight: "600", 
+                    color: "#1863DC", 
+                    marginBottom: "16px",
+                    textAlign: "center",
+                  }}>
+                    {isEditMode ? (
+                      <input
+                        type="text"
+                        defaultValue={quarter.quarter}
+                        onBlur={(e) => {
+                          const newQuarters = [...slide.data.quarters];
+                          newQuarters[idx].quarter = e.target.value;
+                          updateSlideData(slide.id, ["quarters"], newQuarters);
+                        }}
+                        style={{
+                          width: "80px",
+                          padding: "4px 8px",
+                          fontSize: "18px",
+                          border: "1px solid #1863DC",
+                          borderRadius: "4px",
+                          textAlign: "center",
+                          fontWeight: "600",
+                        }}
+                      />
+                    ) : (
+                      quarter.quarter
+                    )}
+                  </div>
+                  
+                  <div style={{ marginBottom: "12px" }}>
+                    <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>
+                      Total:
+                    </div>
+                    <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                      {isEditMode ? (
+                        <input
+                          type="number"
+                          defaultValue={quarter.total}
+                          onBlur={(e) => {
+                            const newQuarters = [...slide.data.quarters];
+                            newQuarters[idx].total = parseInt(e.target.value) || 0;
+                            updateSlideData(slide.id, ["quarters"], newQuarters);
+                          }}
+                          style={{
+                            width: "120px",
+                            padding: "4px 8px",
+                            fontSize: "24px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            fontWeight: "700",
+                          }}
+                        />
+                      ) : (
+                        quarter.total.toLocaleString()
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>
+                      Average:
+                    </div>
+                    <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                      {isEditMode ? (
+                        <input
+                          type="number"
+                          defaultValue={quarter.average}
+                          onBlur={(e) => {
+                            const newQuarters = [...slide.data.quarters];
+                            newQuarters[idx].average = parseInt(e.target.value) || 0;
+                            updateSlideData(slide.id, ["quarters"], newQuarters);
+                          }}
+                          style={{
+                            width: "120px",
+                            padding: "4px 8px",
+                            fontSize: "24px",
+                            border: "1px solid #DBDFE4",
+                            borderRadius: "4px",
+                            fontWeight: "700",
+                          }}
+                        />
+                      ) : (
+                        quarter.average.toLocaleString()
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
       case "rankings":
         return (
           <div>
