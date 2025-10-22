@@ -703,7 +703,6 @@ export default function SprintDashboard() {
     const tableName = row.TableName || row.tableName || "main";
     const sprintNum = parseInt(row.Sprint);
     // ✅ Ensure table structure exists (fix for Support & Live Chat)
-    const tableName = row.TableName || row.tableName || "main";
     let targetTable = slide.data[tableName] || slide.data;
 
     if (!targetTable.rows || !targetTable.columns) {
@@ -717,7 +716,7 @@ export default function SprintDashboard() {
     }
 
     // Find the target table/data structure
-    let targetTable;
+
     if (tableName === "main") {
       targetTable = slide.data;
     } else if (slide.data[tableName]) {
