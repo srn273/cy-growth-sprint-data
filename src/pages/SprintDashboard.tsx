@@ -4466,8 +4466,8 @@ export default function SprintDashboard() {
                 backgroundColor: "#fff",
                 borderRadius: "12px",
                 boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-                overflow: "auto",
-                maxHeight: "90vh",
+                transformOrigin: "center center",
+                transform: "scale(0.85)",
               }}
             >
               {sprintData.slides[currentSlide - 1] && (
