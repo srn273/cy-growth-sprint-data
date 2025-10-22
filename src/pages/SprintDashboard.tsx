@@ -101,17 +101,14 @@ export default function SprintDashboard() {
   const handleImageExtraction = async (imageData: string) => {
     setIsProcessingImage(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-screenshot-data`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ imageData }),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-screenshot-data`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ imageData }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -120,7 +117,7 @@ export default function SprintDashboard() {
 
       const result = await response.json();
       const extractedText = result.extractedText || "";
-      
+
       if (extractedText.trim()) {
         setPastedData(extractedText);
         setPastedImage(null);
@@ -130,7 +127,9 @@ export default function SprintDashboard() {
       }
     } catch (error) {
       console.error("Error processing image:", error);
-      alert(error instanceof Error ? error.message : "Error processing screenshot. Please try pasting text data directly.");
+      alert(
+        error instanceof Error ? error.message : "Error processing screenshot. Please try pasting text data directly.",
+      );
     } finally {
       setIsProcessingImage(false);
     }
@@ -157,7 +156,6 @@ export default function SprintDashboard() {
       }
     }
   };
-
 
   const handlePastedData = () => {
     if (!pastedData.trim()) {
@@ -503,7 +501,7 @@ export default function SprintDashboard() {
             const type = String(r.type || "").toLowerCase();
             return type === "sprint" || (!r.type && r.sprint && !r.quarter);
           });
-          
+
           const quarterRows = rows.filter((r) => {
             const type = String(r.type || "").toLowerCase();
             return type === "quarter" || (!r.type && r.quarter);
@@ -551,16 +549,16 @@ export default function SprintDashboard() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    
-    if (fileExtension === 'csv') {
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+
+    if (fileExtension === "csv") {
       handleCSVImport(file);
-    } else if (fileExtension === 'json') {
+    } else if (fileExtension === "json") {
       handleJSONImport(file);
     } else {
       alert("Unsupported file format. Please upload a JSON or CSV file.");
     }
-    
+
     event.target.value = ""; // Reset input
   };
 
@@ -574,18 +572,20 @@ export default function SprintDashboard() {
         if (importedData.version && importedData.slides && Array.isArray(importedData.slides)) {
           // Force a complete state reset with new data
           setSprintData({ slides: [...importedData.slides] });
-          
+
           if (importedData.currentSprint !== undefined) {
             setCurrentSprint(importedData.currentSprint);
           }
-          
+
           setShowImportModal(false);
           setIsGlobalImport(false);
-          
+
           // Force re-render by navigating to first slide
           setCurrentSlide(1);
-          
-          alert(`✅ Full presentation imported successfully!\n\n${importedData.slides.length} slides loaded\nCurrent Sprint: ${importedData.currentSprint || 'Not set'}`);
+
+          alert(
+            `✅ Full presentation imported successfully!\n\n${importedData.slides.length} slides loaded\nCurrent Sprint: ${importedData.currentSprint || "Not set"}`,
+          );
         } else {
           alert("Invalid import file format. Please use a valid export file.\n\nRequired: version, slides (array)");
         }
@@ -601,8 +601,11 @@ export default function SprintDashboard() {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const lines = content.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-        
+        const lines = content
+          .split("\n")
+          .map((l) => l.trim())
+          .filter((l) => l && !l.startsWith("#"));
+
         if (lines.length < 2) {
           alert("CSV file is empty or invalid.");
           return;
@@ -611,16 +614,16 @@ export default function SprintDashboard() {
         // Parse CSV - handle quoted values properly
         const parseCSVLine = (line: string) => {
           const values: string[] = [];
-          let current = '';
+          let current = "";
           let inQuotes = false;
-          
+
           for (let i = 0; i < line.length; i++) {
             const char = line[i];
             if (char === '"') {
               inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
+            } else if (char === "," && !inQuotes) {
               values.push(current.trim());
-              current = '';
+              current = "";
             } else {
               current += char;
             }
@@ -630,14 +633,17 @@ export default function SprintDashboard() {
         };
 
         const headers = parseCSVLine(lines[0]);
-        const rows = lines.slice(1).map(line => {
-          const values = parseCSVLine(line);
-          const row: any = {};
-          headers.forEach((header, idx) => {
-            row[header] = values[idx] || '';
-          });
-          return row;
-        }).filter(row => row.SlideID && row.Sprint); // Only keep rows with SlideID and Sprint
+        const rows = lines
+          .slice(1)
+          .map((line) => {
+            const values = parseCSVLine(line);
+            const row: any = {};
+            headers.forEach((header, idx) => {
+              row[header] = values[idx] || "";
+            });
+            return row;
+          })
+          .filter((row) => row.SlideID && row.Sprint); // Only keep rows with SlideID and Sprint
 
         if (rows.length === 0) {
           alert("No valid data rows found in CSV. Make sure SlideID and Sprint columns are filled.");
@@ -659,17 +665,17 @@ export default function SprintDashboard() {
     let updatedSlides = new Set<number>();
     const newSlides = [...sprintData.slides];
 
-    rows.forEach(row => {
+    rows.forEach((row) => {
       const slideId = parseInt(row.SlideID || row.slideId);
-      const slideIndex = newSlides.findIndex(s => s.id === slideId);
-      
+      const slideIndex = newSlides.findIndex((s) => s.id === slideId);
+
       if (slideIndex === -1) {
         console.warn(`Slide ${slideId} not found, skipping row`);
         return;
       }
 
       const slide = newSlides[slideIndex];
-      
+
       try {
         const updated = updateSlideFromCSVRow(slide, row);
         if (updated) {
@@ -687,14 +693,24 @@ export default function SprintDashboard() {
       setIsGlobalImport(false);
       alert(`✅ CSV imported successfully!\n\n${updatedCount} rows updated across ${updatedSlides.size} slides.`);
     } else {
-      alert("No data was imported. Please check your CSV format and make sure SlideID, TableName, and Sprint columns are correct.");
+      alert(
+        "No data was imported. Please check your CSV format and make sure SlideID, TableName, and Sprint columns are correct.",
+      );
     }
   };
 
   const updateSlideFromCSVRow = (slide: any, row: any): boolean => {
-    const tableName = row.TableName || row.tableName || 'main';
+    const tableName = row.TableName || row.tableName || "main";
     const sprintNum = parseInt(row.Sprint);
-    
+    // ✅ Ensure table structure exists (fix for Support & Live Chat)
+    const tableName = row.TableName || row.tableName || "main";
+    let targetTable = slide.data[tableName] || slide.data;
+
+    if (!targetTable.rows || !targetTable.columns) {
+      targetTable.rows = targetTable.rows || [];
+      targetTable.columns = targetTable.columns || Object.keys(row).map((k) => ({ key: k, header: k }));
+    }
+
     if (isNaN(sprintNum)) {
       console.warn(`Invalid sprint number for slide ${slide.id}`);
       return false;
@@ -702,7 +718,7 @@ export default function SprintDashboard() {
 
     // Find the target table/data structure
     let targetTable;
-    if (tableName === 'main') {
+    if (tableName === "main") {
       targetTable = slide.data;
     } else if (slide.data[tableName]) {
       targetTable = slide.data[tableName];
@@ -720,18 +736,18 @@ export default function SprintDashboard() {
     // Find or create row for this sprint
     const rowIndex = targetTable.rows.findIndex((r: any) => r.sprint === sprintNum);
     const newRow: any = { sprint: sprintNum };
-    
+
     // Map CSV columns to table columns
     let hasData = false;
     targetTable.columns.forEach((col: any) => {
-      if (col.key === 'sprint') return;
-      
+      if (col.key === "sprint") return;
+
       // Try to find matching CSV column
       const csvValue = row[col.header];
-      if (csvValue !== undefined && csvValue !== '') {
+      if (csvValue !== undefined && csvValue !== "") {
         hasData = true;
         // Parse value - handle numbers, percentages, times
-        const cleanValue = String(csvValue).replace(/[$,%]/g, '').replace(/,/g, '');
+        const cleanValue = String(csvValue).replace(/[$,%]/g, "").replace(/,/g, "");
         const numValue = parseFloat(cleanValue);
         newRow[col.key] = isNaN(numValue) ? csvValue : numValue;
       }
@@ -875,11 +891,11 @@ export default function SprintDashboard() {
 # - Leave empty cells blank (don't use 0 unless intentional)
 `;
 
-    const blob = new Blob([sampleCSV], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob([sampleCSV], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = 'sprint-dashboard-bulk-import-template.csv';
+    link.download = "sprint-dashboard-bulk-import-template.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1863,9 +1879,15 @@ export default function SprintDashboard() {
             <thead>
               <tr style={{ backgroundColor: "#F8FAFB", borderBottom: "2px solid #1863DC" }}>
                 {isEditing && (
-                  <th style={{ padding: "12px 8px", textAlign: "center", fontWeight: "600", color: "#212121", width: "40px" }}>
-                    
-                  </th>
+                  <th
+                    style={{
+                      padding: "12px 8px",
+                      textAlign: "center",
+                      fontWeight: "600",
+                      color: "#212121",
+                      width: "40px",
+                    }}
+                  ></th>
                 )}
                 {data.columns.map((col) => (
                   <th
@@ -2184,26 +2206,30 @@ export default function SprintDashboard() {
                   )}
                 </div>
               )}
-              <div style={{
-                display: "flex",
-                gap: "20px",
-                padding: "40px 40px 40px 80px",
-                backgroundColor: "#FFFFFF",
-                borderRadius: "8px",
-                position: "relative",
-              }}>
-                {/* Y-Axis */}
-                <div style={{
-                  position: "absolute",
-                  left: "10px",
-                  top: "40px",
-                  bottom: "80px",
+              <div
+                style={{
                   display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  fontSize: "14px",
-                  color: "#5A6872",
-                }}>
+                  gap: "20px",
+                  padding: "40px 40px 40px 80px",
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "8px",
+                  position: "relative",
+                }}
+              >
+                {/* Y-Axis */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "10px",
+                    top: "40px",
+                    bottom: "80px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    fontSize: "14px",
+                    color: "#5A6872",
+                  }}
+                >
                   {[1400, 1050, 700, 350, 0].map((value) => (
                     <div key={value} style={{ textAlign: "right", width: "50px" }}>
                       {value}
@@ -2212,151 +2238,164 @@ export default function SprintDashboard() {
                 </div>
 
                 {/* Grid Lines */}
-                <div style={{
-                  position: "absolute",
-                  left: "70px",
-                  right: "40px",
-                  top: "40px",
-                  bottom: "80px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "70px",
+                    right: "40px",
+                    top: "40px",
+                    bottom: "80px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
                   {[0, 1, 2, 3, 4].map((i) => (
                     <div key={i} style={{ borderTop: "1px solid #EAEEF2", width: "100%" }} />
                   ))}
                 </div>
 
                 {/* Chart Content */}
-                <div style={{
-                  display: "flex",
-                  gap: "120px",
-                  alignItems: "flex-end",
-                  justifyContent: "center",
-                  flex: 1,
-                  paddingBottom: "60px",
-                  minHeight: "350px",
-                  position: "relative",
-                }}>
-                {slide.data.sprints.map((sprint, idx) => (
-                  <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
-                    {/* Bars Container */}
-                    <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
-                      {/* Blue Bar - Paid users (this sprint) */}
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div style={{ fontSize: "13px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
-                          {isEditMode ? (
-                            <input
-                              type="number"
-                              defaultValue={sprint.paidUsers}
-                              onBlur={(e) => {
-                                const newSprints = [...slide.data.sprints];
-                                newSprints[idx].paidUsers = parseInt(e.target.value) || 0;
-                                updateSlideData(slide.id, ["sprints"], newSprints);
-                              }}
-                              style={{
-                                width: "60px",
-                                padding: "4px",
-                                fontSize: "13px",
-                                border: "1px solid #4A90E2",
-                                borderRadius: "4px",
-                                textAlign: "center",
-                              }}
-                            />
-                          ) : (
-                            sprint.paidUsers || ""
-                          )}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "120px",
+                    alignItems: "flex-end",
+                    justifyContent: "center",
+                    flex: 1,
+                    paddingBottom: "60px",
+                    minHeight: "350px",
+                    position: "relative",
+                  }}
+                >
+                  {slide.data.sprints.map((sprint, idx) => (
+                    <div
+                      key={idx}
+                      style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}
+                    >
+                      {/* Bars Container */}
+                      <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
+                        {/* Blue Bar - Paid users (this sprint) */}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <div style={{ fontSize: "13px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
+                            {isEditMode ? (
+                              <input
+                                type="number"
+                                defaultValue={sprint.paidUsers}
+                                onBlur={(e) => {
+                                  const newSprints = [...slide.data.sprints];
+                                  newSprints[idx].paidUsers = parseInt(e.target.value) || 0;
+                                  updateSlideData(slide.id, ["sprints"], newSprints);
+                                }}
+                                style={{
+                                  width: "60px",
+                                  padding: "4px",
+                                  fontSize: "13px",
+                                  border: "1px solid #4A90E2",
+                                  borderRadius: "4px",
+                                  textAlign: "center",
+                                }}
+                              />
+                            ) : (
+                              sprint.paidUsers || ""
+                            )}
+                          </div>
+                          <div
+                            style={{
+                              width: "70px",
+                              height: `${Math.max((sprint.paidUsers / 1400) * 280, sprint.paidUsers > 0 ? 20 : 0)}px`,
+                              backgroundColor: "#4A90E2",
+                              borderRadius: "4px 4px 0 0",
+                            }}
+                          />
                         </div>
-                        <div
-                          style={{
-                            width: "70px",
-                            height: `${Math.max((sprint.paidUsers / 1400) * 280, sprint.paidUsers > 0 ? 20 : 0)}px`,
-                            backgroundColor: "#4A90E2",
-                            borderRadius: "4px 4px 0 0",
-                          }}
-                        />
+
+                        {/* Green Bar - Total paid users QTD */}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <div style={{ fontSize: "13px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
+                            {isEditMode ? (
+                              <input
+                                type="number"
+                                defaultValue={sprint.totalPaidQTD}
+                                onBlur={(e) => {
+                                  const newSprints = [...slide.data.sprints];
+                                  newSprints[idx].totalPaidQTD = parseInt(e.target.value) || 0;
+                                  updateSlideData(slide.id, ["sprints"], newSprints);
+                                }}
+                                style={{
+                                  width: "60px",
+                                  padding: "4px",
+                                  fontSize: "13px",
+                                  border: "1px solid #5CB85C",
+                                  borderRadius: "4px",
+                                  textAlign: "center",
+                                }}
+                              />
+                            ) : (
+                              sprint.totalPaidQTD || ""
+                            )}
+                          </div>
+                          <div
+                            style={{
+                              width: "70px",
+                              height: `${Math.max((sprint.totalPaidQTD / 1400) * 280, sprint.totalPaidQTD > 0 ? 20 : 0)}px`,
+                              backgroundColor: "#5CB85C",
+                              borderRadius: "4px 4px 0 0",
+                            }}
+                          />
+                        </div>
                       </div>
-                      
-                      {/* Green Bar - Total paid users QTD */}
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div style={{ fontSize: "13px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
-                          {isEditMode ? (
-                            <input
-                              type="number"
-                              defaultValue={sprint.totalPaidQTD}
-                              onBlur={(e) => {
-                                const newSprints = [...slide.data.sprints];
-                                newSprints[idx].totalPaidQTD = parseInt(e.target.value) || 0;
-                                updateSlideData(slide.id, ["sprints"], newSprints);
-                              }}
-                              style={{
-                                width: "60px",
-                                padding: "4px",
-                                fontSize: "13px",
-                                border: "1px solid #5CB85C",
-                                borderRadius: "4px",
-                                textAlign: "center",
-                              }}
-                            />
-                          ) : (
-                            sprint.totalPaidQTD || ""
-                          )}
-                        </div>
-                        <div
-                          style={{
-                            width: "70px",
-                            height: `${Math.max((sprint.totalPaidQTD / 1400) * 280, sprint.totalPaidQTD > 0 ? 20 : 0)}px`,
-                            backgroundColor: "#5CB85C",
-                            borderRadius: "4px 4px 0 0",
-                          }}
-                        />
+
+                      {/* Sprint Label at bottom - relative to this pair */}
+                      <div
+                        style={{
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          color: "#5A6872",
+                          marginTop: "16px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {isEditMode ? (
+                          <input
+                            type="text"
+                            placeholder="Sprint #"
+                            defaultValue={sprint.sprintNumber || ""}
+                            onBlur={(e) => {
+                              const newSprints = [...slide.data.sprints];
+                              newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
+                              updateSlideData(slide.id, ["sprints"], newSprints);
+                            }}
+                            style={{
+                              width: "100px",
+                              padding: "4px 8px",
+                              fontSize: "15px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              textAlign: "center",
+                            }}
+                          />
+                        ) : sprint.sprintNumber ? (
+                          `Sprint ${sprint.sprintNumber}`
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
-                    
-                    {/* Sprint Label at bottom - relative to this pair */}
-                    <div style={{ 
-                      fontSize: "15px", 
-                      fontWeight: "600", 
-                      color: "#5A6872", 
-                      marginTop: "16px",
-                      textAlign: "center",
-                    }}>
-                      {isEditMode ? (
-                        <input
-                          type="text"
-                          placeholder="Sprint #"
-                          defaultValue={sprint.sprintNumber || ""}
-                          onBlur={(e) => {
-                            const newSprints = [...slide.data.sprints];
-                            newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
-                            updateSlideData(slide.id, ["sprints"], newSprints);
-                          }}
-                          style={{
-                            width: "100px",
-                            padding: "4px 8px",
-                            fontSize: "15px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                            textAlign: "center",
-                          }}
-                        />
-                      ) : (
-                        sprint.sprintNumber ? `Sprint ${sprint.sprintNumber}` : ""
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))}
                 </div>
               </div>
-              
+
               {/* Legend */}
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "center", 
-                gap: "32px", 
-                marginTop: "20px",
-                fontSize: "13px",
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "32px",
+                  marginTop: "20px",
+                  fontSize: "13px",
+                }}
+              >
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <div style={{ width: "14px", height: "14px", backgroundColor: "#4A90E2", borderRadius: "2px" }} />
                   <span style={{ color: "#5A6872" }}>Paid users (this sprint)</span>
@@ -2380,7 +2419,10 @@ export default function SprintDashboard() {
                             ...s,
                             data: {
                               ...s.data,
-                              quarters: [...s.data.quarters, { quarter: `Q${s.data.quarters.length + 1}`, total: 0, average: 0 }],
+                              quarters: [
+                                ...s.data.quarters,
+                                { quarter: `Q${s.data.quarters.length + 1}`, total: 0, average: 0 },
+                              ],
                             },
                           };
                         }
@@ -2435,107 +2477,105 @@ export default function SprintDashboard() {
                 </div>
               )}
               <div style={{ display: "flex", gap: "24px", justifyContent: "center" }}>
-              {slide.data.quarters.map((quarter, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: "24px 32px",
-                    backgroundColor: "#FFFFFF",
-                    border: "2px solid #1863DC",
-                    borderRadius: "8px",
-                    minWidth: "200px",
-                  }}
-                >
-                  <div style={{ 
-                    fontSize: "18px", 
-                    fontWeight: "600", 
-                    color: "#1863DC", 
-                    marginBottom: "16px",
-                    textAlign: "center",
-                  }}>
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        defaultValue={quarter.quarter}
-                        onBlur={(e) => {
-                          const newQuarters = [...slide.data.quarters];
-                          newQuarters[idx].quarter = e.target.value;
-                          updateSlideData(slide.id, ["quarters"], newQuarters);
-                        }}
-                        style={{
-                          width: "80px",
-                          padding: "4px 8px",
-                          fontSize: "18px",
-                          border: "1px solid #1863DC",
-                          borderRadius: "4px",
-                          textAlign: "center",
-                          fontWeight: "600",
-                        }}
-                      />
-                    ) : (
-                      quarter.quarter
-                    )}
-                  </div>
-                  
-                  <div style={{ marginBottom: "12px" }}>
-                    <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>
-                      Total:
-                    </div>
-                    <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                {slide.data.quarters.map((quarter, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: "24px 32px",
+                      backgroundColor: "#FFFFFF",
+                      border: "2px solid #1863DC",
+                      borderRadius: "8px",
+                      minWidth: "200px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "600",
+                        color: "#1863DC",
+                        marginBottom: "16px",
+                        textAlign: "center",
+                      }}
+                    >
                       {isEditMode ? (
                         <input
-                          type="number"
-                          defaultValue={quarter.total}
+                          type="text"
+                          defaultValue={quarter.quarter}
                           onBlur={(e) => {
                             const newQuarters = [...slide.data.quarters];
-                            newQuarters[idx].total = parseInt(e.target.value) || 0;
+                            newQuarters[idx].quarter = e.target.value;
                             updateSlideData(slide.id, ["quarters"], newQuarters);
                           }}
                           style={{
-                            width: "120px",
+                            width: "80px",
                             padding: "4px 8px",
-                            fontSize: "24px",
-                            border: "1px solid #DBDFE4",
+                            fontSize: "18px",
+                            border: "1px solid #1863DC",
                             borderRadius: "4px",
-                            fontWeight: "700",
+                            textAlign: "center",
+                            fontWeight: "600",
                           }}
                         />
                       ) : (
-                        quarter.total.toLocaleString()
+                        quarter.quarter
                       )}
                     </div>
-                  </div>
-                  
-                  <div>
-                    <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>
-                      Average:
+
+                    <div style={{ marginBottom: "12px" }}>
+                      <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>Total:</div>
+                      <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                        {isEditMode ? (
+                          <input
+                            type="number"
+                            defaultValue={quarter.total}
+                            onBlur={(e) => {
+                              const newQuarters = [...slide.data.quarters];
+                              newQuarters[idx].total = parseInt(e.target.value) || 0;
+                              updateSlideData(slide.id, ["quarters"], newQuarters);
+                            }}
+                            style={{
+                              width: "120px",
+                              padding: "4px 8px",
+                              fontSize: "24px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              fontWeight: "700",
+                            }}
+                          />
+                        ) : (
+                          quarter.total.toLocaleString()
+                        )}
+                      </div>
                     </div>
-                    <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
-                      {isEditMode ? (
-                        <input
-                          type="number"
-                          defaultValue={quarter.average}
-                          onBlur={(e) => {
-                            const newQuarters = [...slide.data.quarters];
-                            newQuarters[idx].average = parseInt(e.target.value) || 0;
-                            updateSlideData(slide.id, ["quarters"], newQuarters);
-                          }}
-                          style={{
-                            width: "120px",
-                            padding: "4px 8px",
-                            fontSize: "24px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                            fontWeight: "700",
-                          }}
-                        />
-                      ) : (
-                        quarter.average.toLocaleString()
-                      )}
+
+                    <div>
+                      <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>Average:</div>
+                      <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                        {isEditMode ? (
+                          <input
+                            type="number"
+                            defaultValue={quarter.average}
+                            onBlur={(e) => {
+                              const newQuarters = [...slide.data.quarters];
+                              newQuarters[idx].average = parseInt(e.target.value) || 0;
+                              updateSlideData(slide.id, ["quarters"], newQuarters);
+                            }}
+                            style={{
+                              width: "120px",
+                              padding: "4px 8px",
+                              fontSize: "24px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              fontWeight: "700",
+                            }}
+                          />
+                        ) : (
+                          quarter.average.toLocaleString()
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
             </div>
           </div>
@@ -2577,7 +2617,9 @@ export default function SprintDashboard() {
               </div>
             </div>
             <div style={{ marginBottom: "24px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <div
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
+              >
                 <h3
                   style={{
                     fontSize: "14px",
@@ -2594,7 +2636,13 @@ export default function SprintDashboard() {
                     onClick={() => {
                       const newSlides = sprintData.slides.map((s) => {
                         if (s.id === slide.id && s.type === "rankings") {
-                          return { ...s, data: { ...s.data, byRegion: [...s.data.byRegion, { region: "New Region", count: 0, keywords: "" }] } };
+                          return {
+                            ...s,
+                            data: {
+                              ...s.data,
+                              byRegion: [...s.data.byRegion, { region: "New Region", count: 0, keywords: "" }],
+                            },
+                          };
                         }
                         return s;
                       }) as any;
@@ -2706,7 +2754,7 @@ export default function SprintDashboard() {
                         {item.region} ({item.count})
                       </strong>
                       <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
-                        {item.keywords.split(',').map((keyword, i) => (
+                        {item.keywords.split(",").map((keyword, i) => (
                           <div key={i}>{keyword.trim()}</div>
                         ))}
                       </div>
@@ -2732,16 +2780,27 @@ export default function SprintDashboard() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                  <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#2DAD70" }}>
-                    ↑ Improved
-                  </h3>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#2DAD70" }}>↑ Improved</h3>
                   {isEditMode && (
                     <button
                       onClick={() => {
                         const newSlides = sprintData.slides.map((s) => {
                           if (s.id === slide.id && s.type === "rankings") {
-                            return { ...s, data: { ...s.data, improved: [...s.data.improved, { region: "New Region", count: 0, keywords: "" }] } };
+                            return {
+                              ...s,
+                              data: {
+                                ...s.data,
+                                improved: [...s.data.improved, { region: "New Region", count: 0, keywords: "" }],
+                              },
+                            };
                           }
                           return s;
                         }) as any;
@@ -2851,7 +2910,7 @@ export default function SprintDashboard() {
                           {item.region} ({item.count})
                         </strong>
                         <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
-                          {item.keywords.split(',').map((keyword, i) => (
+                          {item.keywords.split(",").map((keyword, i) => (
                             <div key={i}>{keyword.trim()}</div>
                           ))}
                         </div>
@@ -2861,16 +2920,27 @@ export default function SprintDashboard() {
                 ))}
               </div>
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                  <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#DC2143" }}>
-                    ↓ Declined
-                  </h3>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#DC2143" }}>↓ Declined</h3>
                   {isEditMode && (
                     <button
                       onClick={() => {
                         const newSlides = sprintData.slides.map((s) => {
                           if (s.id === slide.id && s.type === "rankings") {
-                            return { ...s, data: { ...s.data, declined: [...s.data.declined, { region: "New Region", count: 0, keywords: "" }] } };
+                            return {
+                              ...s,
+                              data: {
+                                ...s.data,
+                                declined: [...s.data.declined, { region: "New Region", count: 0, keywords: "" }],
+                              },
+                            };
                           }
                           return s;
                         }) as any;
@@ -2980,7 +3050,7 @@ export default function SprintDashboard() {
                           {item.region} ({item.count})
                         </strong>
                         <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
-                          {item.keywords.split(',').map((keyword, i) => (
+                          {item.keywords.split(",").map((keyword, i) => (
                             <div key={i}>{keyword.trim()}</div>
                           ))}
                         </div>
@@ -4141,11 +4211,19 @@ export default function SprintDashboard() {
             >
               ×
             </button>
-            <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#212121", marginBottom: "20px", paddingRight: "40px" }}>
+            <h2
+              style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "#212121",
+                marginBottom: "20px",
+                paddingRight: "40px",
+              }}
+            >
               {isGlobalImport ? "Import Full Presentation" : "Update Slide Data"}
             </h2>
             <p style={{ fontSize: "14px", color: "#5A6872", marginBottom: "20px" }}>
-              {isGlobalImport 
+              {isGlobalImport
                 ? "Upload a JSON export to restore complete data, or CSV file to bulk update tables and stats across all slides."
                 : "Copy data from your Google Sheet and paste it below, OR paste/upload a screenshot to extract data automatically."}
             </p>
@@ -4198,174 +4276,179 @@ export default function SprintDashboard() {
 
             {!isGlobalImport && (
               <>
-
-            <div
-              style={{
-                marginBottom: "20px",
-                padding: "16px",
-                backgroundColor: "#FEF3E6",
-                borderRadius: "6px",
-                border: "1px solid #FF8800",
-              }}
-            >
-              <div style={{ fontSize: "13px", color: "#994D00", marginBottom: "8px" }}>
-                <strong>📸 Screenshot Upload (NEW!):</strong>
-              </div>
-              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#994D00", lineHeight: "1.6" }}>
-                <li>Take a screenshot of your Google Sheet or table</li>
-                <li>Paste directly (Ctrl+V) in the textarea below OR use the upload button</li>
-                <li>AI will automatically extract and format the data for you</li>
-              </ul>
-            </div>
-
-            <div
-              style={{
-                marginBottom: "20px",
-                padding: "16px",
-                backgroundColor: "#E6F7ED",
-                borderRadius: "6px",
-                border: "1px solid #2DAD70",
-              }}
-            >
-              <div style={{ fontSize: "13px", color: "#1D7A47", marginBottom: "8px" }}>
-                <strong>📊 For Tables (Text Paste):</strong>
-              </div>
-              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#1D7A47", lineHeight: "1.6" }}>
-                <li>
-                  <strong>Step 1:</strong> In Google Sheets, select your entire table (header + data rows)
-                </li>
-                <li>
-                  <strong>Step 2:</strong> Copy (Ctrl+C or Cmd+C)
-                </li>
-                <li>
-                  <strong>Step 3:</strong> Paste here - data will be tab-separated automatically
-                </li>
-                <li>Keeps last 5 sprints automatically | Numbers cleaned from $, %, commas</li>
-              </ul>
-            </div>
-
-            <div
-              style={{
-                marginBottom: "20px",
-                padding: "16px",
-                backgroundColor: "#EBF3FD",
-                borderRadius: "6px",
-                border: "1px solid #1863DC",
-              }}
-            >
-              <div style={{ fontSize: "13px", color: "#134FB0", marginBottom: "8px" }}>
-                <strong>📈 For Stats (3 supported formats):</strong>
-              </div>
-              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#134FB0", lineHeight: "1.6" }}>
-                <li>
-                  <strong>Format 1:</strong> Key-value with tab: <code>total&nbsp;&nbsp;&nbsp;&nbsp;150</code>
-                </li>
-                <li>
-                  <strong>Format 2:</strong> Key-value with colon: <code>Total: 150</code>
-                </li>
-                <li>
-                  <strong>Format 3:</strong> Just values (one per line in order)
-                </li>
-              </ul>
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label
-                style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600", color: "#212121" }}
-              >
-                Paste Data or Screenshot Here
-              </label>
-              {isProcessingImage && (
                 <div
                   style={{
-                    padding: "12px",
+                    marginBottom: "20px",
+                    padding: "16px",
+                    backgroundColor: "#FEF3E6",
+                    borderRadius: "6px",
+                    border: "1px solid #FF8800",
+                  }}
+                >
+                  <div style={{ fontSize: "13px", color: "#994D00", marginBottom: "8px" }}>
+                    <strong>📸 Screenshot Upload (NEW!):</strong>
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#994D00", lineHeight: "1.6" }}>
+                    <li>Take a screenshot of your Google Sheet or table</li>
+                    <li>Paste directly (Ctrl+V) in the textarea below OR use the upload button</li>
+                    <li>AI will automatically extract and format the data for you</li>
+                  </ul>
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    padding: "16px",
+                    backgroundColor: "#E6F7ED",
+                    borderRadius: "6px",
+                    border: "1px solid #2DAD70",
+                  }}
+                >
+                  <div style={{ fontSize: "13px", color: "#1D7A47", marginBottom: "8px" }}>
+                    <strong>📊 For Tables (Text Paste):</strong>
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#1D7A47", lineHeight: "1.6" }}>
+                    <li>
+                      <strong>Step 1:</strong> In Google Sheets, select your entire table (header + data rows)
+                    </li>
+                    <li>
+                      <strong>Step 2:</strong> Copy (Ctrl+C or Cmd+C)
+                    </li>
+                    <li>
+                      <strong>Step 3:</strong> Paste here - data will be tab-separated automatically
+                    </li>
+                    <li>Keeps last 5 sprints automatically | Numbers cleaned from $, %, commas</li>
+                  </ul>
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    padding: "16px",
                     backgroundColor: "#EBF3FD",
                     borderRadius: "6px",
-                    marginBottom: "12px",
-                    fontSize: "13px",
-                    color: "#1863DC",
-                    textAlign: "center",
+                    border: "1px solid #1863DC",
                   }}
                 >
-                  🔄 Processing screenshot with AI... This may take a few seconds.
+                  <div style={{ fontSize: "13px", color: "#134FB0", marginBottom: "8px" }}>
+                    <strong>📈 For Stats (3 supported formats):</strong>
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#134FB0", lineHeight: "1.6" }}>
+                    <li>
+                      <strong>Format 1:</strong> Key-value with tab: <code>total&nbsp;&nbsp;&nbsp;&nbsp;150</code>
+                    </li>
+                    <li>
+                      <strong>Format 2:</strong> Key-value with colon: <code>Total: 150</code>
+                    </li>
+                    <li>
+                      <strong>Format 3:</strong> Just values (one per line in order)
+                    </li>
+                  </ul>
                 </div>
-              )}
-              {pastedImage && !isProcessingImage && (
-                <div style={{ marginBottom: "12px" }}>
-                  <img
-                    src={pastedImage}
-                    alt="Pasted screenshot"
+
+                <div style={{ marginBottom: "20px" }}>
+                  <label
                     style={{
-                      maxWidth: "100%",
-                      maxHeight: "200px",
-                      borderRadius: "6px",
-                      border: "2px solid #2DAD70",
+                      display: "block",
+                      marginBottom: "8px",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      color: "#212121",
                     }}
+                  >
+                    Paste Data or Screenshot Here
+                  </label>
+                  {isProcessingImage && (
+                    <div
+                      style={{
+                        padding: "12px",
+                        backgroundColor: "#EBF3FD",
+                        borderRadius: "6px",
+                        marginBottom: "12px",
+                        fontSize: "13px",
+                        color: "#1863DC",
+                        textAlign: "center",
+                      }}
+                    >
+                      🔄 Processing screenshot with AI... This may take a few seconds.
+                    </div>
+                  )}
+                  {pastedImage && !isProcessingImage && (
+                    <div style={{ marginBottom: "12px" }}>
+                      <img
+                        src={pastedImage}
+                        alt="Pasted screenshot"
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "200px",
+                          borderRadius: "6px",
+                          border: "2px solid #2DAD70",
+                        }}
+                      />
+                    </div>
+                  )}
+                  <textarea
+                    value={pastedData}
+                    onChange={(e) => setPastedData(e.target.value)}
+                    onPaste={handlePasteEvent}
+                    placeholder="Paste your data OR screenshot here (Ctrl+V)...&#10;&#10;Text: Sprint  Total  Social&#10;      263     45     12&#10;&#10;Screenshot: Just paste from clipboard!"
+                    style={{
+                      width: "100%",
+                      minHeight: "150px",
+                      padding: "12px",
+                      border: "2px solid #DBDFE4",
+                      borderRadius: "6px",
+                      fontSize: "13px",
+                      fontFamily: "monospace",
+                      resize: "vertical",
+                    }}
+                    disabled={isProcessingImage}
                   />
                 </div>
-              )}
-              <textarea
-                value={pastedData}
-                onChange={(e) => setPastedData(e.target.value)}
-                onPaste={handlePasteEvent}
-                placeholder="Paste your data OR screenshot here (Ctrl+V)...&#10;&#10;Text: Sprint  Total  Social&#10;      263     45     12&#10;&#10;Screenshot: Just paste from clipboard!"
-                style={{
-                  width: "100%",
-                  minHeight: "150px",
-                  padding: "12px",
-                  border: "2px solid #DBDFE4",
-                  borderRadius: "6px",
-                  fontSize: "13px",
-                  fontFamily: "monospace",
-                  resize: "vertical",
-                }}
-                disabled={isProcessingImage}
-              />
-            </div>
 
-            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-              <button
-                onClick={() => {
-                  setShowImportModal(false);
-                  setCurrentImportSlideId(null);
-                  setPastedData("");
-                  setPastedImage(null);
-                  setIsGlobalImport(false);
-                }}
-                style={{
-                  padding: "12px 24px",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  border: "2px solid #DBDFE4",
-                  borderRadius: "6px",
-                  backgroundColor: "#fff",
-                  color: "#5A6872",
-                  cursor: "pointer",
-                }}
-              >
-                Cancel
-              </button>
-              {!isGlobalImport && (
-                <button
-                  onClick={handlePastedData}
-                  disabled={isProcessingImage}
-                  style={{
-                    padding: "12px 24px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    border: "none",
-                    borderRadius: "6px",
-                    backgroundColor: isProcessingImage ? "#DBDFE4" : "#2DAD70",
-                    color: "#fff",
-                    cursor: isProcessingImage ? "not-allowed" : "pointer",
-                    opacity: isProcessingImage ? 0.6 : 1,
-                  }}
-                >
-                  📥 Import Data
-                </button>
-              )}
-            </div>
-            </>
+                <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                  <button
+                    onClick={() => {
+                      setShowImportModal(false);
+                      setCurrentImportSlideId(null);
+                      setPastedData("");
+                      setPastedImage(null);
+                      setIsGlobalImport(false);
+                    }}
+                    style={{
+                      padding: "12px 24px",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      border: "2px solid #DBDFE4",
+                      borderRadius: "6px",
+                      backgroundColor: "#fff",
+                      color: "#5A6872",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  {!isGlobalImport && (
+                    <button
+                      onClick={handlePastedData}
+                      disabled={isProcessingImage}
+                      style={{
+                        padding: "12px 24px",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        border: "none",
+                        borderRadius: "6px",
+                        backgroundColor: isProcessingImage ? "#DBDFE4" : "#2DAD70",
+                        color: "#fff",
+                        cursor: isProcessingImage ? "not-allowed" : "pointer",
+                        opacity: isProcessingImage ? 0.6 : 1,
+                      }}
+                    >
+                      📥 Import Data
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
