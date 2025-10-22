@@ -905,6 +905,27 @@ export default function SprintDashboard() {
         },
       },
       {
+        id: 2,
+        title: "Content Publishing Stats",
+        type: "table",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1006810399#gid=1006810399",
+        data: {
+          columns: [
+            { key: "sprint", header: "Sprint", locked: true },
+            { key: "blog", header: "Blog Posts" },
+            { key: "infographics", header: "Infographics" },
+            { key: "kb", header: "KB Articles" },
+            { key: "videos", header: "Videos" },
+          ],
+          rows: [
+            { sprint: 263, blog: 0, infographics: 0, kb: 0, videos: 0 },
+            { sprint: 264, blog: 0, infographics: 0, kb: 0, videos: 0 },
+            { sprint: 265, blog: 0, infographics: 0, kb: 0, videos: 0 },
+          ],
+        },
+      },
+      {
         id: 1,
         title: "Top 25 Major Rankings and Movements",
         type: "rankings",
@@ -930,27 +951,6 @@ export default function SprintDashboard() {
           },
           improved: [{ region: "US", count: 0, keywords: "" }],
           declined: [{ region: "US", count: 0, keywords: "" }],
-        },
-      },
-      {
-        id: 2,
-        title: "Content Publishing Stats",
-        type: "table",
-        moreDetailsUrl:
-          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1006810399#gid=1006810399",
-        data: {
-          columns: [
-            { key: "sprint", header: "Sprint", locked: true },
-            { key: "blog", header: "Blog Posts" },
-            { key: "infographics", header: "Infographics" },
-            { key: "kb", header: "KB Articles" },
-            { key: "videos", header: "Videos" },
-          ],
-          rows: [
-            { sprint: 263, blog: 0, infographics: 0, kb: 0, videos: 0 },
-            { sprint: 264, blog: 0, infographics: 0, kb: 0, videos: 0 },
-            { sprint: 265, blog: 0, infographics: 0, kb: 0, videos: 0 },
-          ],
         },
       },
       {
@@ -1285,30 +1285,6 @@ export default function SprintDashboard() {
         },
       },
       {
-        id: 15,
-        title: "Partnerships & Growth - Referral Partner Program",
-        type: "referral",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
-        data: {
-          lifetime: { advocates: 0, paid: 0 },
-          target: 100,
-          current: 0,
-          columns: [
-            { key: "sprint", header: "Sprint", locked: true },
-            { key: "advocates", header: "Advocates Onboarded" },
-            { key: "referrals", header: "Referrals Generated" },
-            { key: "trials", header: "Active Trial Signups" },
-            { key: "paid", header: "Paid Signups" },
-          ],
-          rows: [
-            { sprint: 263, advocates: 0, referrals: 0, trials: 0, paid: 0 },
-            { sprint: 264, advocates: 0, referrals: 0, trials: 0, paid: 0 },
-            { sprint: 265, advocates: 0, referrals: 0, trials: 0, paid: 0 },
-          ],
-          total: { advocates: 0, referrals: 0, trials: 0, paid: 0 },
-        },
-      },
-      {
         id: 16,
         title: "Partnerships & Growth - Strategic Partner Program - Wix App",
         type: "wixApp",
@@ -1331,6 +1307,30 @@ export default function SprintDashboard() {
             { sprint: 265, installs: 0, uninstalls: 0, active: 0, freeSignups: 0, paid: 0 },
           ],
           total: { installs: 0, uninstalls: 0, active: 0, freeSignups: 0, paid: 0 },
+        },
+      },
+      {
+        id: 15,
+        title: "Partnerships & Growth - Referral Partner Program",
+        type: "referral",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        data: {
+          lifetime: { advocates: 0, paid: 0 },
+          target: 100,
+          current: 0,
+          columns: [
+            { key: "sprint", header: "Sprint", locked: true },
+            { key: "advocates", header: "Advocates Onboarded" },
+            { key: "referrals", header: "Referrals Generated" },
+            { key: "trials", header: "Active Trial Signups" },
+            { key: "paid", header: "Paid Signups" },
+          ],
+          rows: [
+            { sprint: 263, advocates: 0, referrals: 0, trials: 0, paid: 0 },
+            { sprint: 264, advocates: 0, referrals: 0, trials: 0, paid: 0 },
+            { sprint: 265, advocates: 0, referrals: 0, trials: 0, paid: 0 },
+          ],
+          total: { advocates: 0, referrals: 0, trials: 0, paid: 0 },
         },
       },
       {
