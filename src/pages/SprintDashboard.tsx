@@ -669,10 +669,10 @@ export default function SprintDashboard() {
             });
             return row;
           })
-          .filter((row) => row.SlideID && row.Sprint); // Only keep rows with SlideID and Sprint
+          .filter((row) => row.SlideID); // Keep rows with SlideID; key column (Sprint/Metrics/Quarter) handled per table
 
         if (rows.length === 0) {
-          alert("No valid data rows found in CSV. Make sure SlideID and Sprint columns are filled.");
+          alert("No valid data rows found in CSV. Make sure SlideID is filled and headers match your tables.");
           return;
         }
 
@@ -701,27 +701,8 @@ export default function SprintDashboard() {
       }
 
       const slide = newSlides[slideIndex];
-      // ✅ Ensure table structure exists and always allow updates
-      const tableName = row.TableName || "main";
-      const targetTable = slide.data[tableName] || slide.data;
+      // Updates handled in updateSlideFromCSVRow
 
-      if (!targetTable.rows || !targetTable.columns) {
-        targetTable.rows = targetTable.rows || [];
-        targetTable.columns =
-          targetTable.columns ||
-          Object.keys(row).map((key) => ({
-            key,
-            header: key,
-          }));
-      }
-
-      // Universal update logic - add or update matching Sprint rows
-      const existingRow = targetTable.rows.find((r: any) => r.Sprint == row.Sprint);
-      if (existingRow) {
-        Object.assign(existingRow, row);
-      } else {
-        targetTable.rows.push(row);
-      }
 
       try {
         const updated = updateSlideFromCSVRow(slide, row);
