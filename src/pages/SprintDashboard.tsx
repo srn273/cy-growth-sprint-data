@@ -367,18 +367,44 @@ export default function SprintDashboard() {
             newSlide.data.rows = mapped;
           }
         } else if (slide.type === "supportData") {
-          // Check if importing tickets or live chat based on headers
-          if (headers.includes("totaltickets") || headers.includes("total tickets solved")) {
+          // Auto-detect which table to update based on headers
+          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+          const hasTicketsHeaders = normalizedHeaders.some(h => 
+            h.includes('totaltickets') || h.includes('totalticketsolved') || 
+            h.includes('presales') || h.includes('converted') || h.includes('paidsubs')
+          );
+          const hasLiveChatHeaders = normalizedHeaders.some(h => 
+            h.includes('conversations') || h.includes('conversationsassigned') || 
+            h.includes('avgassignment') || h.includes('avgteammate')
+          );
+          
+          if (hasTicketsHeaders) {
             newSlide.data.tickets.rows = rows;
-          } else if (headers.includes("conversations") || headers.includes("conversations assigned")) {
+          } else if (hasLiveChatHeaders) {
             newSlide.data.liveChat.rows = rows;
+          } else {
+            // Default to tickets if ambiguous
+            newSlide.data.tickets.rows = rows;
           }
         } else if (slide.type === "agencyLeads") {
-          // Check if importing leads conversion or Q3 performance
-          if (headers.includes("metrics")) {
+          // Auto-detect which table to update based on headers
+          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+          const hasLeadsHeaders = normalizedHeaders.some(h => 
+            h.includes('metrics') || h.includes('totalcount') || 
+            h.includes('fromtickets') || h.includes('websiteleads')
+          );
+          const hasQ3Headers = normalizedHeaders.some(h => 
+            h.includes('quarter') || h.includes('target') || 
+            h.includes('achieved') || h.includes('percentage')
+          );
+          
+          if (hasLeadsHeaders) {
             newSlide.data.leadsConversion.rows = rows;
-          } else if (headers.includes("quarter")) {
+          } else if (hasQ3Headers) {
             newSlide.data.q3Performance.rows = rows;
+          } else {
+            // Default to leadsConversion if ambiguous
+            newSlide.data.leadsConversion.rows = rows;
           }
         } else if (slide.type === "quarterStats") {
           // Separate sprint rows from quarter stats rows
@@ -1685,11 +1711,16 @@ export default function SprintDashboard() {
           targetData = newSlide.data.positionChanges;
         }
 
-        if (targetData.rows && targetData.rows.length > 1) {
-          targetData.rows.pop();
-        } else {
-          alert("Cannot delete the last row. At least one row is required.");
+        const nonLockedColumns = targetData.columns.filter((c) => !c.locked);
+        if (nonLockedColumns.length <= 1) {
+          alert("Cannot delete the last non-locked column. At least one data column is required.");
+          return s;
         }
+
+        targetData.columns = targetData.columns.filter((c) => c.key !== colKey);
+        targetData.rows.forEach((row) => {
+          delete row[colKey];
+        });
         return newSlide;
       }),
     }));
@@ -1876,7 +1907,13 @@ export default function SprintDashboard() {
               </>
             )}
             <button
-              onClick={() => openSlideImport(slide.id)}
+              onClick={() => {
+                // For nested tables (Support/Agency), use the actual parent slide ID
+                const parentSlideId = slide.type === "supportData" || slide.type === "agencyLeads" 
+                  ? (slide.id > 1000 ? Math.floor(slide.id / 1000) : slide.id)
+                  : slide.id;
+                openSlideImport(parentSlideId);
+              }}
               style={{
                 padding: "8px 16px",
                 fontSize: "13px",
@@ -3127,11 +3164,11 @@ export default function SprintDashboard() {
           <div>
             <div style={{ marginBottom: "32px" }}>
               <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px", color: "#212121" }}>Tickets</h3>
-              <EditableTable slide={{ ...slide, id: slide.id, data: slide.data.tickets }} />
+              <EditableTable slide={{ ...slide, id: slide.id, data: slide.data.tickets, type: slide.type }} />
             </div>
             <div>
               <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px", color: "#212121" }}>Live Chat</h3>
-              <EditableTable slide={{ ...slide, id: slide.id + 1000, data: slide.data.liveChat }} />
+              <EditableTable slide={{ ...slide, id: slide.id + 1000, data: slide.data.liveChat, type: slide.type }} />
             </div>
           </div>
         );
@@ -3140,10 +3177,10 @@ export default function SprintDashboard() {
         return (
           <div>
             <div style={{ marginBottom: "32px" }}>
-              <EditableTable slide={{ ...slide, id: slide.id, data: slide.data.leadsConversion }} />
+              <EditableTable slide={{ ...slide, id: slide.id, data: slide.data.leadsConversion, type: slide.type }} />
             </div>
             <div>
-              <EditableTable slide={{ ...slide, id: slide.id + 2000, data: slide.data.q3Performance }} />
+              <EditableTable slide={{ ...slide, id: slide.id + 2000, data: slide.data.q3Performance, type: slide.type }} />
             </div>
           </div>
         );
