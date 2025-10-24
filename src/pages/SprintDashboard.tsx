@@ -387,10 +387,12 @@ export default function SprintDashboard() {
     });
 
     const synonymMap: Record<string, string[]> = {
+      // Common
       sprint: ["sprint", "sprintid", "sprintno", "sprintnumber", "sprint#"],
-      blog: ["blog", "blogs", "blogposts", "blogpost", "blogarticles", "blogposts"],
+      // Content/brand
+      blog: ["blog", "blogs", "blogposts", "blogpost", "blogarticles"],
       infographics: ["infographics", "infographic"],
-      kb: ["kb", "kbar ticles", "kbarticles", "knowledgebase", "knowledge base", "docs", "documentation", "articles"],
+      kb: ["kb", "kb articles", "kbarticles", "knowledgebase", "knowledge base", "docs", "documentation", "articles"],
       videos: ["videos", "video", "youtube", "yt"],
       total: ["total", "totalpaid", "paidtotal", "totalrevenue", "total paid"],
       direct: ["direct", "directplans", "direct plans"],
@@ -399,6 +401,37 @@ export default function SprintDashboard() {
       youtube: ["youtube", "yt"],
       negative: ["negative", "neg"],
       position: ["position", "pluginposition", "plugin position", "rank", "ranking"],
+
+      // Support - tickets
+      totalTickets: ["total tickets", "total tickets solved", "tickets", "tickets solved", "totaltickets", "totalticketsolved"],
+      avgFirstResponse: ["avg first response", "average first response", "first response", "avgfirstresponse", "firstresponse"],
+      avgFullResolution: ["avg full resolution time", "average full resolution time", "full resolution", "avgfullresolution", "fullresolution", "avg resolution time"],
+      csat: ["csat", "csat score", "customer satisfaction", "satisfaction"],
+      presales: ["pre-sales tickets", "presales tickets", "pre sales tickets", "presales"],
+      converted: ["converted tickets", "converted", "converted (unique customers)", "convertedunique"],
+      paidSubs: ["total paid subscriptions (websites)", "paid subscriptions", "paid subs", "paidsubs"],
+      agencyTickets: ["agency tickets", "agencysupport", "agency"],
+      badRating: ["bad rating", "negative rating", "bad", "rating bad"],
+
+      // Support - live chat
+      conversations: ["conversations", "conversations assigned", "assigned conversations"],
+      avgAssignment: ["avg teammate assignment to first response", "avg teammate assignment", "assignment to first response", "avgassignment"],
+      avgResolution: ["avg full resolution time", "avg resolution", "resolution time", "avgresolution"],
+
+      // Agency leads
+      metrics: ["metrics", "category", "metric"],
+      totalCount: ["total count", "count", "totalcount", "total"],
+      fromTickets: ["from tickets", "tickets", "fromtickets"],
+      websiteLeads: ["website leads (lp)", "website leads", "website", "websiteleads"],
+      fromAds: ["from ads", "ads", "paid ads", "fromads"],
+      liveChat: ["live chat", "livechat", "chat"],
+      webApp: ["web app (book a call)", "web app", "book a call", "webapp"],
+
+      // Agency performance
+      quarter: ["quarter", "sprint", "period"],
+      target: ["target", "goal"],
+      achieved: ["achieved", "actual"],
+      percentage: ["percentage", "%", "percent"],
     };
 
     const findHeaderForKey = (key: string): string | null => {
@@ -458,44 +491,80 @@ export default function SprintDashboard() {
           }
         } else if (slide.type === "supportData") {
           // Auto-detect which table to update based on headers
-          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
-          const hasTicketsHeaders = normalizedHeaders.some(h => 
-            h.includes('totaltickets') || h.includes('totalticketsolved') || 
-            h.includes('presales') || h.includes('converted') || h.includes('paidsubs')
+          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
+          const hasTicketsHeaders = normalizedHeaders.some(h =>
+            h.includes("totaltickets") || h.includes("totalticketsolved") ||
+            h.includes("presales") || h.includes("converted") || h.includes("paidsubs")
           );
-          const hasLiveChatHeaders = normalizedHeaders.some(h => 
-            h.includes('conversations') || h.includes('conversationsassigned') || 
-            h.includes('avgassignment') || h.includes('avgteammate')
+          const hasLiveChatHeaders = normalizedHeaders.some(h =>
+            h.includes("conversations") || h.includes("conversationsassigned") ||
+            h.includes("avgassignment") || h.includes("avgteammate") || h.includes("avgresolution")
           );
-          
-          if (hasTicketsHeaders) {
-            newSlide.data.tickets.rows = rows;
-          } else if (hasLiveChatHeaders) {
-            newSlide.data.liveChat.rows = rows;
-          } else {
-            // Default to tickets if ambiguous
-            newSlide.data.tickets.rows = rows;
+
+          const targetKey = hasTicketsHeaders ? "tickets" : hasLiveChatHeaders ? "liveChat" : "tickets";
+          const target = newSlide.data[targetKey];
+
+          if (target?.columns) {
+            const expectedKeys: string[] = target.columns.map((c: any) => c.key);
+            const mapped = rows.map((r: any) => {
+              const out: Record<string, any> = {};
+              expectedKeys.forEach((k) => {
+                const header = findHeaderForKey(k);
+                let v = header ? r[header] : undefined;
+                if (k === "sprint" && v !== undefined) {
+                  const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
+                  v = isNaN(parsed) ? v : parsed;
+                } else {
+                  v = coerceNumber(v);
+                }
+                out[k] = v !== undefined ? v : r[k];
+              });
+              return out;
+            });
+            // Keep only last MAX_SPRINTS if table has a sprint column
+            const hasSprint = expectedKeys.includes("sprint");
+            target.rows = hasSprint ? maintainSprintLimit(mapped) : mapped;
           }
+
+          // Recalculate totals/stats for this slide after mapping
+          recalculateSlideStats(newSlide);
         } else if (slide.type === "agencyLeads") {
           // Auto-detect which table to update based on headers
-          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
-          const hasLeadsHeaders = normalizedHeaders.some(h => 
-            h.includes('metrics') || h.includes('totalcount') || 
-            h.includes('fromtickets') || h.includes('websiteleads')
+          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
+          const hasLeadsHeaders = normalizedHeaders.some(h =>
+            h.includes("metrics") || h.includes("totalcount") ||
+            h.includes("fromtickets") || h.includes("websiteleads") || h.includes("fromads") || h.includes("livechat") || h.includes("webapp")
           );
-          const hasQ3Headers = normalizedHeaders.some(h => 
-            h.includes('quarter') || h.includes('target') || 
-            h.includes('achieved') || h.includes('percentage')
+          const hasQ3Headers = normalizedHeaders.some(h =>
+            h.includes("quarter") || h.includes("target") ||
+            h.includes("achieved") || h.includes("percentage")
           );
-          
-          if (hasLeadsHeaders) {
-            newSlide.data.leadsConversion.rows = rows;
-          } else if (hasQ3Headers) {
-            newSlide.data.q3Performance.rows = rows;
-          } else {
-            // Default to leadsConversion if ambiguous
-            newSlide.data.leadsConversion.rows = rows;
+
+          const targetKey = hasLeadsHeaders ? "leadsConversion" : hasQ3Headers ? "q3Performance" : "leadsConversion";
+          const target = newSlide.data[targetKey];
+
+          if (target?.columns) {
+            const expectedKeys: string[] = target.columns.map((c: any) => c.key);
+            const mapped = rows.map((r: any) => {
+              const out: Record<string, any> = {};
+              expectedKeys.forEach((k) => {
+                const header = findHeaderForKey(k);
+                let v = header ? r[header] : undefined;
+                if (k === "sprint" && v !== undefined) {
+                  const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
+                  v = isNaN(parsed) ? v : parsed;
+                } else {
+                  v = coerceNumber(v);
+                }
+                out[k] = v !== undefined ? v : r[k];
+              });
+              return out;
+            });
+            target.rows = mapped;
           }
+
+          // Recalculate totals/stats for this slide after mapping
+          recalculateSlideStats(newSlide);
         } else if (slide.type === "quarterStats") {
           // Separate sprint rows from quarter stats rows
           const sprintRows = rows.filter((r) => {
