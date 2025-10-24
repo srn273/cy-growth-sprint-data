@@ -16,6 +16,96 @@ export default function SprintDashboard() {
 
   const MAX_SPRINTS = 5;
 
+  // Helper function to recalculate totals and stats for a slide after data changes
+  const recalculateSlideStats = (slide: any) => {
+    if (!slide || !slide.data) return;
+
+    const recalculateTableStats = (data: any) => {
+      if (!data.rows || data.rows.length === 0) return;
+      
+      // Recalculate totals for tables with total row
+      if (data.total && data.columns) {
+        const newTotal: any = {};
+        data.columns.forEach((col: any) => {
+          if (col.key !== "sprint" && col.key !== "metrics" && col.key !== "quarter") {
+            const sum = data.rows.reduce((acc: number, row: any) => {
+              const val = parseFloat(row[col.key]) || 0;
+              return acc + val;
+            }, 0);
+            newTotal[col.key] = sum;
+          }
+        });
+        Object.assign(data.total, newTotal);
+      }
+
+      // Recalculate quarter stats for quarterStats type
+      if (data.quarterStats && data.columns) {
+        const newStats: any = {};
+        data.columns.forEach((col: any) => {
+          if (col.key !== "sprint") {
+            const sum = data.rows.reduce((acc: number, row: any) => {
+              const val = parseFloat(row[col.key]) || 0;
+              return acc + val;
+            }, 0);
+            newStats[col.key] = sum;
+          }
+        });
+        Object.assign(data.quarterStats, newStats);
+      }
+    };
+
+    // Handle different slide types
+    switch (slide.type) {
+      case "supportData":
+        recalculateTableStats(slide.data.tickets);
+        recalculateTableStats(slide.data.liveChat);
+        break;
+      case "agencyLeads":
+        recalculateTableStats(slide.data.leadsConversion);
+        recalculateTableStats(slide.data.q3Performance);
+        break;
+      case "wixApp":
+        // Recalculate lifetime stats for Wix App
+        if (slide.data.lifetime && slide.data.rows && slide.data.columns) {
+          const newLifetime: any = {};
+          slide.data.columns.forEach((col: any) => {
+            if (col.key !== "sprint" && col.key in slide.data.lifetime) {
+              const sum = slide.data.rows.reduce((acc: number, row: any) => {
+                const val = parseFloat(row[col.key]) || 0;
+                return acc + val;
+              }, 0);
+              newLifetime[col.key] = sum;
+            }
+          });
+          Object.assign(slide.data.lifetime, newLifetime);
+        }
+        recalculateTableStats(slide.data);
+        break;
+      case "referral":
+        // Recalculate lifetime stats for Referral
+        if (slide.data.lifetime && slide.data.rows && slide.data.columns) {
+          const newLifetime: any = {};
+          slide.data.columns.forEach((col: any) => {
+            if (col.key !== "sprint" && col.key in slide.data.lifetime) {
+              const sum = slide.data.rows.reduce((acc: number, row: any) => {
+                const val = parseFloat(row[col.key]) || 0;
+                return acc + val;
+              }, 0);
+              newLifetime[col.key] = sum;
+            }
+          });
+          Object.assign(slide.data.lifetime, newLifetime);
+        }
+        recalculateTableStats(slide.data);
+        break;
+      case "withTarget":
+      case "quarterStats":
+      default:
+        recalculateTableStats(slide.data);
+        break;
+    }
+  };
+
   const maintainSprintLimit = (rows) => {
     if (!rows || rows.length <= MAX_SPRINTS) return rows;
 
@@ -701,14 +791,14 @@ export default function SprintDashboard() {
       }
 
       const slide = newSlides[slideIndex];
-      // Updates handled in updateSlideFromCSVRow
-
-
+      
       try {
         const updated = updateSlideFromCSVRow(slide, row);
         if (updated) {
           updatedCount++;
           updatedSlides.add(slideId);
+          // Recalculate totals and stats for the updated slide
+          recalculateSlideStats(slide);
         }
       } catch (error) {
         console.error(`Error updating slide ${slideId}:`, error);
@@ -1485,6 +1575,9 @@ export default function SprintDashboard() {
           if (targetData.columns.some((c) => c.key === "sprint")) {
             targetData.rows = maintainSprintLimit(rows);
           }
+          
+          // Recalculate stats after adding row
+          recalculateSlideStats(newSlide);
         }
         return newSlide;
       }),
@@ -1512,6 +1605,9 @@ export default function SprintDashboard() {
 
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIndex, 1);
+          
+          // Recalculate stats after deleting row
+          recalculateSlideStats(newSlide);
         } else {
           alert("Cannot delete the last row. At least one row is required.");
         }
@@ -1636,6 +1732,9 @@ export default function SprintDashboard() {
         if (targetData.rows && targetData.rows[rowIndex]) {
           const parsedValue = isNaN(newValue) || newValue === "" ? newValue : Number(newValue);
           targetData.rows[rowIndex][colKey] = parsedValue;
+          
+          // Recalculate totals and stats after cell edit
+          recalculateSlideStats(newSlide);
         }
         return newSlide;
       }),
@@ -1666,6 +1765,9 @@ export default function SprintDashboard() {
 
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIdx, 1);
+          
+          // Recalculate stats after deleting row
+          recalculateSlideStats(newSlide);
         }
 
         return newSlide;
