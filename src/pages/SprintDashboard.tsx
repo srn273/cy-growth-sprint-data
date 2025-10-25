@@ -127,6 +127,13 @@ export default function SprintDashboard() {
     return [...sorted.slice(0, MAX_SPRINTS), ...specialRows];
   };
 
+  // Helper: resolve parent slide id from nested table ids (e.g., +1000 for support, +2000 for agency)
+  const getActualSlideId = (slideId: number) => {
+    if (slideId >= 2000) return slideId - 2000;
+    if (slideId >= 1000) return slideId - 1000;
+    return slideId;
+  };
+
   const parseStatsData = (lines: string[], slideId: number) => {
     // Detect which slide type and get expected stat keys
     const slide = sprintData.slides.find((s) => s.id === slideId);
@@ -1625,8 +1632,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1653,8 +1659,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1705,8 +1710,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1739,8 +1743,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1768,8 +1771,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1803,8 +1805,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1833,8 +1834,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1869,8 +1869,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -1902,8 +1901,7 @@ export default function SprintDashboard() {
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
-        const isNested = slideId > 1000;
-        const actualId = isNested ? Math.floor(slideId / 1000) : slideId;
+        const actualId = getActualSlideId(slideId);
 
         if (s.id !== actualId) return s;
         const newSlide = JSON.parse(JSON.stringify(s));
@@ -2116,7 +2114,7 @@ export default function SprintDashboard() {
               onClick={() => {
                 // For nested tables (Support/Agency), use the actual parent slide ID
                 const parentSlideId = slide.type === "supportData" || slide.type === "agencyLeads" 
-                  ? (slide.id > 1000 ? Math.floor(slide.id / 1000) : slide.id)
+                  ? getActualSlideId(slide.id)
                   : slide.id;
                 openSlideImport(parentSlideId);
               }}
