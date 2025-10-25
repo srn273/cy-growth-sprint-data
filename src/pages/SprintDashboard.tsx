@@ -401,6 +401,10 @@ export default function SprintDashboard() {
       youtube: ["youtube", "yt"],
       negative: ["negative", "neg"],
       position: ["position", "pluginposition", "plugin position", "rank", "ranking"],
+      
+      // Plugin ranking & rankings
+      pos1_2: ["position 1-2", "pos1_2", "pos12", "position1-2", "position12", "1-2", "12"],
+      pos3_10: ["position 3-10", "pos3_10", "pos310", "position3-10", "position310", "3-10", "310"],
 
       // Support - tickets
       totalTickets: ["total tickets", "total tickets solved", "tickets", "tickets solved", "totaltickets", "totalticketsolved"],
@@ -431,7 +435,28 @@ export default function SprintDashboard() {
       quarter: ["quarter", "sprint", "period"],
       target: ["target", "goal"],
       achieved: ["achieved", "actual"],
-      percentage: ["percentage", "%", "percent"],
+      percentage: ["percentage", "%", "percent", "targetachieved%", "target achieved %"],
+      
+      // withTarget types (Agency Signups, Affiliate)
+      signups: ["signups", "signup", "new signups"],
+      paid: ["paid", "paidusers", "paid users", "paying"],
+      shortfall: ["shortfall", "shortage", "deficit"],
+      
+      // Affiliate
+      newAffiliates: ["new affiliates", "newaffiliates", "affiliates"],
+      trialSignups: ["trial signups", "trialsignups", "trials"],
+      paidSignups: ["paid signups", "paidsignups"],
+      
+      // Referral
+      advocates: ["advocates onboarded", "advocates", "advocatesonboarded"],
+      referrals: ["referrals generated", "referrals", "referralsgenerated"],
+      trials: ["active trial signups", "trials", "activetrials", "activetrialsignups"],
+      
+      // Wix App
+      installs: ["installs", "install"],
+      uninstalls: ["uninstalls", "uninstall"],
+      active: ["active installs", "activeinstalls", "active"],
+      freeSignups: ["free signups", "freesignups", "free"],
     };
 
     const findHeaderForKey = (key: string): string | null => {
@@ -707,6 +732,26 @@ export default function SprintDashboard() {
               average: coerceNumber(r.average || r.avg),
             }));
           }
+        } else if (slide.type === "pluginRanking") {
+          // Handle plugin ranking slide
+          const expectedKeys: string[] = newSlide.data.columns?.map((c: any) => c.key) || ["sprint", "position"];
+          const mapped = rows.map((r: any) => {
+            const out: Record<string, any> = {};
+            expectedKeys.forEach((k) => {
+              const header = findHeaderForKey(k);
+              let v = header ? r[header] : undefined;
+              if (k === "sprint" && v !== undefined) {
+                const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
+                v = isNaN(parsed) ? v : parsed;
+              } else {
+                v = coerceNumber(v);
+              }
+              out[k] = v !== undefined ? v : r[k];
+            });
+            return out;
+          });
+          // Keep only last MAX_SPRINTS
+          newSlide.data.rows = maintainSprintLimit(mapped);
         }
 
         return newSlide;
@@ -1645,8 +1690,11 @@ export default function SprintDashboard() {
             targetData.rows = maintainSprintLimit(rows);
           }
           
-          // Recalculate stats after adding row
-          recalculateSlideStats(newSlide);
+          // Only recalculate stats for table types that support it (not quarterStats during addRow)
+          // quarterStats should only update stats manually via Edit Stats button
+          if (s.type !== "quarterStats") {
+            recalculateSlideStats(newSlide);
+          }
         }
         return newSlide;
       }),
@@ -1675,8 +1723,10 @@ export default function SprintDashboard() {
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIndex, 1);
           
-          // Recalculate stats after deleting row
-          recalculateSlideStats(newSlide);
+          // Only recalculate stats for table types that support it (not quarterStats during removeRow)
+          if (s.type !== "quarterStats") {
+            recalculateSlideStats(newSlide);
+          }
         } else {
           alert("Cannot delete the last row. At least one row is required.");
         }
@@ -1802,8 +1852,10 @@ export default function SprintDashboard() {
           const parsedValue = isNaN(newValue) || newValue === "" ? newValue : Number(newValue);
           targetData.rows[rowIndex][colKey] = parsedValue;
           
-          // Recalculate totals and stats after cell edit
-          recalculateSlideStats(newSlide);
+          // Only recalculate stats for table types that support it (not quarterStats during cell edit)
+          if (s.type !== "quarterStats") {
+            recalculateSlideStats(newSlide);
+          }
         }
         return newSlide;
       }),
@@ -1835,8 +1887,10 @@ export default function SprintDashboard() {
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIdx, 1);
           
-          // Recalculate stats after deleting row
-          recalculateSlideStats(newSlide);
+          // Only recalculate stats for table types that support it (not quarterStats during deleteRow)
+          if (s.type !== "quarterStats") {
+            recalculateSlideStats(newSlide);
+          }
         }
 
         return newSlide;
