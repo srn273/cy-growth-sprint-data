@@ -127,6 +127,11 @@ export default function SprintDashboard() {
     return [...sorted.slice(0, MAX_SPRINTS), ...specialRows];
   };
 
+  // Helper: check if a slide type uses nested tables
+  const isNestedTableSlide = (type: string): boolean => {
+    return ["supportData", "agencyLeads", "referral", "wixApp", "subscriptions"].includes(type);
+  };
+
   // Helper: resolve parent slide id from nested table ids (e.g., +1000 for support, +2000 for agency)
   const getActualSlideId = (slideId: number) => {
     if (slideId >= 2000) return slideId - 2000;
@@ -707,10 +712,24 @@ export default function SprintDashboard() {
         } else if (slide.type === "subscriptions") {
           newSlide.data.rows = rows;
         } else if (slide.type === "rankings") {
-          // Update position changes table
+          // Update position changes table - parse sprint numbers like pluginRanking
           const sprintRows = rows.filter((r) => r.sprint);
           if (sprintRows.length > 0) {
-            newSlide.data.positionChanges.rows = sprintRows;
+            const mapped = sprintRows.map((r: any) => {
+              const out: Record<string, any> = {};
+              Object.keys(r).forEach((k) => {
+                let v = r[k];
+                if (k === "sprint" && v !== undefined) {
+                  const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
+                  v = isNaN(parsed) ? v : parsed;
+                } else if (k !== "sprint") {
+                  v = coerceNumber(v);
+                }
+                out[k] = v;
+              });
+              return out;
+            });
+            newSlide.data.positionChanges.rows = mapped;
           }
         } else if (slide.type === "comparison") {
           // Handle comparison slide - separate sprint data from quarter data
@@ -2034,7 +2053,7 @@ export default function SprintDashboard() {
     const data = slide.data;
     if (!data || !data.rows || !data.columns) return null;
     const lastIdx = data.rows.length - 1;
-    const actualIdForEdit = slide.type === "supportData" || slide.type === "agencyLeads" ? getActualSlideId(slide.id) : slide.id;
+    const actualIdForEdit = isNestedTableSlide(slide.type) ? getActualSlideId(slide.id) : slide.id;
     const isEditing = editingTableId === slide.id || editingTableId === actualIdForEdit;
 
     return (
@@ -2113,8 +2132,8 @@ export default function SprintDashboard() {
             )}
             <button
               onClick={() => {
-                // For nested tables (Support/Agency), use the actual parent slide ID
-                const parentSlideId = slide.type === "supportData" || slide.type === "agencyLeads" 
+                // For nested tables, use the actual parent slide ID
+                const parentSlideId = isNestedTableSlide(slide.type)
                   ? getActualSlideId(slide.id)
                   : slide.id;
                 openSlideImport(parentSlideId);
