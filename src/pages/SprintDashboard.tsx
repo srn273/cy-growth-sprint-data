@@ -1218,6 +1218,7 @@ export default function SprintDashboard() {
           quarters: [
             { quarter: "Q1", total: 5278, average: 468 },
             { quarter: "Q2", total: 6247, average: 475 },
+            { quarter: "Q3", total: 0, average: 0 },
           ],
         },
       },
