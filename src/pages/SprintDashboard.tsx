@@ -22,7 +22,7 @@ export default function SprintDashboard() {
 
     const recalculateTableStats = (data: any) => {
       if (!data.rows || data.rows.length === 0) return;
-      
+
       // Recalculate totals for tables with total row
       if (data.total && data.columns) {
         const newTotal: any = {};
@@ -413,15 +413,35 @@ export default function SprintDashboard() {
       youtube: ["youtube", "yt"],
       negative: ["negative", "neg"],
       position: ["position", "pluginposition", "plugin position", "rank", "ranking"],
-      
+
       // Plugin ranking & rankings
       pos1_2: ["position 1-2", "pos1_2", "pos12", "position1-2", "position12", "1-2", "12"],
       pos3_10: ["position 3-10", "pos3_10", "pos310", "position3-10", "position310", "3-10", "310"],
 
       // Support - tickets
-      totalTickets: ["total tickets", "total tickets solved", "tickets", "tickets solved", "totaltickets", "totalticketsolved"],
-      avgFirstResponse: ["avg first response", "average first response", "first response", "avgfirstresponse", "firstresponse"],
-      avgFullResolution: ["avg full resolution time", "average full resolution time", "full resolution", "avgfullresolution", "fullresolution", "avg resolution time"],
+      totalTickets: [
+        "total tickets",
+        "total tickets solved",
+        "tickets",
+        "tickets solved",
+        "totaltickets",
+        "totalticketsolved",
+      ],
+      avgFirstResponse: [
+        "avg first response",
+        "average first response",
+        "first response",
+        "avgfirstresponse",
+        "firstresponse",
+      ],
+      avgFullResolution: [
+        "avg full resolution time",
+        "average full resolution time",
+        "full resolution",
+        "avgfullresolution",
+        "fullresolution",
+        "avg resolution time",
+      ],
       csat: ["csat", "csat score", "customer satisfaction", "satisfaction"],
       presales: ["pre-sales tickets", "presales tickets", "pre sales tickets", "presales"],
       converted: ["converted tickets", "converted", "converted (unique customers)", "convertedunique"],
@@ -431,7 +451,12 @@ export default function SprintDashboard() {
 
       // Support - live chat
       conversations: ["conversations", "conversations assigned", "assigned conversations"],
-      avgAssignment: ["avg teammate assignment to first response", "avg teammate assignment", "assignment to first response", "avgassignment"],
+      avgAssignment: [
+        "avg teammate assignment to first response",
+        "avg teammate assignment",
+        "assignment to first response",
+        "avgassignment",
+      ],
       avgResolution: ["avg full resolution time", "avg resolution", "resolution time", "avgresolution"],
 
       // Agency leads
@@ -448,22 +473,22 @@ export default function SprintDashboard() {
       target: ["target", "goal"],
       achieved: ["achieved", "actual"],
       percentage: ["percentage", "%", "percent", "targetachieved%", "target achieved %"],
-      
+
       // withTarget types (Agency Signups, Affiliate)
       signups: ["signups", "signup", "new signups"],
       paid: ["paid", "paidusers", "paid users", "paying"],
       shortfall: ["shortfall", "shortage", "deficit"],
-      
+
       // Affiliate
       newAffiliates: ["new affiliates", "newaffiliates", "affiliates"],
       trialSignups: ["trial signups", "trialsignups", "trials"],
       paidSignups: ["paid signups", "paidsignups"],
-      
+
       // Referral
       advocates: ["advocates onboarded", "advocates", "advocatesonboarded"],
       referrals: ["referrals generated", "referrals", "referralsgenerated"],
       trials: ["active trial signups", "trials", "activetrials", "activetrialsignups"],
-      
+
       // Wix App
       installs: ["installs", "install"],
       uninstalls: ["uninstalls", "uninstall"],
@@ -528,14 +553,22 @@ export default function SprintDashboard() {
           }
         } else if (slide.type === "supportData") {
           // Auto-detect which table to update based on headers
-          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
-          const hasTicketsHeaders = normalizedHeaders.some(h =>
-            h.includes("totaltickets") || h.includes("totalticketsolved") ||
-            h.includes("presales") || h.includes("converted") || h.includes("paidsubs")
+          const normalizedHeaders = headers.map((h) => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
+          const hasTicketsHeaders = normalizedHeaders.some(
+            (h) =>
+              h.includes("totaltickets") ||
+              h.includes("totalticketsolved") ||
+              h.includes("presales") ||
+              h.includes("converted") ||
+              h.includes("paidsubs"),
           );
-          const hasLiveChatHeaders = normalizedHeaders.some(h =>
-            h.includes("conversations") || h.includes("conversationsassigned") ||
-            h.includes("avgassignment") || h.includes("avgteammate") || h.includes("avgresolution")
+          const hasLiveChatHeaders = normalizedHeaders.some(
+            (h) =>
+              h.includes("conversations") ||
+              h.includes("conversationsassigned") ||
+              h.includes("avgassignment") ||
+              h.includes("avgteammate") ||
+              h.includes("avgresolution"),
           );
 
           const targetKey = hasTicketsHeaders ? "tickets" : hasLiveChatHeaders ? "liveChat" : "tickets";
@@ -567,14 +600,19 @@ export default function SprintDashboard() {
           recalculateSlideStats(newSlide);
         } else if (slide.type === "agencyLeads") {
           // Auto-detect which table to update based on headers
-          const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
-          const hasLeadsHeaders = normalizedHeaders.some(h =>
-            h.includes("metrics") || h.includes("totalcount") ||
-            h.includes("fromtickets") || h.includes("websiteleads") || h.includes("fromads") || h.includes("livechat") || h.includes("webapp")
+          const normalizedHeaders = headers.map((h) => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
+          const hasLeadsHeaders = normalizedHeaders.some(
+            (h) =>
+              h.includes("metrics") ||
+              h.includes("totalcount") ||
+              h.includes("fromtickets") ||
+              h.includes("websiteleads") ||
+              h.includes("fromads") ||
+              h.includes("livechat") ||
+              h.includes("webapp"),
           );
-          const hasQ3Headers = normalizedHeaders.some(h =>
-            h.includes("quarter") || h.includes("target") ||
-            h.includes("achieved") || h.includes("percentage")
+          const hasQ3Headers = normalizedHeaders.some(
+            (h) => h.includes("quarter") || h.includes("target") || h.includes("achieved") || h.includes("percentage"),
           );
 
           const targetKey = hasLeadsHeaders ? "leadsConversion" : hasQ3Headers ? "q3Performance" : "leadsConversion";
@@ -931,7 +969,7 @@ export default function SprintDashboard() {
       }
 
       const slide = newSlides[slideIndex];
-      
+
       try {
         const updated = updateSlideFromCSVRow(slide, row);
         if (updated) {
@@ -1266,9 +1304,9 @@ export default function SprintDashboard() {
             { key: "position", header: "Plugin Position" },
           ],
           rows: [
-            { sprint: 263, position: 0 },
-            { sprint: 264, position: 0 },
-            { sprint: 265, position: 0 },
+            { sprint: 263, position: 39 },
+            { sprint: 264, position: 39 },
+            { sprint: 265, position: 39 },
           ],
         },
       },
@@ -1713,7 +1751,7 @@ export default function SprintDashboard() {
           if (targetData.columns.some((c) => c.key === "sprint")) {
             targetData.rows = maintainSprintLimit(rows);
           }
-          
+
           // Only recalculate stats for table types that support it (not quarterStats during addRow)
           // quarterStats should only update stats manually via Edit Stats button
           if (s.type !== "quarterStats") {
@@ -1745,7 +1783,7 @@ export default function SprintDashboard() {
 
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIndex, 1);
-          
+
           // Only recalculate stats for table types that support it (not quarterStats during removeRow)
           if (s.type !== "quarterStats") {
             recalculateSlideStats(newSlide);
@@ -1870,7 +1908,7 @@ export default function SprintDashboard() {
         if (targetData.rows && targetData.rows[rowIndex]) {
           const parsedValue = isNaN(newValue) || newValue === "" ? newValue : Number(newValue);
           targetData.rows[rowIndex][colKey] = parsedValue;
-          
+
           // Only recalculate stats for table types that support it (not quarterStats during cell edit)
           if (s.type !== "quarterStats") {
             recalculateSlideStats(newSlide);
@@ -1904,7 +1942,7 @@ export default function SprintDashboard() {
 
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIdx, 1);
-          
+
           // Only recalculate stats for table types that support it (not quarterStats during deleteRow)
           if (s.type !== "quarterStats") {
             recalculateSlideStats(newSlide);
@@ -2133,9 +2171,7 @@ export default function SprintDashboard() {
             <button
               onClick={() => {
                 // For nested tables, use the actual parent slide ID
-                const parentSlideId = isNestedTableSlide(slide.type)
-                  ? getActualSlideId(slide.id)
-                  : slide.id;
+                const parentSlideId = isNestedTableSlide(slide.type) ? getActualSlideId(slide.id) : slide.id;
                 openSlideImport(parentSlideId);
               }}
               style={{
@@ -3404,7 +3440,9 @@ export default function SprintDashboard() {
               <EditableTable slide={{ ...slide, id: slide.id, data: slide.data.leadsConversion, type: slide.type }} />
             </div>
             <div>
-              <EditableTable slide={{ ...slide, id: slide.id + 2000, data: slide.data.q3Performance, type: slide.type }} />
+              <EditableTable
+                slide={{ ...slide, id: slide.id + 2000, data: slide.data.q3Performance, type: slide.type }}
+              />
             </div>
           </div>
         );
