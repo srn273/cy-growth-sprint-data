@@ -1599,7 +1599,7 @@ export default function SprintDashboard() {
             { sprint: 264, newAff: 0, trials: 0, paid: 0 },
             { sprint: 265, newAff: 0, trials: 0, paid: 0 },
           ],
-          total: { new affiliates: 0, trials: 0, paid: 0 },
+          total: { newAff: 0, trials: 0, paid: 0 },
         },
       },
       {
