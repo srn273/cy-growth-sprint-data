@@ -2034,7 +2034,8 @@ export default function SprintDashboard() {
     const data = slide.data;
     if (!data || !data.rows || !data.columns) return null;
     const lastIdx = data.rows.length - 1;
-    const isEditing = editingTableId === slide.id;
+    const actualIdForEdit = slide.type === "supportData" || slide.type === "agencyLeads" ? getActualSlideId(slide.id) : slide.id;
+    const isEditing = editingTableId === slide.id || editingTableId === actualIdForEdit;
 
     return (
       <div style={{ marginBottom: "12px" }}>
