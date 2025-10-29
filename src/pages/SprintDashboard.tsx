@@ -748,42 +748,55 @@ export default function SprintDashboard() {
             }
           }
         } else if (slide.type === "wixApp") {
-          // Separate sprint rows from lifetime rows
-          const sprintRows = rows.filter((r) => {
-            const sprint = String(r.sprint).toLowerCase();
-            return (
-              sprint !== "lifetime" &&
-              sprint !== "total" &&
-              sprint !== "qtd" &&
-              (typeof r.sprint === "number" || !isNaN(parseInt(r.sprint)))
-            );
-          });
-          newSlide.data.rows = sprintRows;
-
-          // Update lifetime stats and total stats
-          const lifetimeRow = rows.find((r) => {
-            const sprint = String(r.sprint).toLowerCase();
-            return sprint === "lifetime";
-          });
-          if (lifetimeRow && newSlide.data.lifetime) {
-            Object.keys(newSlide.data.lifetime).forEach((key) => {
-              if (lifetimeRow[key] !== undefined) {
-                newSlide.data.lifetime[key] = lifetimeRow[key];
-              }
+          // Map incoming headers to expected keys first
+          if (newSlide.data?.columns) {
+            const expectedKeys: string[] = newSlide.data.columns.map((c: any) => c.key);
+            const mapped = rows.map((r: any) => {
+              const out: Record<string, any> = {};
+              expectedKeys.forEach((k) => {
+                const header = findHeaderForKey(k);
+                let v = header ? r[header] : undefined;
+                if (k === "sprint" && v !== undefined) {
+                  const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
+                  v = isNaN(parsed) ? v : parsed;
+                } else {
+                  v = coerceNumber(v);
+                }
+                out[k] = v !== undefined ? v : r[k];
+              });
+              return out;
             });
-          }
 
-          // Update total stats if present
-          const totalsRow = rows.find((r) => {
-            const sprint = String(r.sprint).toLowerCase();
-            return sprint === "total" || sprint === "qtd";
-          });
-          if (totalsRow && newSlide.data.total) {
-            Object.keys(newSlide.data.total).forEach((key) => {
-              if (totalsRow[key] !== undefined) {
-                newSlide.data.total[key] = totalsRow[key];
-              }
+            // Separate sprint rows from lifetime/total rows
+            const sprintRows = mapped.filter((r) => {
+              const sprint = String(r.sprint).toLowerCase();
+              return sprint !== "lifetime" && sprint !== "total" && sprint !== "qtd";
             });
+            // Keep only last MAX_SPRINTS
+            newSlide.data.rows = maintainSprintLimit(sprintRows);
+
+            // Update lifetime stats if present
+            const lifetimeRow = mapped.find((r) => String(r.sprint).toLowerCase() === "lifetime");
+            if (lifetimeRow && newSlide.data.lifetime) {
+              Object.keys(newSlide.data.lifetime).forEach((key) => {
+                if (lifetimeRow[key] !== undefined) {
+                  newSlide.data.lifetime[key] = lifetimeRow[key];
+                }
+              });
+            }
+
+            // Update total/QTD stats if present
+            const totalsRow = mapped.find((r) => {
+              const sprint = String(r.sprint).toLowerCase();
+              return sprint === "total" || sprint === "qtd";
+            });
+            if (totalsRow && newSlide.data.total) {
+              Object.keys(newSlide.data.total).forEach((key) => {
+                if (totalsRow[key] !== undefined) {
+                  newSlide.data.total[key] = totalsRow[key];
+                }
+              });
+            }
           }
         } else if (slide.type === "subscriptions") {
           newSlide.data.rows = rows;
