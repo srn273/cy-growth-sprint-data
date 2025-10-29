@@ -801,24 +801,31 @@ export default function SprintDashboard() {
         } else if (slide.type === "subscriptions") {
           newSlide.data.rows = rows;
         } else if (slide.type === "rankings") {
-          // Update position changes table - parse sprint numbers like pluginRanking
-          const sprintRows = rows.filter((r) => r.sprint);
-          if (sprintRows.length > 0) {
-            const mapped = sprintRows.map((r: any) => {
+          // Update position changes table with header mapping and sprint parsing
+          const target = newSlide.data.positionChanges;
+          if (target?.columns) {
+            const expectedKeys: string[] = target.columns.map((c: any) => c.key);
+            const mapped = rows.map((r: any) => {
               const out: Record<string, any> = {};
-              Object.keys(r).forEach((k) => {
-                let v = r[k];
+              expectedKeys.forEach((k) => {
+                const header = findHeaderForKey(k);
+                let v = header ? r[header] : undefined;
                 if (k === "sprint" && v !== undefined) {
                   const parsed = parseInt(String(v).match(/\d+/)?.[0] || String(v), 10);
                   v = isNaN(parsed) ? v : parsed;
-                } else if (k !== "sprint") {
+                } else {
                   v = coerceNumber(v);
                 }
-                out[k] = v;
+                out[k] = v !== undefined ? v : r[k];
               });
               return out;
             });
-            newSlide.data.positionChanges.rows = mapped;
+            // Keep only last MAX_SPRINTS if table has a sprint column
+            const hasSprint = expectedKeys.includes("sprint");
+            target.rows = hasSprint ? maintainSprintLimit(mapped) : mapped;
+
+            // Recalculate totals/stats for this slide after mapping
+            recalculateSlideStats(newSlide);
           }
         } else if (slide.type === "comparison") {
           // Handle comparison slide - separate sprint data from quarter data
