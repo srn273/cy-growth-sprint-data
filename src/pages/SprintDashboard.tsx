@@ -1568,7 +1568,7 @@ export default function SprintDashboard() {
           performance: {
             impressions: { value: 0, change: 0, isIncrease: true },
             clicks: { value: 0, change: 0, isIncrease: true },
-            CTR: { value: 0, change: 0, isIncrease: true },
+            ctr: { value: 0, change: 0, isIncrease: true },
             conversions: { value: 0, change: 0, isIncrease: false },
           },
           auctionInsights: {
