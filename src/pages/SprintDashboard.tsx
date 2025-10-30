@@ -3539,7 +3539,7 @@ export default function SprintDashboard() {
                   gap: "8px",
                 }}
               >
-                📊 Performance (Oct 23-29 vs. Oct 16-22)
+                📊 Performance (Current Sprint  vs. Last Sprint)
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {["impressions", "clicks", "ctr", "conversions"].map((metric) => {
