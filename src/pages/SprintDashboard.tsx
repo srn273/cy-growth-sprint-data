@@ -1366,8 +1366,8 @@ export default function SprintDashboard() {
             { sprint: 263, position: 39 },
             { sprint: 264, position: 39 },
             { sprint: 265, position: 39 },
+            { sprint: 266, position: 39 }
           ],
-          <em>Source: https://wp-rankings.com/plugins/cookie-law-info</em>
         },
       },
       {
