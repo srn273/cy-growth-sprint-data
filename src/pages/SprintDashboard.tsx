@@ -1566,14 +1566,14 @@ export default function SprintDashboard() {
         moreDetailsUrl: "https://docs.google.com/spreadsheets",
         data: {
           performance: {
-            impressions: { value: 0, change: 0, isIncrease: true },
-            clicks: { value: 0, change: 0, isIncrease: true },
-            CTR: { value: 0, change: 0, isIncrease: true },
-            conversions: { value: 0, change: 0, isIncrease: false },
+            impressions: { value: 0, isIncrease: true },
+            clicks: { value: 0, isIncrease: true },
+            CTR: { value: 0, isIncrease: true },
+            conversions: { value: 0, isIncrease: false },
           },
           auctionInsights: {
-            impressionShare: 0,
-            absoluteTopOfPage: 0,
+            impressionShare:  { value: 0, isIncrease: true },
+            absoluteTopOfPage: { value: 0, isIncrease: false },
           },
         },
       },
