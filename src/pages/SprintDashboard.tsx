@@ -4464,22 +4464,6 @@ export default function SprintDashboard() {
                 💾 Export Data
               </button>
               <button
-                onClick={downloadSampleCSV}
-                style={{
-                  padding: "12px 20px",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  border: "none",
-                  borderRadius: "6px",
-                  backgroundColor: "#6366F1",
-                  color: "#fff",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-                📋 Download CSV Template
-              </button>
-              <button
                 onClick={exportToPDF}
                 style={{
                   padding: "12px 20px",
@@ -4608,7 +4592,7 @@ export default function SprintDashboard() {
             </h2>
             <p style={{ fontSize: "14px", color: "#5A6872", marginBottom: "20px" }}>
               {isGlobalImport
-                ? "Upload a JSON export to restore complete data, or CSV file to bulk update tables and stats across all slides."
+                ? "Upload a JSON export to restore complete data, or paste CSV format below to bulk update all slides at once."
                 : "Copy data from your Google Sheet and paste it below, OR paste/upload a screenshot to extract data automatically."}
             </p>
 
@@ -4624,36 +4608,50 @@ export default function SprintDashboard() {
                     color: "#fff",
                     borderRadius: "6px",
                     cursor: "pointer",
-                    marginRight: "12px",
+                    marginBottom: "16px",
                   }}
                 >
-                  📁 Select JSON/CSV File
+                  📁 Select JSON File
                   <input
                     type="file"
-                    accept=".json,.csv,application/json,text/csv"
+                    accept=".json,application/json"
                     onChange={handleFileImport}
                     style={{ display: "none" }}
                   />
                 </label>
-                <button
-                  onClick={downloadSampleCSV}
-                  style={{
-                    padding: "12px 24px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    backgroundColor: "#6366F1",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                  }}
-                >
-                  📋 Download CSV Template
-                </button>
-                <div style={{ fontSize: "13px", color: "#5A6872", marginTop: "12px", lineHeight: "1.6" }}>
-                  <strong>JSON:</strong> Complete backup/restore of all slides and data
-                  <br />
-                  <strong>CSV:</strong> Bulk update tables and stats - download template to see format
+                
+                <div style={{ 
+                  backgroundColor: "#F8F9FA", 
+                  border: "1px solid #DFE3E8", 
+                  borderRadius: "8px", 
+                  padding: "16px",
+                  fontSize: "13px",
+                  color: "#212121",
+                  fontFamily: "monospace",
+                  lineHeight: "1.8"
+                }}>
+                  <div style={{ fontWeight: "700", fontSize: "14px", marginBottom: "12px", color: "#1863DC" }}>
+                    📋 Bulk Paste Format (CSV):
+                  </div>
+                  <div style={{ marginBottom: "12px", color: "#5A6872" }}>
+                    Paste data in this format to update all slides at once:
+                  </div>
+                  <div style={{ backgroundColor: "#fff", padding: "12px", borderRadius: "4px", border: "1px solid #E1E4E8", overflowX: "auto" }}>
+                    <strong>SlideID,TableName,Sprint,[Column Names...]</strong><br/>
+                    1,positionChanges,263,15,45<br/>
+                    1,positionChanges,264,18,42<br/>
+                    2,main,263,5,3,8,2<br/>
+                    7,tickets,263,350,2h 30m,5h 45m,95%<br/>
+                    16,main,263,350,25,325,120,15
+                  </div>
+                  <div style={{ marginTop: "12px", fontSize: "12px", color: "#5A6872" }}>
+                    <strong>Key Points:</strong><br/>
+                    • <strong>SlideID:</strong> The slide number (1-16)<br/>
+                    • <strong>TableName:</strong> "main", "positionChanges", "tickets", "liveChat", etc.<br/>
+                    • <strong>Sprint:</strong> Sprint number (e.g., 263, 264)<br/>
+                    • <strong>Columns:</strong> Match your slide's column names exactly<br/>
+                    • Each row updates one sprint in one table
+                  </div>
                 </div>
               </div>
             )}
