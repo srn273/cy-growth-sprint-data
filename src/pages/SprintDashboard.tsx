@@ -3542,7 +3542,7 @@ export default function SprintDashboard() {
                 📊 Performance (Current Sprint  vs. Last Sprint)
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                {["impressions", "clicks", "ctr", "conversions"].map((metric) => {
+                {["impressions", "clicks", "CTR", "conversions"].map((metric) => {
                   const metricData = slide.data.performance[metric];
                   const label = metric.charAt(0).toUpperCase() + metric.slice(1);
                   return (
