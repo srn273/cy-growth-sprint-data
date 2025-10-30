@@ -1267,7 +1267,7 @@ export default function SprintDashboard() {
         id: 0,
         title: "Sprint Comparison - Paid Users Overview",
         type: "comparison",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1339605795#gid=1339605795",
         data: {
           sprints: [
             { sprintNumber: 0, paidUsers: 0, totalPaidQTD: 0 },
@@ -1305,7 +1305,7 @@ export default function SprintDashboard() {
         id: 1,
         title: "Top 25 Major Rankings and Movements",
         type: "rankings",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=769589025#gid=769589025",
         data: {
           total: 0,
           byRegion: [
@@ -1333,7 +1333,7 @@ export default function SprintDashboard() {
         id: 3,
         title: "Brand Mentions",
         type: "table",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1091728359#gid=1091728359",
         data: {
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
@@ -1392,7 +1392,7 @@ export default function SprintDashboard() {
         id: 7,
         title: "Support data",
         type: "supportData",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=40331932#gid=40331932",
         data: {
           tickets: {
             columns: [
@@ -1467,7 +1467,7 @@ export default function SprintDashboard() {
         id: 8,
         title: "Agency Leads & Conversion (Presales)",
         type: "agencyLeads",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=479602000#gid=479602000",
         data: {
           leadsConversion: {
             columns: [
@@ -1537,7 +1537,7 @@ export default function SprintDashboard() {
         id: 9,
         title: "Paid Acquisition - Google Ads",
         type: "quarterStats",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1295636005#gid=1295636005",
         data: {
           quarterStats: {
             accountsCreated: 0,
@@ -1563,7 +1563,7 @@ export default function SprintDashboard() {
         id: 10,
         title: "Google Ads Key Observations",
         type: "googleAdsObservations",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1295636005#gid=1295636005",
         data: {
           performance: {
             impressions: { value: 0, isIncrease: true },
@@ -1581,7 +1581,7 @@ export default function SprintDashboard() {
         id: 11,
         title: "Paid Acquisition - Bing Ads",
         type: "quarterStats",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1295636005#gid=1295636005",
         data: {
           quarterStats: {
             accountsCreated: 0,
@@ -1607,7 +1607,7 @@ export default function SprintDashboard() {
         id: 12,
         title: "Paid Acquisition - Agency Data",
         type: "table",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1295636005#gid=1295636005",
         data: {
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
@@ -1627,7 +1627,7 @@ export default function SprintDashboard() {
         id: 13,
         title: "Agency - Signups & Paid Users",
         type: "withTarget",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1941259614#gid=1941259614",
         data: {
           target: 27,
           targetLabel: "SPRINT PAID TARGET",
@@ -1651,7 +1651,7 @@ export default function SprintDashboard() {
         id: 14,
         title: "Partnerships & Growth - Affiliate Partner Program",
         type: "withTarget",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           target: 1000,
           targetLabel: "QUARTER TARGET",
@@ -1673,7 +1673,7 @@ export default function SprintDashboard() {
         id: 16,
         title: "Partnerships & Growth - Strategic Partner Program - Wix App",
         type: "wixApp",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           lifetime: { installs: 0, active: 0, paid: 0, rating: 0 },
           target: 100,
@@ -1698,7 +1698,7 @@ export default function SprintDashboard() {
         id: 15,
         title: "Partnerships & Growth - Referral Partner Program",
         type: "referral",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           lifetime: { advocates: 0, paid: 0 },
           target: 100,
@@ -1722,7 +1722,7 @@ export default function SprintDashboard() {
         id: 17,
         title: "New subscriptions & paid signups",
         type: "subscriptions",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl: "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=458351126#gid=458351126",
         data: {
           rows: [
             { channel: "New Subscription (Direct)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0 },
@@ -3539,7 +3539,7 @@ export default function SprintDashboard() {
                   gap: "8px",
                 }}
               >
-                Performance (Current Sprint  vs. Last Sprint)
+                📊 Performance (Current Sprint  vs. Last Sprint)
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {["impressions", "clicks", "CTR", "conversions"].map((metric) => {
@@ -3646,7 +3646,7 @@ export default function SprintDashboard() {
                   gap: "8px",
                 }}
               >
-                Auction Insights
+                🎯 Auction Insights
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {[
