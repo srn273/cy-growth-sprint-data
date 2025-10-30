@@ -1560,23 +1560,121 @@ export default function SprintDashboard() {
         },
       },
       {
-        id: 10,
-        title: "Google Ads Key Observations",
-        type: "googleAdsObservations",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
-        data: {
-          performance: {
-            impressions: { value: 0, isIncrease: true },
-            clicks: { value: 0, isIncrease: true },
-            CTR: { value: 0, isIncrease: true },
-            conversions: { value: 0, isIncrease: false },
-          },
-          auctionInsights: {
-            impressionShare:  { value: 0, isIncrease: true },
-            absoluteTopOfPage: { value: 0, isIncrease: false },
-          },
-        },
-      },
+  id: 10,
+  title: "Google Ads Key Observations",
+  type: "googleAdsObservations",
+  moreDetailsUrl: "https://docs.google.com/spreadsheets",
+  data: {
+    performance: {
+      impressions: { value: 0, isIncrease: true },
+      clicks: { value: 0, isIncrease: true },
+      CTR: { value: 0, isIncrease: true },
+      conversions: { value: 0, isIncrease: false },
+    },
+    auctionInsights: {
+      impressionShare: { value: 0, isIncrease: true },
+      absoluteTopOfPage: { value: 0, isIncrease: false },
+    },
+  },
+  render: (data, isEditMode, updateMetricValue, updateMetricTrend) => (
+    <div className="google-ads-observations space-y-4">
+      {/* ---- Performance Section ---- */}
+      <div>
+        <h3 className="font-semibold text-gray-700 mb-1">Performance</h3>
+        {Object.entries(data.performance).map(([key, metric]) => (
+          <div key={key} className="flex justify-between items-center py-1">
+            <span className="font-medium capitalize">
+              {key.replace(/([A-Z])/g, " $1")}
+            </span>
+            {isEditMode ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={metric.value}
+                  onChange={(e) =>
+                    updateMetricValue("performance", key, +e.target.value)
+                  }
+                  className="w-20 border border-gray-300 rounded p-1 text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <select
+                  value={metric.isIncrease ? "increase" : "decrease"}
+                  onChange={(e) =>
+                    updateMetricTrend(
+                      "performance",
+                      key,
+                      e.target.value === "increase"
+                    )
+                  }
+                  className="border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="increase">🔼</option>
+                  <option value="decrease">🔽</option>
+                </select>
+              </div>
+            ) : (
+              <span
+                className={`text-base font-semibold flex items-center justify-end w-24 ${
+                  metric.isIncrease ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {metric.value}
+                {metric.isIncrease ? " 🔼" : " 🔽"}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ---- Auction Insights Section ---- */}
+      <div>
+        <h3 className="font-semibold text-gray-700 mb-1">Auction Insights</h3>
+        {Object.entries(data.auctionInsights).map(([key, metric]) => (
+          <div key={key} className="flex justify-between items-center py-1">
+            <span className="font-medium capitalize">
+              {key.replace(/([A-Z])/g, " $1")}
+            </span>
+            {isEditMode ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={metric.value}
+                  onChange={(e) =>
+                    updateMetricValue("auctionInsights", key, +e.target.value)
+                  }
+                  className="w-20 border border-gray-300 rounded p-1 text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <select
+                  value={metric.isIncrease ? "increase" : "decrease"}
+                  onChange={(e) =>
+                    updateMetricTrend(
+                      "auctionInsights",
+                      key,
+                      e.target.value === "increase"
+                    )
+                  }
+                  className="border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="increase">🔼</option>
+                  <option value="decrease">🔽</option>
+                </select>
+              </div>
+            ) : (
+              <span
+                className={`text-base font-semibold flex items-center justify-end w-24 ${
+                  metric.isIncrease ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {metric.value}
+                {metric.isIncrease ? " 🔼" : " 🔽"}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  ),
+}
+,
       {
         id: 11,
         title: "Paid Acquisition - Bing Ads",
