@@ -3539,7 +3539,7 @@ export default function SprintDashboard() {
                   gap: "8px",
                 }}
               >
-                📊 Performance (Current Sprint  vs. Last Sprint)
+                Performance (Current Sprint  vs. Last Sprint)
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {["impressions", "clicks", "CTR", "conversions"].map((metric) => {
@@ -3646,7 +3646,7 @@ export default function SprintDashboard() {
                   gap: "8px",
                 }}
               >
-                🎯 Auction Insights
+                Auction Insights
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {[
