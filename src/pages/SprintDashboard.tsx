@@ -2653,7 +2653,7 @@ export default function SprintDashboard() {
                 <div
                   style={{
                     display: "flex",
-                    gap: "120px",
+                    gap: `${Math.max(120 - (slide.data.sprints.length - 2) * 20, 40)}px`,
                     alignItems: "flex-end",
                     justifyContent: "center",
                     flex: 1,
@@ -2662,96 +2662,100 @@ export default function SprintDashboard() {
                     position: "relative",
                   }}
                 >
-                  {slide.data.sprints.map((sprint, idx) => (
-                    <div
-                      key={idx}
-                      style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}
-                    >
-                      {/* Bars Container */}
-                      <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
-                        {/* Blue Bar - Paid users (this sprint) */}
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <div style={{ fontSize: "13px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
-                            {isEditMode ? (
-                              <input
-                                type="number"
-                                defaultValue={sprint.paidUsers}
-                                onBlur={(e) => {
-                                  const newSprints = [...slide.data.sprints];
-                                  newSprints[idx].paidUsers = parseInt(e.target.value) || 0;
-                                  updateSlideData(slide.id, ["sprints"], newSprints);
-                                }}
-                                style={{
-                                  width: "60px",
-                                  padding: "4px",
-                                  fontSize: "13px",
-                                  border: "1px solid #4A90E2",
-                                  borderRadius: "4px",
-                                  textAlign: "center",
-                                }}
-                              />
-                            ) : (
-                              sprint.paidUsers || ""
-                            )}
-                          </div>
-                          <div
-                            style={{
-                              width: "70px",
-                              height: `${Math.max((sprint.paidUsers / 1400) * 280, sprint.paidUsers > 0 ? 20 : 0)}px`,
-                              backgroundColor: "#4A90E2",
-                              borderRadius: "4px 4px 0 0",
-                            }}
-                          />
-                        </div>
-
-                        {/* Green Bar - Total paid users QTD */}
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <div style={{ fontSize: "13px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
-                            {isEditMode ? (
-                              <input
-                                type="number"
-                                defaultValue={sprint.totalPaidQTD}
-                                onBlur={(e) => {
-                                  const newSprints = [...slide.data.sprints];
-                                  newSprints[idx].totalPaidQTD = parseInt(e.target.value) || 0;
-                                  updateSlideData(slide.id, ["sprints"], newSprints);
-                                }}
-                                style={{
-                                  width: "60px",
-                                  padding: "4px",
-                                  fontSize: "13px",
-                                  border: "1px solid #5CB85C",
-                                  borderRadius: "4px",
-                                  textAlign: "center",
-                                }}
-                              />
-                            ) : (
-                              sprint.totalPaidQTD || ""
-                            )}
-                          </div>
-                          <div
-                            style={{
-                              width: "70px",
-                              height: `${Math.max((sprint.totalPaidQTD / 1400) * 280, sprint.totalPaidQTD > 0 ? 20 : 0)}px`,
-                              backgroundColor: "#5CB85C",
-                              borderRadius: "4px 4px 0 0",
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Sprint Label at bottom - relative to this pair */}
+                  {slide.data.sprints.map((sprint, idx) => {
+                    const barWidth = Math.max(70 - (slide.data.sprints.length - 2) * 8, 40);
+                    const barGap = Math.max(16 - (slide.data.sprints.length - 2) * 2, 8);
+                    
+                    return (
                       <div
-                        style={{
-                          fontSize: "15px",
-                          fontWeight: "600",
-                          color: "#5A6872",
-                          marginTop: "16px",
-                          textAlign: "center",
-                        }}
+                        key={idx}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}
                       >
-                        {isEditMode ? (
-                          <input
+                        {/* Bars Container */}
+                        <div style={{ display: "flex", gap: `${barGap}px`, alignItems: "flex-end" }}>
+                          {/* Blue Bar - Paid users (this sprint) */}
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <div style={{ fontSize: "13px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
+                              {isEditMode ? (
+                                <input
+                                  type="number"
+                                  defaultValue={sprint.paidUsers}
+                                  onBlur={(e) => {
+                                    const newSprints = [...slide.data.sprints];
+                                    newSprints[idx].paidUsers = parseInt(e.target.value) || 0;
+                                    updateSlideData(slide.id, ["sprints"], newSprints);
+                                  }}
+                                  style={{
+                                    width: "60px",
+                                    padding: "4px",
+                                    fontSize: "13px",
+                                    border: "1px solid #4A90E2",
+                                    borderRadius: "4px",
+                                    textAlign: "center",
+                                  }}
+                                />
+                              ) : (
+                                sprint.paidUsers || ""
+                              )}
+                            </div>
+                            <div
+                              style={{
+                                width: `${barWidth}px`,
+                                height: `${Math.max((sprint.paidUsers / 1400) * 280, sprint.paidUsers > 0 ? 20 : 0)}px`,
+                                backgroundColor: "#4A90E2",
+                                borderRadius: "4px 4px 0 0",
+                              }}
+                            />
+                          </div>
+
+                          {/* Green Bar - Total paid users QTD */}
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <div style={{ fontSize: "13px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
+                              {isEditMode ? (
+                                <input
+                                  type="number"
+                                  defaultValue={sprint.totalPaidQTD}
+                                  onBlur={(e) => {
+                                    const newSprints = [...slide.data.sprints];
+                                    newSprints[idx].totalPaidQTD = parseInt(e.target.value) || 0;
+                                    updateSlideData(slide.id, ["sprints"], newSprints);
+                                  }}
+                                  style={{
+                                    width: "60px",
+                                    padding: "4px",
+                                    fontSize: "13px",
+                                    border: "1px solid #5CB85C",
+                                    borderRadius: "4px",
+                                    textAlign: "center",
+                                  }}
+                                />
+                              ) : (
+                                sprint.totalPaidQTD || ""
+                              )}
+                            </div>
+                            <div
+                              style={{
+                                width: `${barWidth}px`,
+                                height: `${Math.max((sprint.totalPaidQTD / 1400) * 280, sprint.totalPaidQTD > 0 ? 20 : 0)}px`,
+                                backgroundColor: "#5CB85C",
+                                borderRadius: "4px 4px 0 0",
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Sprint Label at bottom - relative to this pair */}
+                        <div
+                          style={{
+                            fontSize: "15px",
+                            fontWeight: "600",
+                            color: "#5A6872",
+                            marginTop: "16px",
+                            textAlign: "center",
+                          }}
+                         >
+                          {isEditMode ? (
+                            <input
                             type="text"
                             placeholder="Sprint #"
                             defaultValue={sprint.sprintNumber || ""}
