@@ -2753,36 +2753,36 @@ export default function SprintDashboard() {
                             marginTop: "16px",
                             textAlign: "center",
                           }}
-                         >
+                        >
                           {isEditMode ? (
                             <input
-                            type="text"
-                            placeholder="Sprint #"
-                            defaultValue={sprint.sprintNumber || ""}
-                            onBlur={(e) => {
-                              const newSprints = [...slide.data.sprints];
-                              newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
-                              updateSlideData(slide.id, ["sprints"], newSprints);
-                            }}
-                            style={{
-                              width: "100px",
-                              padding: "4px 8px",
-                              fontSize: "15px",
-                              border: "1px solid #DBDFE4",
-                              borderRadius: "4px",
-                              textAlign: "center",
-                            }}
-                          />
-                        ) : sprint.sprintNumber ? (
-                          `Sprint ${sprint.sprintNumber}`
-                        ) : (
-                          ""
-                        )}
+                              type="text"
+                              placeholder="Sprint #"
+                              defaultValue={sprint.sprintNumber || ""}
+                              onBlur={(e) => {
+                                const newSprints = [...slide.data.sprints];
+                                newSprints[idx].sprintNumber = parseInt(e.target.value) || 0;
+                                updateSlideData(slide.id, ["sprints"], newSprints);
+                              }}
+                              style={{
+                                width: "100px",
+                                padding: "4px 8px",
+                                fontSize: "15px",
+                                border: "1px solid #DBDFE4",
+                                borderRadius: "4px",
+                                textAlign: "center",
+                              }}
+                            />
+                          ) : sprint.sprintNumber ? (
+                            `Sprint ${sprint.sprintNumber}`
+                          ) : (
+                            ""
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )})}
+                  </div>
                 </div>
-              </div>
 
               {/* Legend */}
               <div
