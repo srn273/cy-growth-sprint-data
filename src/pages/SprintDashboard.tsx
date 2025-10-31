@@ -1270,8 +1270,10 @@ export default function SprintDashboard() {
         moreDetailsUrl: "https://docs.google.com/spreadsheets",
         data: {
           sprints: [
-            { sprintNumber: 0, paidUsers: 0, totalPaidQTD: 0 },
-            { sprintNumber: 0, paidUsers: 0, totalPaidQTD: 0 },
+            { sprintNumber: 263, paidUsers: 586, totalPaidQTD: 693 },
+            { sprintNumber: 264, paidUsers: 521, totalPaidQTD: 1211 },
+            { sprintNumber: 265, paidUsers: 516, totalPaidQTD: 1726 },
+            { sprintNumber: 266, paidUsers: 529, totalPaidQTD: 2260 },
           ],
           quarters: [
             { quarter: "Q1", total: 5278, average: 468 },
