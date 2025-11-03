@@ -1230,11 +1230,11 @@ export default function SprintDashboard() {
 #
 # Slide 9: Paid Acquisition - Google Ads
 #   TableName: main
-#   Columns: Total Accounts, Paid Trials, Paying Users
+#   Columns: Total Accounts Created, Accounts in Paid Plan Trials, # of Paying Users
 #
 # Slide 11: Paid Acquisition - Bing Ads
 #   TableName: main
-#   Columns: Total Accounts, Paid Trials, Paying Users
+#   Columns: Total Accounts Created, Accounts in Paid Plan Trials, # of Paying Users
 #
 # Slide 12: Paid Acquisition - Agency Data
 #   TableName: main
