@@ -1337,7 +1337,8 @@ export default function SprintDashboard() {
         id: 3,
         title: "Brand Mentions",
         type: "table",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1091728359#gid=1091728359",
         data: {
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
@@ -1397,7 +1398,8 @@ export default function SprintDashboard() {
         id: 7,
         title: "Support data",
         type: "supportData",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=40331932#gid=40331932",
         data: {
           tickets: {
             columns: [
@@ -1472,7 +1474,8 @@ export default function SprintDashboard() {
         id: 8,
         title: "Agency Leads & Conversion (Presales)",
         type: "agencyLeads",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=479602000#gid=479602000",
         data: {
           leadsConversion: {
             columns: [
