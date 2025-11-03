@@ -474,7 +474,8 @@ export default function SprintDashboard() {
         "avg teammate assignment",
         "assignment to first response",
         "avgassignment",
-      ]
+      ],
+      avgResolution: ["avg full resolution time", "avg resolution", "resolution time", "avgresolution"],
 
       // Agency leads
       metrics: ["metrics", "category", "metric"],
