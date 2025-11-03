@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function SprintDashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -13,8 +13,26 @@ export default function SprintDashboard() {
   const [editingTableId, setEditingTableId] = useState<number | null>(null);
   const [editingStatsId, setEditingStatsId] = useState<number | null>(null);
   const [isGlobalImport, setIsGlobalImport] = useState(false);
+  
+  // Track scroll position to prevent jumping
+  const scrollPositionRef = useRef<number>(0);
+  const isPreservingScrollRef = useRef<boolean>(false);
 
   const MAX_SPRINTS = 5;
+
+  // Preserve scroll position during state updates to prevent jumping
+  useEffect(() => {
+    if (isPreservingScrollRef.current) {
+      window.scrollTo(0, scrollPositionRef.current);
+      isPreservingScrollRef.current = false;
+    }
+  });
+
+  // Save scroll position before state updates
+  const preserveScroll = () => {
+    scrollPositionRef.current = window.scrollY;
+    isPreservingScrollRef.current = true;
+  };
 
   // Helper function to recalculate totals and stats for a slide after data changes
   const recalculateSlideStats = (slide: any) => {
@@ -1752,17 +1770,15 @@ export default function SprintDashboard() {
   });
 
   const updateSlideTitle = (slideId, newTitle) => {
-    const scrollPosition = window.scrollY;
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => (s.id === slideId ? { ...s, title: newTitle } : s)),
     }));
-    requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
-    });
   };
 
   const updateMoreDetailsUrl = (slideId, url) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => (s.id === slideId ? { ...s, moreDetailsUrl: url } : s)),
@@ -1770,6 +1786,7 @@ export default function SprintDashboard() {
   };
 
   const updateSlideData = (slideId, path, value) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1797,6 +1814,7 @@ export default function SprintDashboard() {
   };
 
   const addRow = (slideId) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1848,6 +1866,7 @@ export default function SprintDashboard() {
   };
 
   const removeRow = (slideId, rowIndex) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1881,6 +1900,7 @@ export default function SprintDashboard() {
   };
 
   const addColumn = (slideId) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1909,6 +1929,7 @@ export default function SprintDashboard() {
   };
 
   const removeColumn = (slideId, colKey) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1942,7 +1963,7 @@ export default function SprintDashboard() {
   };
 
   const updateColumnHeader = (slideId, colKey, newHeader) => {
-    const scrollPosition = window.scrollY;
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -1965,13 +1986,10 @@ export default function SprintDashboard() {
         return newSlide;
       }),
     }));
-    requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
-    });
   };
 
   const updateCellValue = (slideId, rowIndex, colKey, newValue) => {
-    const scrollPosition = window.scrollY;
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -2001,12 +2019,10 @@ export default function SprintDashboard() {
         return newSlide;
       }),
     }));
-    requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
-    });
   };
 
   const deleteRow = (slideId, rowIdx) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -2039,6 +2055,7 @@ export default function SprintDashboard() {
   };
 
   const deleteColumn = (slideId, colKey) => {
+    preserveScroll();
     setSprintData((prev) => ({
       ...prev,
       slides: prev.slides.map((s) => {
@@ -2564,7 +2581,8 @@ export default function SprintDashboard() {
                           };
                         }
                         return s;
-                      }) as any;
+                        }) as any;
+                      preserveScroll();
                       setSprintData({ slides: newSlides });
                     }}
                     style={{
@@ -2594,7 +2612,8 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                        }) as any;
+                          }) as any;
+                        preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
                       style={{
@@ -2839,7 +2858,8 @@ export default function SprintDashboard() {
                           };
                         }
                         return s;
-                      }) as any;
+                        }) as any;
+                      preserveScroll();
                       setSprintData({ slides: newSlides });
                     }}
                     style={{
@@ -2869,7 +2889,8 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                        }) as any;
+                          }) as any;
+                        preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
                       style={{
@@ -3057,7 +3078,8 @@ export default function SprintDashboard() {
                           };
                         }
                         return s;
-                      }) as any;
+                        }) as any;
+                      preserveScroll();
                       setSprintData({ slides: newSlides });
                     }}
                     style={{
@@ -3215,7 +3237,8 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                        }) as any;
+                          }) as any;
+                        preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
                       style={{
@@ -3355,7 +3378,8 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                        }) as any;
+                          }) as any;
+                        preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
                       style={{
