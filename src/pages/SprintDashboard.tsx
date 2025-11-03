@@ -13,7 +13,7 @@ export default function SprintDashboard() {
   const [editingTableId, setEditingTableId] = useState<number | null>(null);
   const [editingStatsId, setEditingStatsId] = useState<number | null>(null);
   const [isGlobalImport, setIsGlobalImport] = useState(false);
-  
+
   // Track scroll position to prevent jumping
   const scrollPositionRef = useRef<number>(0);
   const isPreservingScrollRef = useRef<boolean>(false);
@@ -1759,8 +1759,8 @@ export default function SprintDashboard() {
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=458351126#gid=458351126",
         data: {
           rows: [
-            { channel: "New Subscription (Direct)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0 },
-            { channel: "New Subscription (Agency)", totalTarget: 315, targetAsOnDate: 0, actual: 0, percentage: 0 },
+            { channel: "Direct (new subscription)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0 },
+            { channel: "Agency (new subscription)", totalTarget: 315, targetAsOnDate: 0, actual: 0, percentage: 0 },
             { channel: "Affiliate (paid signups)", totalTarget: 1000, targetAsOnDate: 0, actual: 0, percentage: 0 },
             { channel: "Ads", totalTarget: 800, targetAsOnDate: 0, actual: 0, percentage: 0 },
           ],
@@ -2581,7 +2581,7 @@ export default function SprintDashboard() {
                           };
                         }
                         return s;
-                        }) as any;
+                      }) as any;
                       preserveScroll();
                       setSprintData({ slides: newSlides });
                     }}
@@ -2612,7 +2612,7 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                          }) as any;
+                        }) as any;
                         preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
@@ -2858,7 +2858,7 @@ export default function SprintDashboard() {
                           };
                         }
                         return s;
-                        }) as any;
+                      }) as any;
                       preserveScroll();
                       setSprintData({ slides: newSlides });
                     }}
@@ -2889,7 +2889,7 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                          }) as any;
+                        }) as any;
                         preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
@@ -3078,7 +3078,7 @@ export default function SprintDashboard() {
                           };
                         }
                         return s;
-                        }) as any;
+                      }) as any;
                       preserveScroll();
                       setSprintData({ slides: newSlides });
                     }}
@@ -3237,7 +3237,7 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                          }) as any;
+                        }) as any;
                         preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
@@ -3378,7 +3378,7 @@ export default function SprintDashboard() {
                             };
                           }
                           return s;
-                          }) as any;
+                        }) as any;
                         preserveScroll();
                         setSprintData({ slides: newSlides });
                       }}
