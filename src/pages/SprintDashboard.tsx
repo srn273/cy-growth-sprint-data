@@ -1267,7 +1267,8 @@ export default function SprintDashboard() {
         id: 0,
         title: "Sprint Comparison - Paid Users Overview",
         type: "comparison",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1339605795#gid=1339605795",
         data: {
           sprints: [
             { sprintNumber: 263, paidUsers: 586, totalPaidQTD: 693 },
@@ -1368,7 +1369,7 @@ export default function SprintDashboard() {
             { sprint: 263, position: 39 },
             { sprint: 264, position: 39 },
             { sprint: 265, position: 39 },
-            { sprint: 266, position: 39 }
+            { sprint: 266, position: 39 },
           ],
         },
       },
@@ -2665,7 +2666,7 @@ export default function SprintDashboard() {
                   {slide.data.sprints.map((sprint, idx) => {
                     const barWidth = Math.max(70 - (slide.data.sprints.length - 2) * 8, 40);
                     const barGap = Math.max(16 - (slide.data.sprints.length - 2) * 2, 8);
-                    
+
                     return (
                       <div
                         key={idx}
@@ -2780,9 +2781,10 @@ export default function SprintDashboard() {
                           )}
                         </div>
                       </div>
-                    )})}
-                  </div>
+                    );
+                  })}
                 </div>
+              </div>
 
               {/* Legend */}
               <div
@@ -3551,7 +3553,10 @@ export default function SprintDashboard() {
                   const metricData = slide.data.performance[metric];
                   const label = metric.charAt(0).toUpperCase() + metric.slice(1);
                   return (
-                    <div key={metric} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div
+                      key={metric}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                    >
                       <span style={{ fontSize: "15px", fontWeight: "600", color: "#212121" }}>{label}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         {isEditMode ? (
@@ -3561,7 +3566,11 @@ export default function SprintDashboard() {
                               step="0.1"
                               defaultValue={metricData.value}
                               onBlur={(e) =>
-                                updateSlideData(slide.id, ["performance", metric, "value"], parseFloat(e.target.value) || 0)
+                                updateSlideData(
+                                  slide.id,
+                                  ["performance", metric, "value"],
+                                  parseFloat(e.target.value) || 0,
+                                )
                               }
                               style={{
                                 width: "100px",
@@ -3574,7 +3583,11 @@ export default function SprintDashboard() {
                             <select
                               value={metricData.isIncrease ? "increase" : "decrease"}
                               onChange={(e) =>
-                                updateSlideData(slide.id, ["performance", metric, "isIncrease"], e.target.value === "increase")
+                                updateSlideData(
+                                  slide.id,
+                                  ["performance", metric, "isIncrease"],
+                                  e.target.value === "increase",
+                                )
                               }
                               style={{
                                 padding: "6px 8px",
@@ -3648,7 +3661,11 @@ export default function SprintDashboard() {
                               step="0.1"
                               defaultValue={metricData.value}
                               onBlur={(e) =>
-                                updateSlideData(slide.id, ["auctionInsights", key, "value"], parseFloat(e.target.value) || 0)
+                                updateSlideData(
+                                  slide.id,
+                                  ["auctionInsights", key, "value"],
+                                  parseFloat(e.target.value) || 0,
+                                )
                               }
                               style={{
                                 width: "100px",
@@ -3661,7 +3678,11 @@ export default function SprintDashboard() {
                             <select
                               value={metricData.isIncrease ? "increase" : "decrease"}
                               onChange={(e) =>
-                                updateSlideData(slide.id, ["auctionInsights", key, "isIncrease"], e.target.value === "increase")
+                                updateSlideData(
+                                  slide.id,
+                                  ["auctionInsights", key, "isIncrease"],
+                                  e.target.value === "increase",
+                                )
                               }
                               style={{
                                 padding: "6px 8px",
@@ -4812,38 +4833,53 @@ export default function SprintDashboard() {
                     style={{ display: "none" }}
                   />
                 </label>
-                
-                <div style={{ 
-                  backgroundColor: "#F8F9FA", 
-                  border: "1px solid #DFE3E8", 
-                  borderRadius: "8px", 
-                  padding: "16px",
-                  fontSize: "13px",
-                  color: "#212121",
-                  fontFamily: "monospace",
-                  lineHeight: "1.8"
-                }}>
+
+                <div
+                  style={{
+                    backgroundColor: "#F8F9FA",
+                    border: "1px solid #DFE3E8",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    fontSize: "13px",
+                    color: "#212121",
+                    fontFamily: "monospace",
+                    lineHeight: "1.8",
+                  }}
+                >
                   <div style={{ fontWeight: "700", fontSize: "14px", marginBottom: "12px", color: "#1863DC" }}>
                     📋 Bulk Paste Format (CSV):
                   </div>
                   <div style={{ marginBottom: "12px", color: "#5A6872" }}>
                     Paste data in this format to update all slides at once:
                   </div>
-                  <div style={{ backgroundColor: "#fff", padding: "12px", borderRadius: "4px", border: "1px solid #E1E4E8", overflowX: "auto" }}>
-                    <strong>SlideID,TableName,Sprint,[Column Names...]</strong><br/>
-                    1,positionChanges,263,15,45<br/>
-                    1,positionChanges,264,18,42<br/>
-                    2,main,263,5,3,8,2<br/>
-                    7,tickets,263,350,2h 30m,5h 45m,95%<br/>
+                  <div
+                    style={{
+                      backgroundColor: "#fff",
+                      padding: "12px",
+                      borderRadius: "4px",
+                      border: "1px solid #E1E4E8",
+                      overflowX: "auto",
+                    }}
+                  >
+                    <strong>SlideID,TableName,Sprint,[Column Names...]</strong>
+                    <br />
+                    1,positionChanges,263,15,45
+                    <br />
+                    1,positionChanges,264,18,42
+                    <br />
+                    2,main,263,5,3,8,2
+                    <br />
+                    7,tickets,263,350,2h 30m,5h 45m,95%
+                    <br />
                     16,main,263,350,25,325,120,15
                   </div>
                   <div style={{ marginTop: "12px", fontSize: "12px", color: "#5A6872" }}>
-                    <strong>Key Points:</strong><br/>
-                    • <strong>SlideID:</strong> The slide number (1-16)<br/>
-                    • <strong>TableName:</strong> "main", "positionChanges", "tickets", "liveChat", etc.<br/>
-                    • <strong>Sprint:</strong> Sprint number (e.g., 263, 264)<br/>
-                    • <strong>Columns:</strong> Match your slide's column names exactly<br/>
-                    • Each row updates one sprint in one table
+                    <strong>Key Points:</strong>
+                    <br />• <strong>SlideID:</strong> The slide number (1-16)
+                    <br />• <strong>TableName:</strong> "main", "positionChanges", "tickets", "liveChat", etc.
+                    <br />• <strong>Sprint:</strong> Sprint number (e.g., 263, 264)
+                    <br />• <strong>Columns:</strong> Match your slide's column names exactly
+                    <br />• Each row updates one sprint in one table
                   </div>
                 </div>
               </div>
