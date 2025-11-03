@@ -1575,7 +1575,7 @@ export default function SprintDashboard() {
             conversions: { value: 0, isIncrease: false },
           },
           auctionInsights: {
-            impressionShare:  { value: 0, isIncrease: true },
+            impressionShare: { value: 0, isIncrease: true },
             absoluteTopOfPage: { value: 0, isIncrease: false },
           },
         },
@@ -3556,7 +3556,7 @@ export default function SprintDashboard() {
                     <div key={metric} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: "15px", fontWeight: "600", color: "#212121" }}>{label}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        {isEditMode && (
+                        {isEditMode ? (
                           <>
                             <input
                               type="number"
@@ -3566,64 +3566,44 @@ export default function SprintDashboard() {
                                 updateSlideData(slide.id, ["performance", metric, "value"], parseFloat(e.target.value) || 0)
                               }
                               style={{
-                                width: "80px",
+                                width: "100px",
                                 padding: "6px 8px",
                                 border: "1px solid #DFE3E8",
                                 borderRadius: "4px",
                                 fontSize: "14px",
                               }}
                             />
-                            <input
-                              type="number"
-                              step="0.1"
-                              defaultValue={metricData.change}
-                              onBlur={(e) =>
-                                updateSlideData(slide.id, ["performance", metric, "change"], parseFloat(e.target.value) || 0)
+                            <select
+                              value={metricData.isIncrease ? "increase" : "decrease"}
+                              onChange={(e) =>
+                                updateSlideData(slide.id, ["performance", metric, "isIncrease"], e.target.value === "increase")
                               }
                               style={{
-                                width: "70px",
                                 padding: "6px 8px",
                                 border: "1px solid #DFE3E8",
                                 borderRadius: "4px",
                                 fontSize: "14px",
-                              }}
-                              placeholder="%"
-                            />
-                            <button
-                              onClick={() =>
-                                updateSlideData(slide.id, ["performance", metric, "isIncrease"], !metricData.isIncrease)
-                              }
-                              style={{
-                                padding: "6px 10px",
-                                border: "none",
-                                borderRadius: "4px",
-                                backgroundColor: metricData.isIncrease ? "#2DAD70" : "#E94B4B",
-                                color: "#fff",
+                                backgroundColor: "#fff",
                                 cursor: "pointer",
-                                fontSize: "12px",
-                                fontWeight: "600",
                               }}
                             >
-                              {metricData.isIncrease ? "↑" : "↓"}
-                            </button>
+                              <option value="increase">↑ Increase</option>
+                              <option value="decrease">↓ Decrease</option>
+                            </select>
                           </>
-                        )}
-                        {!isEditMode && (
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            <span style={{ fontSize: "15px", fontWeight: "700", color: "#212121" }}>{metricData.value}</span>
-                            <span
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "600",
-                                color: metricData.isIncrease ? "#2DAD70" : "#E94B4B",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px",
-                              }}
-                            >
-                              {metricData.isIncrease ? "↑" : "↓"} {Math.abs(metricData.change)}%
-                            </span>
-                          </div>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: "15px",
+                              fontWeight: "700",
+                              color: metricData.isIncrease ? "#2DAD70" : "#E94B4B",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                            }}
+                          >
+                            {metricData.isIncrease ? "↑" : "↓"} {metricData.value}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -3660,37 +3640,61 @@ export default function SprintDashboard() {
                   { key: "impressionShare", label: "Impression Share" },
                   { key: "absoluteTopOfPage", label: "Absolute Top of Page" },
                 ].map(({ key, label }) => {
-                  const value = slide.data.auctionInsights[key];
+                  const metricData = slide.data.auctionInsights[key];
                   return (
                     <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "15px", fontWeight: "600", color: "#212121" }}>{label}:</span>
-                      {isEditMode ? (
-                        <input
-                          type="number"
-                          step="0.1"
-                          defaultValue={value}
-                          onBlur={(e) =>
-                            updateSlideData(slide.id, ["auctionInsights", key], parseFloat(e.target.value) || 0)
-                          }
-                          style={{
-                            width: "90px",
-                            padding: "6px 8px",
-                            border: "1px solid #DFE3E8",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                          }}
-                        />
-                      ) : (
-                        <span
-                          style={{
-                            fontSize: "15px",
-                            fontWeight: "700",
-                            color: value > 0 ? "#2DAD70" : "#E94B4B",
-                          }}
-                        >
-                          {value > 0 ? "↑" : value < 0 ? "↓" : ""} {Math.abs(value)}%
-                        </span>
-                      )}
+                      <span style={{ fontSize: "15px", fontWeight: "600", color: "#212121" }}>{label}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        {isEditMode ? (
+                          <>
+                            <input
+                              type="number"
+                              step="0.1"
+                              defaultValue={metricData.value}
+                              onBlur={(e) =>
+                                updateSlideData(slide.id, ["auctionInsights", key, "value"], parseFloat(e.target.value) || 0)
+                              }
+                              style={{
+                                width: "100px",
+                                padding: "6px 8px",
+                                border: "1px solid #DFE3E8",
+                                borderRadius: "4px",
+                                fontSize: "14px",
+                              }}
+                            />
+                            <select
+                              value={metricData.isIncrease ? "increase" : "decrease"}
+                              onChange={(e) =>
+                                updateSlideData(slide.id, ["auctionInsights", key, "isIncrease"], e.target.value === "increase")
+                              }
+                              style={{
+                                padding: "6px 8px",
+                                border: "1px solid #DFE3E8",
+                                borderRadius: "4px",
+                                fontSize: "14px",
+                                backgroundColor: "#fff",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <option value="increase">↑ Increase</option>
+                              <option value="decrease">↓ Decrease</option>
+                            </select>
+                          </>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: "15px",
+                              fontWeight: "700",
+                              color: metricData.isIncrease ? "#2DAD70" : "#E94B4B",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                            }}
+                          >
+                            {metricData.isIncrease ? "↑" : "↓"} {metricData.value}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
