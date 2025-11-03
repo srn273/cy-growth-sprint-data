@@ -1308,7 +1308,8 @@ export default function SprintDashboard() {
         id: 1,
         title: "Top 25 Major Rankings and Movements",
         type: "rankings",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=769589025#gid=769589025",
         data: {
           total: 0,
           byRegion: [
