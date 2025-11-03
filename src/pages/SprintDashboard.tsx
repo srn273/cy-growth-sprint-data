@@ -1663,7 +1663,8 @@ export default function SprintDashboard() {
         id: 14,
         title: "Partnerships & Growth - Affiliate Partner Program",
         type: "withTarget",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           target: 1000,
           targetLabel: "QUARTER TARGET",
@@ -1685,7 +1686,8 @@ export default function SprintDashboard() {
         id: 16,
         title: "Partnerships & Growth - Strategic Partner Program - Wix App",
         type: "wixApp",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           lifetime: { installs: 0, active: 0, paid: 0, rating: 0 },
           target: 100,
@@ -1710,7 +1712,8 @@ export default function SprintDashboard() {
         id: 15,
         title: "Partnerships & Growth - Referral Partner Program",
         type: "referral",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           lifetime: { advocates: 0, paid: 0 },
           target: 100,
@@ -1734,7 +1737,8 @@ export default function SprintDashboard() {
         id: 17,
         title: "New subscriptions & paid signups",
         type: "subscriptions",
-        moreDetailsUrl: "https://docs.google.com/spreadsheets",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=458351126#gid=458351126",
         data: {
           rows: [
             { channel: "New Subscription (Direct)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0 },
