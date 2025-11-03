@@ -3529,24 +3529,22 @@ export default function SprintDashboard() {
             <div
               style={{
                 padding: "24px",
-                backgroundColor: "#F8FAFB",
-                borderRadius: "12px",
-                border: "2px solid #5B79F5",
-                borderLeft: "6px solid #5B79F5",
+                backgroundColor: "#FFFFFF",
+                borderRadius: "8px",
+                border: "2px solid #1863DC",
               }}
             >
               <h3
                 style={{
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  color: "#5B79F5",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  color: "#1863DC",
                   marginBottom: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
                 }}
               >
-                📊 Performance (Current Sprint  vs. Last Sprint)
+                Performance (Current Sprint vs. Last Sprint)
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {["impressions", "clicks", "CTR", "conversions"].map((metric) => {
@@ -3616,24 +3614,22 @@ export default function SprintDashboard() {
             <div
               style={{
                 padding: "24px",
-                backgroundColor: "#F8FAFB",
-                borderRadius: "12px",
-                border: "2px solid #5B79F5",
-                borderLeft: "6px solid #5B79F5",
+                backgroundColor: "#FFFFFF",
+                borderRadius: "8px",
+                border: "2px solid #1863DC",
               }}
             >
               <h3
                 style={{
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  color: "#5B79F5",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  color: "#1863DC",
                   marginBottom: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
                 }}
               >
-                🎯 Auction Insights
+                Auction Insights
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {[
