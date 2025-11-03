@@ -1226,8 +1226,7 @@ export default function SprintDashboard() {
 #            Total Paid subscriptions (websites), Agency Tickets, Bad Rating
 #   
 #   TableName: liveChat
-#   Columns: Conversations assigned, Avg teammate assignment to first response,
-#            Avg full resolution time, CSAT Score, Bad Rating
+#   Columns: Conversations assigned, Avg teammate assignment to first response, CSAT Score, Bad Rating
 #
 # Slide 9: Paid Acquisition - Google Ads
 #   TableName: main
