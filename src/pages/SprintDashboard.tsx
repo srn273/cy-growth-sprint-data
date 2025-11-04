@@ -452,14 +452,6 @@ export default function SprintDashboard() {
         "avgfirstresponse",
         "firstresponse",
       ],
-      avgFullResolution: [
-        "avg full resolution time",
-        "average full resolution time",
-        "full resolution",
-        "avgfullresolution",
-        "fullresolution",
-        "avg resolution time",
-      ],
       csat: ["csat", "csat score", "customer satisfaction", "satisfaction"],
       presales: ["pre-sales tickets", "presales tickets", "pre sales tickets", "presales"],
       converted: ["converted tickets", "converted", "converted (unique customers)", "convertedunique"],
@@ -1140,7 +1132,7 @@ export default function SprintDashboard() {
 
   const downloadSampleCSV = () => {
     // Generate comprehensive CSV with all columns
-    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,Trial Signups,Conversions,Referrals,Free Signups,Paid Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
+    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,Trial Signups,Conversions,Referrals,Free Signups,Paid Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
 1,positionChanges,263,15,45
 1,positionChanges,264,18,42
 2,main,263,5,3,8,2
@@ -1213,7 +1205,7 @@ export default function SprintDashboard() {
 # Slide 7: Support Data (has 2 tables)
 #   TableName: tickets
 #   Columns: Total Tickets Solved, Avg First Response Time, 
-#            Avg Full Resolution time, CSAT Score, Pre-sales Tickets,
+#            CSAT Score, Pre-sales Tickets,
 #            Converted Tickets (Unique customers), 
 #            Total Paid subscriptions (websites), Agency Tickets, Bad Rating
 #   
@@ -1417,7 +1409,6 @@ export default function SprintDashboard() {
               { key: "sprint", header: "Sprint", locked: true },
               { key: "totalTickets", header: "Total Tickets Solved" },
               { key: "avgFirstResponse", header: "Avg First Response Time" },
-              { key: "avgFullResolution", header: "Avg Full Resolution time" },
               { key: "csat", header: "CSAT Score" },
               { key: "presales", header: "Pre-sales Tickets" },
               { key: "converted", header: "Converted Tickets (Unique customers)" },
@@ -1430,7 +1421,6 @@ export default function SprintDashboard() {
   sprint: 264,
   totalTickets: 56,
   avgFirstResponse: "5 hrs",
-  avgFullResolution: "",
   csat: "75% (3:1)",
   presales: 19,
   converted: 4,
@@ -1442,7 +1432,6 @@ export default function SprintDashboard() {
   sprint: 265,
   totalTickets: 47,
   avgFirstResponse: "7.6 hrs",
-  avgFullResolution: "",
   csat: "100% (4:0)",
   presales: 8,
   converted: 2,
@@ -1454,7 +1443,6 @@ export default function SprintDashboard() {
   sprint: 266,
   totalTickets: 51,
   avgFirstResponse: "8.4 hrs",
-  avgFullResolution: "",
   csat: "100% (2:0)",
   presales: 23,
   converted: 5,
