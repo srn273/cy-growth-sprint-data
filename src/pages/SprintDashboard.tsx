@@ -1398,9 +1398,10 @@ export default function SprintDashboard() {
             { key: "direct", header: "Direct Plans" },
           ],
           rows: [
-            { sprint: 263, total: 0, direct: 0 },
-            { sprint: 264, total: 0, direct: 0 },
-            { sprint: 265, total: 0, direct: 0 },
+            { sprint: 263, total: 142, direct: 96 },
+            { sprint: 264, total: 87, direct: 52 },
+            { sprint: 265, total: 82, direct: 61 },
+            { sprint: 266, total: 83, direct: 55 },
           ],
         },
       },
