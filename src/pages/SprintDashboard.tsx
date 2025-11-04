@@ -1837,11 +1837,8 @@ export default function SprintDashboard() {
             targetData.rows = maintainSprintLimit(rows);
           }
 
-          // Only recalculate stats for table types that support it (not quarterStats during addRow)
-          // quarterStats should only update stats manually via Edit Stats button
-          if (s.type !== "quarterStats") {
-            recalculateSlideStats(newSlide);
-          }
+          // Recalculate stats for all table types
+          recalculateSlideStats(newSlide);
         }
         return newSlide;
       }),
@@ -1870,10 +1867,8 @@ export default function SprintDashboard() {
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIndex, 1);
 
-          // Only recalculate stats for table types that support it (not quarterStats during removeRow)
-          if (s.type !== "quarterStats") {
-            recalculateSlideStats(newSlide);
-          }
+          // Recalculate stats for all table types
+          recalculateSlideStats(newSlide);
         } else {
           alert("Cannot delete the last row. At least one row is required.");
         }
@@ -1994,10 +1989,8 @@ export default function SprintDashboard() {
           const parsedValue = isNaN(newValue) || newValue === "" ? newValue : Number(newValue);
           targetData.rows[rowIndex][colKey] = parsedValue;
 
-          // Only recalculate stats for table types that support it (not quarterStats during cell edit)
-          if (s.type !== "quarterStats") {
-            recalculateSlideStats(newSlide);
-          }
+          // Recalculate stats for all table types
+          recalculateSlideStats(newSlide);
         }
         return newSlide;
       }),
@@ -2026,10 +2019,8 @@ export default function SprintDashboard() {
         if (targetData.rows && targetData.rows.length > 1) {
           targetData.rows.splice(rowIdx, 1);
 
-          // Only recalculate stats for table types that support it (not quarterStats during deleteRow)
-          if (s.type !== "quarterStats") {
-            recalculateSlideStats(newSlide);
-          }
+          // Recalculate stats for all table types
+          recalculateSlideStats(newSlide);
         }
 
         return newSlide;
