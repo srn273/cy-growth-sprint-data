@@ -498,20 +498,13 @@ export default function SprintDashboard() {
       shortfall: ["shortfall", "shortage", "deficit"],
 
       // Affiliate
-      newAff: ["new affiliates", "newaffiliates", "affiliates"],
-      newAffiliates: ["new affiliates", "newaffiliates", "affiliates"],
-      trialSignups: ["trial signups", "trialsignups", "trials"],
-      paidSignups: ["paid signups", "paidsignups"],
+      trials: ["trial signups", "trialsignups", "trials"],
+      conversions: ["conversions", "paid signups", "paidsignups"],
 
       // Referral
-      advocates: ["advocates onboarded", "advocates", "advocatesonboarded"],
-      referrals: ["referrals generated", "referrals", "referralsgenerated"],
-      trials: ["active trial signups", "trials", "activetrials", "activetrialsignups"],
+      referrals: ["referrals", "referrals generated", "referralsgenerated"],
 
       // Wix App
-      installs: ["installs", "install"],
-      uninstalls: ["uninstalls", "uninstall"],
-      active: ["active installs", "activeinstalls", "active"],
       freeSignups: ["free signups", "freesignups", "free"],
     };
 
@@ -586,8 +579,7 @@ export default function SprintDashboard() {
               h.includes("conversations") ||
               h.includes("conversationsassigned") ||
               h.includes("avgassignment") ||
-              h.includes("avgteammate") ||
-              h.includes("avgresolution"),
+              h.includes("avgteammate"),
           );
 
           const targetKey = hasTicketsHeaders ? "tickets" : hasLiveChatHeaders ? "liveChat" : "tickets";
@@ -1148,7 +1140,7 @@ export default function SprintDashboard() {
 
   const downloadSampleCSV = () => {
     // Generate comprehensive CSV with all columns
-    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Avg full resolution time,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,New Affiliates,Trial Signups,Paid Signups,Advocates Onboarded,Referrals Generated,Active Trial Signups,Installs,Uninstalls,Active Installs,Free Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
+    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,Avg Full Resolution time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,Trial Signups,Conversions,Referrals,Free Signups,Paid Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
 1,positionChanges,263,15,45
 1,positionChanges,264,18,42
 2,main,263,5,3,8,2
@@ -1246,17 +1238,15 @@ export default function SprintDashboard() {
 #
 # Slide 14: Partnerships - Affiliate Partner Program
 #   TableName: main
-#   Columns: New Affiliates, Trial Signups, Paid Signups
+#   Columns: Trial Signups, Conversions
 #
 # Slide 15: Referral Partner Program
 #   TableName: main
-#   Columns: Advocates Onboarded, Referrals Generated, 
-#            Active Trial Signups, Paid Signups
+#   Columns: Trial Signups, Referrals
 #
 # Slide 16: Strategic Partner Program - Wix App
 #   TableName: main
-#   Columns: Installs, Uninstalls, Active Installs, 
-#            Free Signups, Paid Signups
+#   Columns: Free Signups, Paid Signups
 #
 # ========================================
 # TIPS:
@@ -1475,14 +1465,13 @@ export default function SprintDashboard() {
               { key: "sprint", header: "Sprint", locked: true },
               { key: "conversations", header: "Conversations assigned" },
               { key: "avgAssignment", header: "Avg teammate assignment to first response" },
-              { key: "avgResolution", header: "Avg full resolution time" },
               { key: "csat", header: "CSAT Score" },
               { key: "badRating", header: "Bad Rating" },
             ],
             rows: [
-              { sprint: 263, conversations: 0, avgAssignment: "", avgResolution: "", csat: "", badRating: "-" },
-              { sprint: 264, conversations: 0, avgAssignment: "", avgResolution: "", csat: "", badRating: "-" },
-              { sprint: 265, conversations: 0, avgAssignment: "", avgResolution: "", csat: "", badRating: "-" },
+              { sprint: 263, conversations: 0, avgAssignment: "", csat: "", badRating: "-" },
+              { sprint: 264, conversations: 0, avgAssignment: "", csat: "", badRating: "-" },
+              { sprint: 265, conversations: 0, avgAssignment: "", csat: "", badRating: "-" },
             ],
           },
         },
@@ -1688,16 +1677,15 @@ export default function SprintDashboard() {
           targetLabel: "QUARTER TARGET",
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
-            { key: "newAff", header: "New Affiliates" },
             { key: "trials", header: "Trial Signups" },
-            { key: "paid", header: "Paid Signups" },
+            { key: "conversions", header: "Conversions" },
           ],
           rows: [
-            { sprint: 263, newAff: 0, trials: 0, paid: 0 },
-            { sprint: 264, newAff: 0, trials: 0, paid: 0 },
-            { sprint: 265, newAff: 0, trials: 0, paid: 0 },
+            { sprint: 263, trials: 0, conversions: 0 },
+            { sprint: 264, trials: 0, conversions: 0 },
+            { sprint: 265, trials: 0, conversions: 0 },
           ],
-          total: { newAff: 0, trials: 0, paid: 0 },
+          total: { trials: 0, conversions: 0 },
         },
       },
       {
@@ -1707,23 +1695,20 @@ export default function SprintDashboard() {
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
-          lifetime: { installs: 0, active: 0, paid: 0, rating: 0 },
+          lifetime: { paid: 0, rating: 0 },
           target: 100,
           current: 0,
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
-            { key: "installs", header: "Installs" },
-            { key: "uninstalls", header: "Uninstalls" },
-            { key: "active", header: "Active Installs" },
             { key: "freeSignups", header: "Free Signups" },
             { key: "paid", header: "Paid Signups" },
           ],
           rows: [
-            { sprint: 263, installs: 0, uninstalls: 0, active: 0, freeSignups: 0, paid: 0 },
-            { sprint: 264, installs: 0, uninstalls: 0, active: 0, freeSignups: 0, paid: 0 },
-            { sprint: 265, installs: 0, uninstalls: 0, active: 0, freeSignups: 0, paid: 0 },
+            { sprint: 263, freeSignups: 0, paid: 0 },
+            { sprint: 264, freeSignups: 0, paid: 0 },
+            { sprint: 265, freeSignups: 0, paid: 0 },
           ],
-          total: { installs: 0, uninstalls: 0, active: 0, freeSignups: 0, paid: 0 },
+          total: { freeSignups: 0, paid: 0 },
         },
       },
       {
@@ -1733,22 +1718,20 @@ export default function SprintDashboard() {
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
-          lifetime: { advocates: 0, paid: 0 },
+          lifetime: { paid: 0 },
           target: 100,
           current: 0,
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
-            { key: "advocates", header: "Advocates Onboarded" },
-            { key: "referrals", header: "Referrals Generated" },
-            { key: "trials", header: "Active Trial Signups" },
-            { key: "paid", header: "Paid Signups" },
+            { key: "trials", header: "Trial Signups" },
+            { key: "referrals", header: "Referrals" },
           ],
           rows: [
-            { sprint: 263, advocates: 0, referrals: 0, trials: 0, paid: 0 },
-            { sprint: 264, advocates: 0, referrals: 0, trials: 0, paid: 0 },
-            { sprint: 265, advocates: 0, referrals: 0, trials: 0, paid: 0 },
+            { sprint: 263, trials: 0, referrals: 0 },
+            { sprint: 264, trials: 0, referrals: 0 },
+            { sprint: 265, trials: 0, referrals: 0 },
           ],
-          total: { advocates: 0, referrals: 0, trials: 0, paid: 0 },
+          total: { trials: 0, referrals: 0 },
         },
       },
       {
@@ -4195,7 +4178,7 @@ export default function SprintDashboard() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      {key === "paid" ? "Paid Signups" : key}
+                      {key === "paid" ? "Paid Signups" : key === "trials" ? "Trial Signups" : key === "referrals" ? "Referrals" : key}
                     </div>
                   </div>
                 ))}
@@ -4313,7 +4296,7 @@ export default function SprintDashboard() {
                   </div>
                 )}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
                 {Object.entries(slide.data.lifetime).map(([key, value]) => (
                   <div
                     key={key}
@@ -4353,7 +4336,7 @@ export default function SprintDashboard() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      {key}
+                      {key === "paid" ? "Paid Signups" : key === "rating" ? "Rating" : key}
                     </div>
                   </div>
                 ))}
