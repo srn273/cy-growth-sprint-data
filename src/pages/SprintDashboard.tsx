@@ -1461,9 +1461,9 @@ export default function SprintDashboard() {
               { key: "badRating", header: "Bad Rating" },
             ],
             rows: [
-              { sprint: 263, conversations: 0, avgAssignment: "", csat: "", badRating: "-" },
-              { sprint: 264, conversations: 0, avgAssignment: "", csat: "", badRating: "-" },
-              { sprint: 265, conversations: 0, avgAssignment: "", csat: "", badRating: "-" },
+              { sprint: 264, conversations: 2, avgAssignment: "28s", csat: "-", badRating: "-" },
+              { sprint: 265, conversations: "-", avgAssignment: "-", csat: "-", badRating: "-" },
+              { sprint: 266, conversations: 3, avgAssignment: "1 hr 19 m", csat: "100% (2:0)", badRating: "-" },
             ],
           },
         },
