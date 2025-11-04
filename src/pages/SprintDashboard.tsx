@@ -1532,9 +1532,9 @@ export default function SprintDashboard() {
               { key: "percentage", header: "Percentage" },
             ],
             rows: [
-              { quarter: "Sprint 264", target: 7, achieved: 1, percentage: "14%" },
-              { quarter: "Sprint 265", target: 7, achieved: 1, percentage: "14%" },
-              { quarter: "Sprint 266", target: 7, achieved: 0, percentage: "0%" },
+              { quarter: "Sprint 263", target: 0, achieved: 0, percentage: "0%" },
+              { quarter: "Sprint 264", target: 0, achieved: 0, percentage: "0%" },
+              { quarter: "Sprint 265", target: 0, achieved: 0, percentage: "0%" },
             ],
           },
         },
