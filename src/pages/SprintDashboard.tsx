@@ -1680,7 +1680,7 @@ export default function SprintDashboard() {
             { sprint: 265, trials: 27, conversions: 13 },
             { sprint: 266, trials: 17, conversions: 23 },
           ],
-          total: { newAffiliates: 0, trials: 0, conversions: 0 },
+          total: { new Affiliates: 0, trials: 0, conversions: 0 },
         },
       },
       {
