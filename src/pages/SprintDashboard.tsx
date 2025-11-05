@@ -1418,38 +1418,38 @@ export default function SprintDashboard() {
             ],
             rows: [
               {
-  sprint: 264,
-  totalTickets: 56,
-  avgFirstResponse: "5 hrs",
-  csat: "75% (3:1)",
-  presales: 19,
-  converted: 4,
-  paidSubs: 12,
-  agencyTickets: 12,
-  badRating: "Asking for promo code",
-},
-{
-  sprint: 265,
-  totalTickets: 47,
-  avgFirstResponse: "7.6 hrs",
-  csat: "100% (4:0)",
-  presales: 8,
-  converted: 2,
-  paidSubs: 2,
-  agencyTickets: 12,
-  badRating: "-",
-},
-{
-  sprint: 266,
-  totalTickets: 51,
-  avgFirstResponse: "8.4 hrs",
-  csat: "100% (2:0)",
-  presales: 23,
-  converted: 5,
-  paidSubs: 5,
-  agencyTickets: 11,
-  badRating: "-",
-},
+                sprint: 264,
+                totalTickets: 56,
+                avgFirstResponse: "5 hrs",
+                csat: "75% (3:1)",
+                presales: 19,
+                converted: 4,
+                paidSubs: 12,
+                agencyTickets: 12,
+                badRating: "Asking for promo code",
+              },
+              {
+                sprint: 265,
+                totalTickets: 47,
+                avgFirstResponse: "7.6 hrs",
+                csat: "100% (4:0)",
+                presales: 8,
+                converted: 2,
+                paidSubs: 2,
+                agencyTickets: 12,
+                badRating: "-",
+              },
+              {
+                sprint: 266,
+                totalTickets: 51,
+                avgFirstResponse: "8.4 hrs",
+                csat: "100% (2:0)",
+                presales: 23,
+                converted: 5,
+                paidSubs: 5,
+                agencyTickets: 11,
+                badRating: "-",
+              },
             ],
           },
           liveChat: {
@@ -1651,7 +1651,7 @@ export default function SprintDashboard() {
             { key: "shortfall", header: "Shortfall" },
           ],
           rows: [
-           { sprint: 263, signups: 34, paid: 8, percentage: 30, shortfall: 19 },
+            { sprint: 263, signups: 34, paid: 8, percentage: 30, shortfall: 19 },
             { sprint: 264, signups: 28, paid: 8, percentage: 30, shortfall: 19 },
             { sprint: 265, signups: 26, paid: 6, percentage: 22, shortfall: 21 },
             { sprint: 266, signups: 23, paid: 7, percentage: 26, shortfall: 20 },
@@ -1680,7 +1680,7 @@ export default function SprintDashboard() {
             { sprint: 265, trials: 27, conversions: 13 },
             { sprint: 266, trials: 17, conversions: 23 },
           ],
-          total: { new Affiliates: 0, trials: 0, conversions: 0 },
+          total: { newAffiliates: 0, trials: 0, conversions: 0 },
         },
       },
       {
@@ -4168,7 +4168,13 @@ export default function SprintDashboard() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      {key === "paid" ? "Paid Signups" : key === "trials" ? "Trial Signups" : key === "referrals" ? "Referrals" : key}
+                      {key === "paid"
+                        ? "Paid Signups"
+                        : key === "trials"
+                          ? "Trial Signups"
+                          : key === "referrals"
+                            ? "Referrals"
+                            : key}
                     </div>
                   </div>
                 ))}
