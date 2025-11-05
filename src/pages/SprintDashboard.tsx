@@ -1680,7 +1680,7 @@ export default function SprintDashboard() {
             { sprint: 265, trials: 27, conversions: 13 },
             { sprint: 266, trials: 17, conversions: 23 },
           ],
-          total: { trials: 0, conversions: 0 },
+          total: { newAffiliates: 0, trials: 0, conversions: 0 },
         },
       },
       {
@@ -1690,7 +1690,7 @@ export default function SprintDashboard() {
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
-          lifetime: { paid: 0, rating: 0 },
+          lifetime: { activeInstalls: 0, onboardedInstalls: 0, paidSignups: 0, appRating: 0 },
           target: 400,
           current: 0,
           columns: [
@@ -1715,7 +1715,7 @@ export default function SprintDashboard() {
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
-          lifetime: { paid: 0 },
+          lifetime: { advocates: 0, conversions: 0 },
           target: 100,
           current: 0,
           columns: [
