@@ -1689,7 +1689,7 @@ export default function SprintDashboard() {
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
           lifetime: { paid: 0, rating: 0 },
-          target: 100,
+          target: 400,
           current: 0,
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
