@@ -1674,11 +1674,13 @@ export default function SprintDashboard() {
             { key: "conversions", header: "Conversions" },
           ],
           rows: [
-            { sprint: 263, trials: 0, conversions: 0 },
-            { sprint: 264, trials: 0, conversions: 0 },
-            { sprint: 265, trials: 0, conversions: 0 },
+            { sprint: 262, trials: 11, conversions: 24 },
+            { sprint: 263, trials: 6, conversions: 35 },
+            { sprint: 264, trials: 11, conversions: 27 },
+            { sprint: 265, trials: 27, conversions: 13 },
+            { sprint: 266, trials: 17, conversions: 23 },
           ],
-          total: { trials: 0, conversions: 0 },
+          total: { trials: 72, conversions: 122 },
         },
       },
       {
@@ -1688,20 +1690,22 @@ export default function SprintDashboard() {
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
-          lifetime: { paid: 0, rating: 0 },
+          lifetime: { paid: 2106, rating: 3.43 },
           target: 400,
-          current: 0,
+          current: 61,
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
             { key: "freeSignups", header: "Free Signups" },
             { key: "paid", header: "Paid Signups" },
           ],
           rows: [
-            { sprint: 263, freeSignups: 0, paid: 0 },
-            { sprint: 264, freeSignups: 0, paid: 0 },
-            { sprint: 265, freeSignups: 0, paid: 0 },
+            { sprint: 262, freeSignups: 90, paid: 12 },
+            { sprint: 263, freeSignups: 97, paid: 9 },
+            { sprint: 264, freeSignups: 90, paid: 16 },
+            { sprint: 265, freeSignups: 98, paid: 16 },
+            { sprint: 266, freeSignups: 88, paid: 8 },
           ],
-          total: { freeSignups: 0, paid: 0 },
+          total: { freeSignups: 463, paid: 61 },
         },
       },
       {
@@ -1711,7 +1715,7 @@ export default function SprintDashboard() {
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=801337408#gid=801337408",
         data: {
-          lifetime: { paid: 0 },
+          lifetime: { paid: 921 },
           target: 100,
           current: 0,
           columns: [
@@ -1720,11 +1724,13 @@ export default function SprintDashboard() {
             { key: "referrals", header: "Referrals" },
           ],
           rows: [
-            { sprint: 263, trials: 0, referrals: 0 },
-            { sprint: 264, trials: 0, referrals: 0 },
-            { sprint: 265, trials: 0, referrals: 0 },
+            { sprint: 262, trials: 0, referrals: 6 },
+            { sprint: 263, trials: 1, referrals: 2 },
+            { sprint: 264, trials: 4, referrals: 4 },
+            { sprint: 265, trials: 5, referrals: 0 },
+            { sprint: 266, trials: 3, referrals: 1 },
           ],
-          total: { trials: 0, referrals: 0 },
+          total: { trials: 13, referrals: 13 },
         },
       },
       {
