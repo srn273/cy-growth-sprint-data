@@ -1273,8 +1273,7 @@ export default function SprintDashboard() {
             { sprintNumber: 263, paidUsers: 586, totalPaidQTD: 693 },
             { sprintNumber: 264, paidUsers: 521, totalPaidQTD: 1211 },
             { sprintNumber: 265, paidUsers: 516, totalPaidQTD: 1726 },
-            { sprintNumber: 266, paidUsers: 529, totalPaidQTD: 2260 }
-            { sprintNumber: 267, paidUsers: 558, totalPaidQTD: 2815 },
+            { sprintNumber: 266, paidUsers: 529, totalPaidQTD: 2260 },
           ],
           quarters: [
             { quarter: "Q1", total: 5278, average: 468 },
