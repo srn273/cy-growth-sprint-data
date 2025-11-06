@@ -1329,6 +1329,7 @@ export default function SprintDashboard() {
               { sprint: 264, pos1_2: 18, pos3_10: 42 },
               { sprint: 265, pos1_2: 15, pos3_10: 49 },
               { sprint: 266, pos1_2: 17, pos3_10: 47 },
+              { sprint: 267, pos1_2: 16, pos3_10: 49 },
             ],
           },
           improved: [{ region: "US", count: 0, keywords: "" }],
