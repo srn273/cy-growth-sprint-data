@@ -3844,7 +3844,7 @@ export default function SprintDashboard() {
                 )}
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px" }}>
-                {Object.entries(slide.data.quarterStats).map(([key, value]) => (
+                {Object.entries(slide.data.quarterStats || {}).map(([key, value]) => (
                   <div
                     key={key}
                     style={{
@@ -4145,7 +4145,7 @@ export default function SprintDashboard() {
                 )}
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-                {Object.entries(slide.data.lifetime).map(([key, value]) => (
+                {Object.entries(slide.data.lifetime || {}).map(([key, value]) => (
                   <div
                     key={key}
                     style={{
@@ -4309,7 +4309,7 @@ export default function SprintDashboard() {
                 )}
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-                {Object.entries(slide.data.lifetime).map(([key, value]) => (
+                {Object.entries(slide.data.lifetime || {}).map(([key, value]) => (
                   <div
                     key={key}
                     style={{
