@@ -1552,19 +1552,38 @@ export default function SprintDashboard() {
         },
       },
       {
+        id: 13,
+        title: "Agency - Signups & Paid Users",
+        type: "withTarget",
+        moreDetailsUrl:
+          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1941259614#gid=1941259614",
+        data: {
+          target: 27,
+          targetLabel: "SPRINT PAID TARGET",
+          hideQtdStats: true,
+          columns: [
+            { key: "sprint", header: "Sprint", locked: true },
+            { key: "signups", header: "Signups" },
+            { key: "paid", header: "Paid" },
+            { key: "percentage", header: "Target Achieved %" },
+            { key: "shortfall", header: "Shortfall" },
+          ],
+          rows: [
+            { sprint: 263, signups: 34, paid: 8, percentage: 30, shortfall: 19 },
+            { sprint: 264, signups: 28, paid: 8, percentage: 30, shortfall: 19 },
+            { sprint: 265, signups: 26, paid: 6, percentage: 22, shortfall: 21 },
+            { sprint: 266, signups: 23, paid: 7, percentage: 26, shortfall: 20 },
+          ],
+          total: { signups: 0, paid: 0 },
+        },
+      },
+      {
         id: 9,
         title: "Paid Acquisition - Google Ads",
         type: "quarterStats",
         moreDetailsUrl:
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1295636005#gid=1295636005",
         data: {
-          quarterStats: {
-            accountsCreated: 0,
-            cardAdded: 0,
-            bannerActive: 0,
-            payingUsers: 0,
-            roas: 0,
-          },
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
             { key: "totalAccounts", header: "Total Accounts" },
@@ -1647,32 +1666,6 @@ export default function SprintDashboard() {
             { sprint: 266, formFills: 8, demos: 0, signups: 0, paying: 0 },
             { sprint: 267, formFills: 13, demos: 0, signups: 1, paying: 0 },
           ],
-        },
-      },
-      {
-        id: 13,
-        title: "Agency - Signups & Paid Users",
-        type: "withTarget",
-        moreDetailsUrl:
-          "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1941259614#gid=1941259614",
-        data: {
-          target: 27,
-          targetLabel: "SPRINT PAID TARGET",
-          hideQtdStats: true,
-          columns: [
-            { key: "sprint", header: "Sprint", locked: true },
-            { key: "signups", header: "Signups" },
-            { key: "paid", header: "Paid" },
-            { key: "percentage", header: "Target Achieved %" },
-            { key: "shortfall", header: "Shortfall" },
-          ],
-          rows: [
-            { sprint: 263, signups: 34, paid: 8, percentage: 30, shortfall: 19 },
-            { sprint: 264, signups: 28, paid: 8, percentage: 30, shortfall: 19 },
-            { sprint: 265, signups: 26, paid: 6, percentage: 22, shortfall: 21 },
-            { sprint: 266, signups: 23, paid: 7, percentage: 26, shortfall: 20 },
-          ],
-          total: { signups: 0, paid: 0 },
         },
       },
       {
