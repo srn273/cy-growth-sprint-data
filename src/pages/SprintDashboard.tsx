@@ -1301,6 +1301,7 @@ export default function SprintDashboard() {
             { sprint: 264, blog: 2, infographics: 0, kb: 0, videos: 1 },
             { sprint: 265, blog: 1, infographics: 0, kb: 1, videos: 1 },
             { sprint: 266, blog: 2, infographics: 0, kb: 6, videos: 0 },
+            { sprint: 267, blog: 2, infographics: 0, kb: 0, videos: 1 },
           ],
         },
       },
