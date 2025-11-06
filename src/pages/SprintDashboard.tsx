@@ -1374,6 +1374,7 @@ export default function SprintDashboard() {
             { sprint: 264, position: 39 },
             { sprint: 265, position: 39 },
             { sprint: 266, position: 39 },
+            { sprint: 267, position: 39 },
           ],
         },
       },
