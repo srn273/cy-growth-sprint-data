@@ -1585,11 +1585,11 @@ export default function SprintDashboard() {
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=1295636005#gid=1295636005",
         data: {
           quarterStats: {
-            totalAccounts: 0,
-            paidTrials: 0,
-            activeTrials: 0,
-            conversions: 0,
-            cancelledTrials: 0,
+            accountsCreated: 0,
+            cardAdded: 0,
+            bannerActive: 0,
+            payingUsers: 0,
+            roas: 0,
           },
           columns: [
             { key: "sprint", header: "Sprint", locked: true },
