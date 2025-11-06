@@ -1395,6 +1395,7 @@ export default function SprintDashboard() {
             { sprint: 264, total: 87, direct: 52 },
             { sprint: 265, total: 82, direct: 61 },
             { sprint: 266, total: 83, direct: 55 },
+            { sprint: 267, total: 113, direct: 62 },
           ],
         },
       },
