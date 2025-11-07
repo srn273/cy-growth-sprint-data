@@ -2359,7 +2359,7 @@ export default function SprintDashboard() {
                   key={rowIdx}
                   style={{
                     backgroundColor: rowIdx % 2 ? "#F8FAFB" : "#fff",
-                    borderBottom: "1px solid #EAEEF2",
+                    borderBottom: rowIdx === lastIdx ? "3px solid #1863DC" : "1px solid #EAEEF2",
                     borderTop: rowIdx === lastIdx ? "3px solid #1863DC" : "none",
                   }}
                 >
