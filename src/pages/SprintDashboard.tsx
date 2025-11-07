@@ -2563,7 +2563,8 @@ export default function SprintDashboard() {
                 <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
                   <button
                     onClick={() => {
-                      if (slide.data.sprints.length >= 5) {
+                      // Only enforce 5-sprint limit for slides other than the first slide (id 0)
+                      if (slide.id !== 0 && slide.data.sprints.length >= 5) {
                         alert("Maximum 5 sprints allowed");
                         return;
                       }
@@ -2593,7 +2594,7 @@ export default function SprintDashboard() {
                       fontWeight: "600",
                     }}
                   >
-                    + Add Sprint ({slide.data.sprints.length}/5)
+                    + Add Sprint ({slide.data.sprints.length}{slide.id !== 0 ? '/5' : ''})
                   </button>
                   {slide.data.sprints.length > 1 && (
                     <button
