@@ -1580,7 +1580,7 @@ export default function SprintDashboard() {
             { sprint: 264, signups: 28, paid: 8, percentage: 30, shortfall: 38 },
             { sprint: 265, signups: 26, paid: 6, percentage: 22, shortfall: 59 },
             { sprint: 266, signups: 23, paid: 7, percentage: 26, shortfall: 79 },
-            { sprint: 266, signups: 22, paid: 7, percentage: 26, shortfall: 99 },
+            { sprint: 267, signups: 22, paid: 7, percentage: 26, shortfall: 99 },
           ],
           total: { signups: 0, paid: 0 },
         },
