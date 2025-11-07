@@ -4,7 +4,7 @@ export default function SprintDashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isPresentMode, setIsPresentMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(1);
-  const [currentSprint, setCurrentSprint] = useState(267);
+  const [currentSprint, setCurrentSprint] = useState(0);
   const [showImportModal, setShowImportModal] = useState(false);
   const [currentImportSlideId, setCurrentImportSlideId] = useState<number | null>(null);
   const [pastedData, setPastedData] = useState("");
