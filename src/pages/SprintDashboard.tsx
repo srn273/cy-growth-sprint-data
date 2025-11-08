@@ -2293,7 +2293,7 @@ export default function SprintDashboard() {
             style={{
               width: "100%",
               borderCollapse: "collapse",
-              fontSize: "14px",
+              fontSize: "18px",
               fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
             }}
           >
@@ -2449,8 +2449,8 @@ export default function SprintDashboard() {
             marginBottom: "16px",
           }}
         >
-          <span style={{ fontSize: "14px", fontWeight: "600", color: "#5A6872" }}>Sprint:</span>
-          <span style={{ fontSize: "18px", fontWeight: "700", color: "#1863DC" }}>{currentSprint}</span>
+          <span style={{ fontSize: "18px", fontWeight: "600", color: "#5A6872" }}>Sprint:</span>
+          <span style={{ fontSize: "22px", fontWeight: "700", color: "#1863DC" }}>{currentSprint}</span>
         </div>
       )}
       <div
@@ -2465,7 +2465,7 @@ export default function SprintDashboard() {
       >
         <h2
           style={{
-            fontSize: "20px",
+            fontSize: "24px",
             fontWeight: "600",
             color: "#212121",
             margin: 0,
@@ -2480,7 +2480,7 @@ export default function SprintDashboard() {
               onBlur={(e) => updateSlideTitle(slide.id, e.target.value)}
               style={{
                 width: "100%",
-                fontSize: "20px",
+                fontSize: "24px",
                 fontWeight: "600",
                 padding: "8px",
                 border: "2px solid #1863DC",
@@ -2499,7 +2499,7 @@ export default function SprintDashboard() {
               rel="noopener noreferrer"
               style={{
                 padding: "8px 16px",
-                fontSize: "13px",
+                fontSize: "17px",
                 fontWeight: "600",
                 backgroundColor: "#EBF3FD",
                 color: "#1863DC",
@@ -2518,7 +2518,7 @@ export default function SprintDashboard() {
                 onClick={() => openSlideImport(slide.id)}
                 style={{
                   padding: "8px 16px",
-                  fontSize: "13px",
+                  fontSize: "17px",
                   fontWeight: "600",
                   backgroundColor: "#2DAD70",
                   color: "#fff",
@@ -2539,7 +2539,7 @@ export default function SprintDashboard() {
                 style={{
                   width: "280px",
                   padding: "8px",
-                  fontSize: "13px",
+                  fontSize: "17px",
                   border: "1px solid #DBDFE4",
                   borderRadius: "4px",
                 }}
@@ -2590,7 +2590,7 @@ export default function SprintDashboard() {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
-                      fontSize: "13px",
+                      fontSize: "17px",
                       fontWeight: "600",
                     }}
                   >
@@ -2621,7 +2621,7 @@ export default function SprintDashboard() {
                         border: "none",
                         borderRadius: "4px",
                         cursor: "pointer",
-                        fontSize: "13px",
+                        fontSize: "17px",
                         fontWeight: "600",
                       }}
                     >
@@ -2650,7 +2650,7 @@ export default function SprintDashboard() {
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
-                    fontSize: "14px",
+                    fontSize: "18px",
                     color: "#5A6872",
                   }}
                 >
@@ -2711,7 +2711,7 @@ export default function SprintDashboard() {
                         <div style={{ display: "flex", gap: `${barGap}px`, alignItems: "flex-end" }}>
                           {/* Blue Bar - Paid users (this sprint) */}
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <div style={{ fontSize: "13px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
+                            <div style={{ fontSize: "17px", fontWeight: "600", color: "#4A90E2", marginBottom: "8px" }}>
                               {isEditMode ? (
                                 <input
                                   type="number"
@@ -2724,7 +2724,7 @@ export default function SprintDashboard() {
                                   style={{
                                     width: "60px",
                                     padding: "4px",
-                                    fontSize: "13px",
+                                    fontSize: "17px",
                                     border: "1px solid #4A90E2",
                                     borderRadius: "4px",
                                     textAlign: "center",
@@ -2746,7 +2746,7 @@ export default function SprintDashboard() {
 
                           {/* Green Bar - Total paid users QTD */}
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <div style={{ fontSize: "13px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
+                            <div style={{ fontSize: "17px", fontWeight: "600", color: "#5CB85C", marginBottom: "8px" }}>
                               {isEditMode ? (
                                 <input
                                   type="number"
@@ -2759,7 +2759,7 @@ export default function SprintDashboard() {
                                   style={{
                                     width: "60px",
                                     padding: "4px",
-                                    fontSize: "13px",
+                                    fontSize: "17px",
                                     border: "1px solid #5CB85C",
                                     borderRadius: "4px",
                                     textAlign: "center",
@@ -2783,7 +2783,7 @@ export default function SprintDashboard() {
                         {/* Sprint Label at bottom - relative to this pair */}
                         <div
                           style={{
-                            fontSize: "15px",
+                            fontSize: "19px",
                             fontWeight: "600",
                             color: "#5A6872",
                             marginTop: "16px",
@@ -2803,7 +2803,7 @@ export default function SprintDashboard() {
                               style={{
                                 width: "100px",
                                 padding: "4px 8px",
-                                fontSize: "15px",
+                                fontSize: "19px",
                                 border: "1px solid #DBDFE4",
                                 borderRadius: "4px",
                                 textAlign: "center",
@@ -2828,7 +2828,7 @@ export default function SprintDashboard() {
                   justifyContent: "center",
                   gap: "32px",
                   marginTop: "20px",
-                  fontSize: "13px",
+                  fontSize: "17px",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -2873,7 +2873,7 @@ export default function SprintDashboard() {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
-                      fontSize: "13px",
+                      fontSize: "17px",
                       fontWeight: "600",
                     }}
                   >
@@ -2904,7 +2904,7 @@ export default function SprintDashboard() {
                         border: "none",
                         borderRadius: "4px",
                         cursor: "pointer",
-                        fontSize: "13px",
+                        fontSize: "17px",
                         fontWeight: "600",
                       }}
                     >
@@ -2927,7 +2927,7 @@ export default function SprintDashboard() {
                   >
                     <div
                       style={{
-                        fontSize: "18px",
+                        fontSize: "22px",
                         fontWeight: "600",
                         color: "#1863DC",
                         marginBottom: "16px",
@@ -2946,7 +2946,7 @@ export default function SprintDashboard() {
                           style={{
                             width: "80px",
                             padding: "4px 8px",
-                            fontSize: "18px",
+                            fontSize: "22px",
                             border: "1px solid #1863DC",
                             borderRadius: "4px",
                             textAlign: "center",
@@ -2959,8 +2959,8 @@ export default function SprintDashboard() {
                     </div>
 
                     <div style={{ marginBottom: "12px" }}>
-                      <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>Total:</div>
-                      <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                      <div style={{ fontSize: "17px", color: "#5A6872", marginBottom: "4px" }}>Total:</div>
+                      <div style={{ fontSize: "28px", fontWeight: "700", color: "#212121" }}>
                         {isEditMode ? (
                           <input
                             type="number"
@@ -2973,7 +2973,7 @@ export default function SprintDashboard() {
                             style={{
                               width: "120px",
                               padding: "4px 8px",
-                              fontSize: "24px",
+                              fontSize: "28px",
                               border: "1px solid #DBDFE4",
                               borderRadius: "4px",
                               fontWeight: "700",
@@ -2986,8 +2986,8 @@ export default function SprintDashboard() {
                     </div>
 
                     <div>
-                      <div style={{ fontSize: "13px", color: "#5A6872", marginBottom: "4px" }}>Average:</div>
-                      <div style={{ fontSize: "24px", fontWeight: "700", color: "#212121" }}>
+                      <div style={{ fontSize: "17px", color: "#5A6872", marginBottom: "4px" }}>Average:</div>
+                      <div style={{ fontSize: "28px", fontWeight: "700", color: "#212121" }}>
                         {isEditMode ? (
                           <input
                             type="number"
@@ -3000,7 +3000,7 @@ export default function SprintDashboard() {
                             style={{
                               width: "120px",
                               padding: "4px 8px",
-                              fontSize: "24px",
+                              fontSize: "28px",
                               border: "1px solid #DBDFE4",
                               borderRadius: "4px",
                               fontWeight: "700",
@@ -3023,7 +3023,7 @@ export default function SprintDashboard() {
             <div style={{ marginBottom: "24px" }}>
               <h3
                 style={{
-                  fontSize: "14px",
+                  fontSize: "20px",
                   fontWeight: "600",
                   marginBottom: "12px",
                   color: "#5A6872",
@@ -3033,7 +3033,7 @@ export default function SprintDashboard() {
               >
                 TOTAL #1 RANKINGS
               </h3>
-              <div style={{ fontSize: "32px", fontWeight: "700", color: "#1863DC" }}>
+              <div style={{ fontSize: "36px", fontWeight: "700", color: "#1863DC" }}>
                 {isEditMode ? (
                   <input
                     key={`total-${slide.id}`}
@@ -3041,7 +3041,7 @@ export default function SprintDashboard() {
                     defaultValue={slide.data.total}
                     onBlur={(e) => updateSlideData(slide.id, ["total"], e.target.value)}
                     style={{
-                      fontSize: "32px",
+                      fontSize: "36px",
                       padding: "8px",
                       width: "120px",
                       border: "2px solid #1863DC",
@@ -3059,7 +3059,7 @@ export default function SprintDashboard() {
               >
                 <h3
                   style={{
-                    fontSize: "14px",
+                    fontSize: "20px",
                     fontWeight: "600",
                     color: "#5A6872",
                     textTransform: "uppercase",
@@ -3093,7 +3093,7 @@ export default function SprintDashboard() {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
-                      fontSize: "12px",
+                      fontSize: "16px",
                     }}
                   >
                     + Add Region
@@ -3126,7 +3126,7 @@ export default function SprintDashboard() {
                           placeholder="Region"
                           style={{
                             padding: "6px",
-                            fontSize: "14px",
+                            fontSize: "16px",
                             border: "1px solid #DBDFE4",
                             borderRadius: "4px",
                             fontWeight: "600",
@@ -3144,7 +3144,7 @@ export default function SprintDashboard() {
                           placeholder="Count"
                           style={{
                             padding: "6px",
-                            fontSize: "14px",
+                            fontSize: "16px",
                             border: "1px solid #DBDFE4",
                             borderRadius: "4px",
                             width: "80px",
@@ -3162,7 +3162,7 @@ export default function SprintDashboard() {
                             border: "none",
                             borderRadius: "4px",
                             cursor: "pointer",
-                            fontSize: "12px",
+                            fontSize: "16px",
                           }}
                         >
                           ✕
@@ -3178,7 +3178,7 @@ export default function SprintDashboard() {
                         placeholder="Keywords (comma separated)"
                         style={{
                           padding: "6px",
-                          fontSize: "12px",
+                          fontSize: "16px",
                           border: "1px solid #DBDFE4",
                           borderRadius: "4px",
                           minHeight: "60px",
@@ -3188,10 +3188,10 @@ export default function SprintDashboard() {
                     </div>
                   ) : (
                     <>
-                      <strong style={{ color: "#212121", fontSize: "14px" }}>
+                      <strong style={{ color: "#212121", fontSize: "18px" }}>
                         {item.region} ({item.count})
                       </strong>
-                      <div style={{ fontSize: "12px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
+                      <div style={{ fontSize: "16px", color: "#5A6872", marginTop: "8px", lineHeight: "1.8" }}>
                         {item.keywords.split(",").map((keyword, i) => (
                           <div key={i}>{keyword.trim()}</div>
                         ))}
