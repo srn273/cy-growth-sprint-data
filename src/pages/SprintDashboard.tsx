@@ -2683,7 +2683,9 @@ export default function SprintDashboard() {
                 <div
                   style={{
                     display: "flex",
-                    gap: `${Math.max(120 - (slide.data.sprints.length - 2) * 20, 40)}px`,
+                    gap: `${slide.id === 0 
+                      ? Math.max(120 - (slide.data.sprints.length - 2) * 15, 20)
+                      : Math.max(120 - (slide.data.sprints.length - 2) * 20, 40)}px`,
                     alignItems: "flex-end",
                     justifyContent: "center",
                     flex: 1,
@@ -2693,8 +2695,12 @@ export default function SprintDashboard() {
                   }}
                 >
                   {slide.data.sprints.map((sprint, idx) => {
-                    const barWidth = Math.max(70 - (slide.data.sprints.length - 2) * 8, 40);
-                    const barGap = Math.max(16 - (slide.data.sprints.length - 2) * 2, 8);
+                    const barWidth = slide.id === 0
+                      ? Math.max(70 - (slide.data.sprints.length - 2) * 6, 30)
+                      : Math.max(70 - (slide.data.sprints.length - 2) * 8, 40);
+                    const barGap = slide.id === 0
+                      ? Math.max(16 - (slide.data.sprints.length - 2) * 1.5, 6)
+                      : Math.max(16 - (slide.data.sprints.length - 2) * 2, 8);
 
                     return (
                       <div
