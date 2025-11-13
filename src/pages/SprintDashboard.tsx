@@ -135,14 +135,14 @@ export default function SprintDashboard() {
     const specialRows = rows.filter(isSpecial);
     const numericRows = rows.filter((r) => !isSpecial(r));
 
-    // Sort by sprint number (descending) and keep only last 5 numeric sprints
+    // Sort by sprint number (ascending) and keep only last 5 numeric sprints
     const sorted = [...numericRows].sort((a, b) => {
       const sprintA = typeof a.sprint === "number" ? a.sprint : parseInt(a.sprint) || 0;
       const sprintB = typeof b.sprint === "number" ? b.sprint : parseInt(b.sprint) || 0;
-      return sprintB - sprintA;
+      return sprintA - sprintB;
     });
 
-    return [...sorted.slice(0, MAX_SPRINTS), ...specialRows];
+    return [...sorted.slice(-MAX_SPRINTS), ...specialRows];
   };
 
   // Helper: check if a slide type uses nested tables
