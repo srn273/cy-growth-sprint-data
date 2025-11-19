@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function SprintDashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -4362,7 +4363,7 @@ export default function SprintDashboard() {
 
       case "subscriptions":
         return (
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "32px", height: "100%" }}>
             {isEditMode && (
               <div style={{ marginBottom: "16px" }}>
                 <button
@@ -4387,40 +4388,60 @@ export default function SprintDashboard() {
                     cursor: "pointer",
                   }}
                 >
-                  + Add Row
+                  + Add Channel
                 </button>
               </div>
             )}
-            <table
-              style={{ width: "100%", borderCollapse: "collapse", fontSize: "18px", fontFamily: "Inter, sans-serif" }}
+
+            {/* Metric Cards */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "20px",
+                width: "100%",
+              }}
             >
-              <thead>
-                <tr style={{ backgroundColor: "#F8FAFB", borderBottom: "2px solid #1863DC" }}>
-                  <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: "600", color: "#212121" }}>
-                    Channel
-                  </th>
-                  <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: "600", color: "#212121" }}>
-                    Total Target
-                  </th>
-                  <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: "600", color: "#212121" }}>
-                    Target as on Date
-                  </th>
-                  <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: "600", color: "#212121" }}>
-                    Actual
-                  </th>
-                  <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: "600", color: "#212121" }}>
-                    % (Target as on Date)
-                  </th>
-                  {isEditMode && <th style={{ padding: "12px 16px" }}>Actions</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {slide.data.rows.map((row, idx) => (
-                  <tr
+              {slide.data.rows.map((row, idx) => {
+                const progressPercent = row.targetAsOnDate > 0 ? Math.round((row.actual / row.targetAsOnDate) * 100) : 0;
+                const isOnTrack = progressPercent >= 100;
+                
+                return (
+                  <div
                     key={idx}
-                    style={{ backgroundColor: idx % 2 ? "#F8FAFB" : "#fff", borderBottom: "1px solid #EAEEF2" }}
+                    style={{
+                      backgroundColor: "#fff",
+                      border: "2px solid #EAEEF2",
+                      borderRadius: "12px",
+                      padding: "24px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                      position: "relative",
+                    }}
                   >
-                    <td style={{ padding: "12px 16px", fontWeight: "600", color: "#212121" }}>
+                    {isEditMode && (
+                      <button
+                        onClick={() => {
+                          const newRows = slide.data.rows.filter((_, i) => i !== idx);
+                          updateSlideData(slide.id, ["rows"], newRows);
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: "12px",
+                          right: "12px",
+                          padding: "4px 8px",
+                          fontSize: "14px",
+                          backgroundColor: "#DC3545",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                    
+                    <div style={{ fontSize: "16px", fontWeight: "600", color: "#666", marginBottom: "12px" }}>
                       {isEditMode ? (
                         <input
                           key={`channel-${idx}`}
@@ -4431,112 +4452,178 @@ export default function SprintDashboard() {
                             padding: "6px 8px",
                             border: "1px solid #DBDFE4",
                             borderRadius: "4px",
+                            fontSize: "16px",
                           }}
                         />
                       ) : (
                         row.channel
                       )}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      {isEditMode ? (
-                        <input
-                          key={`target-${idx}`}
-                          type="number"
-                          defaultValue={row.totalTarget ?? ""}
-                          onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "totalTarget"], e.target.value)}
+                    </div>
+
+                    <div style={{ marginBottom: "16px" }}>
+                      <div style={{ fontSize: "14px", color: "#888", marginBottom: "4px" }}>Total Target</div>
+                      <div style={{ fontSize: "32px", fontWeight: "700", color: "#212121" }}>
+                        {isEditMode ? (
+                          <input
+                            key={`target-${idx}`}
+                            type="number"
+                            defaultValue={row.totalTarget ?? ""}
+                            onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "totalTarget"], e.target.value)}
+                            style={{
+                              width: "120px",
+                              padding: "6px 8px",
+                              border: "1px solid #DBDFE4",
+                              borderRadius: "4px",
+                              fontSize: "32px",
+                            }}
+                          />
+                        ) : (
+                          row.totalTarget?.toLocaleString() || "-"
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                      <div>
+                        <div style={{ fontSize: "14px", color: "#888", marginBottom: "4px" }}>Target (Date)</div>
+                        <div style={{ fontSize: "22px", fontWeight: "600", color: "#212121" }}>
+                          {isEditMode ? (
+                            <input
+                              key={`targetdate-${idx}`}
+                              type="number"
+                              defaultValue={row.targetAsOnDate ?? ""}
+                              onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "targetAsOnDate"], e.target.value)}
+                              style={{
+                                width: "80px",
+                                padding: "4px 6px",
+                                border: "1px solid #DBDFE4",
+                                borderRadius: "4px",
+                                fontSize: "22px",
+                              }}
+                            />
+                          ) : (
+                            row.targetAsOnDate?.toLocaleString() || "-"
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "14px", color: "#888", marginBottom: "4px" }}>Actual</div>
+                        <div style={{ fontSize: "22px", fontWeight: "600", color: isOnTrack ? "#2DAD70" : "#DC3545" }}>
+                          {isEditMode ? (
+                            <input
+                              key={`actual-${idx}`}
+                              type="number"
+                              defaultValue={row.actual ?? ""}
+                              onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "actual"], e.target.value)}
+                              style={{
+                                width: "80px",
+                                padding: "4px 6px",
+                                border: "1px solid #DBDFE4",
+                                borderRadius: "4px",
+                                fontSize: "22px",
+                              }}
+                            />
+                          ) : (
+                            row.actual?.toLocaleString() || "-"
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div style={{ marginTop: "16px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span style={{ fontSize: "14px", color: "#888" }}>Progress</span>
+                        <span
                           style={{
-                            width: "100px",
-                            padding: "6px 8px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      ) : (
-                        row.totalTarget || "-"
-                      )}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      {isEditMode ? (
-                        <input
-                          key={`targetdate-${idx}`}
-                          type="number"
-                          defaultValue={row.targetAsOnDate ?? ""}
-                          onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "targetAsOnDate"], e.target.value)}
-                          style={{
-                            width: "100px",
-                            padding: "6px 8px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      ) : (
-                        row.targetAsOnDate || "-"
-                      )}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      {isEditMode ? (
-                        <input
-                          key={`actual-${idx}`}
-                          type="number"
-                          defaultValue={row.actual ?? ""}
-                          onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "actual"], e.target.value)}
-                          style={{
-                            width: "100px",
-                            padding: "6px 8px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      ) : (
-                        row.actual || "-"
-                      )}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      {isEditMode ? (
-                        <input
-                          key={`percentage-${idx}`}
-                          type="number"
-                          defaultValue={row.percentage ?? ""}
-                          onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "percentage"], e.target.value)}
-                          style={{
-                            width: "80px",
-                            padding: "6px 8px",
-                            border: "1px solid #DBDFE4",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      ) : row.percentage !== null && row.percentage !== 0 ? (
-                        `${row.percentage}%`
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    {isEditMode && (
-                      <td style={{ padding: "12px 16px" }}>
-                        <button
-                          onClick={() => {
-                            const newRows = slide.data.rows.filter((_, i) => i !== idx);
-                            updateSlideData(slide.id, ["rows"], newRows);
-                          }}
-                          style={{
-                            padding: "6px 12px",
-                            fontSize: "12px",
-                            fontWeight: "500",
-                            backgroundColor: "#DC2143",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
+                            fontSize: "18px",
+                            fontWeight: "700",
+                            color: isOnTrack ? "#2DAD70" : "#DC3545",
                           }}
                         >
-                          Delete
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          {progressPercent}%
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "10px",
+                          backgroundColor: "#EAEEF2",
+                          borderRadius: "5px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${Math.min(progressPercent, 100)}%`,
+                            height: "100%",
+                            backgroundColor: isOnTrack ? "#2DAD70" : "#DC3545",
+                            transition: "width 0.3s ease",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bar Chart */}
+            <div
+              style={{
+                backgroundColor: "#fff",
+                border: "2px solid #EAEEF2",
+                borderRadius: "12px",
+                padding: "24px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                flex: 1,
+              }}
+            >
+              <h3 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "20px", color: "#212121" }}>
+                Performance Comparison
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={slide.data.rows.map((row) => ({
+                    name: row.channel.replace(/ \(.*?\)/, ""),
+                    Target: row.targetAsOnDate,
+                    Actual: row.actual,
+                  }))}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#EAEEF2" />
+                  <XAxis
+                    dataKey="name"
+                    angle={-15}
+                    textAnchor="end"
+                    height={80}
+                    tick={{ fill: "#212121", fontSize: 14, fontWeight: "600" }}
+                  />
+                  <YAxis tick={{ fill: "#212121", fontSize: 14 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "1px solid #EAEEF2",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: "14px", fontWeight: "600" }}
+                    iconType="rect"
+                  />
+                  <Bar dataKey="Target" fill="#1863DC" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="Actual" fill="#2DAD70" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         );
 
