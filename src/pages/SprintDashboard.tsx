@@ -124,7 +124,10 @@ export default function SprintDashboard() {
     }
   };
 
-  const maintainSprintLimit = (rows) => {
+  const maintainSprintLimit = (rows, slideId?: number) => {
+    // Slide 0 (comparison) has no sprint limit
+    if (slideId === 0) return rows;
+    
     if (!rows || rows.length <= MAX_SPRINTS) return rows;
 
     const isSpecial = (r: any) => {
@@ -329,8 +332,8 @@ export default function SprintDashboard() {
         });
         console.log("Parsed data rows:", dataRows);
 
-        // Apply 5-sprint limit
-        const limitedRows = maintainSprintLimit(dataRows);
+        // Apply 5-sprint limit (except for slide 0)
+        const limitedRows = maintainSprintLimit(dataRows, currentImportSlideId);
         console.log("Limited rows (max 5):", limitedRows);
 
         // Update the specific slide with imported data
@@ -594,9 +597,9 @@ export default function SprintDashboard() {
               });
               return out;
             });
-            // Keep only last MAX_SPRINTS if table has a sprint column
+            // Keep only last MAX_SPRINTS if table has a sprint column (except for slide 0)
             const hasSprint = expectedKeys.includes("sprint");
-            target.rows = hasSprint ? maintainSprintLimit(mapped) : mapped;
+            target.rows = hasSprint ? maintainSprintLimit(mapped, slide.id) : mapped;
           }
 
           // Recalculate totals/stats for this slide after mapping
@@ -774,8 +777,8 @@ export default function SprintDashboard() {
               const sprint = String(r.sprint).toLowerCase();
               return sprint !== "lifetime" && sprint !== "total" && sprint !== "qtd";
             });
-            // Keep only last MAX_SPRINTS
-            newSlide.data.rows = maintainSprintLimit(sprintRows);
+            // Keep only last MAX_SPRINTS (except for slide 0)
+            newSlide.data.rows = maintainSprintLimit(sprintRows, slide.id);
 
             // Update lifetime stats if present
             const lifetimeRow = mapped.find((r) => String(r.sprint).toLowerCase() === "lifetime");
@@ -822,9 +825,9 @@ export default function SprintDashboard() {
               });
               return out;
             });
-            // Keep only last MAX_SPRINTS if table has a sprint column
+            // Keep only last MAX_SPRINTS if table has a sprint column (except for slide 0)
             const hasSprint = expectedKeys.includes("sprint");
-            target.rows = hasSprint ? maintainSprintLimit(mapped) : mapped;
+            target.rows = hasSprint ? maintainSprintLimit(mapped, slide.id) : mapped;
 
             // Recalculate totals/stats for this slide after mapping
             recalculateSlideStats(newSlide);
@@ -874,8 +877,8 @@ export default function SprintDashboard() {
             });
             return out;
           });
-          // Keep only last MAX_SPRINTS
-          newSlide.data.rows = maintainSprintLimit(mapped);
+          // Keep only last MAX_SPRINTS (except for slide 0)
+          newSlide.data.rows = maintainSprintLimit(mapped, slide.id);
         }
 
         return newSlide;
@@ -1124,7 +1127,7 @@ export default function SprintDashboard() {
       targetTable.rows[rowIndex] = { ...targetTable.rows[rowIndex], ...newRow };
     } else {
       targetTable.rows.push(newRow);
-      targetTable.rows = maintainSprintLimit(targetTable.rows);
+      targetTable.rows = maintainSprintLimit(targetTable.rows, slide.id);
     }
 
     return true;
@@ -1843,9 +1846,9 @@ export default function SprintDashboard() {
           });
           rows.push(newRow);
 
-          // Maintain sprint limit
+          // Maintain sprint limit (except for slide 0)
           if (targetData.columns.some((c) => c.key === "sprint")) {
-            targetData.rows = maintainSprintLimit(rows);
+            targetData.rows = maintainSprintLimit(rows, s.id);
           }
 
           // Recalculate stats for all table types
