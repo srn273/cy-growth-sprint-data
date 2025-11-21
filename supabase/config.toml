@@ -1,4 +1,4 @@
 project_id = "aikkzydoqtmxengfvmau"
 
 [functions.extract-screenshot-data]
-verify_jwt = false
+verify_jwt = true
