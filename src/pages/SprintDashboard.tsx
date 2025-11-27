@@ -18,8 +18,6 @@ export default function SprintDashboard() {
   const scrollPositionRef = useRef<number>(0);
   const isPreservingScrollRef = useRef<boolean>(false);
 
-  const MAX_SPRINTS = 5;
-
   // Preserve scroll position during state updates to prevent jumping
   useEffect(() => {
     if (isPreservingScrollRef.current) {
@@ -124,28 +122,9 @@ export default function SprintDashboard() {
     }
   };
 
+  // No longer enforcing sprint limits - allow unlimited sprints with hide/show controls
   const maintainSprintLimit = (rows, slideId?: number) => {
-    // Slide 0 (comparison) has no sprint limit
-    if (slideId === 0) return rows;
-    
-    if (!rows || rows.length <= MAX_SPRINTS) return rows;
-
-    const isSpecial = (r: any) => {
-      const s = String(r?.sprint ?? "").toLowerCase();
-      return s === "qtd" || s === "total" || s === "lifetime" || s.includes("qtd");
-    };
-
-    const specialRows = rows.filter(isSpecial);
-    const numericRows = rows.filter((r) => !isSpecial(r));
-
-    // Sort by sprint number (ascending) and keep only last 5 numeric sprints
-    const sorted = [...numericRows].sort((a, b) => {
-      const sprintA = typeof a.sprint === "number" ? a.sprint : parseInt(a.sprint) || 0;
-      const sprintB = typeof b.sprint === "number" ? b.sprint : parseInt(b.sprint) || 0;
-      return sprintA - sprintB;
-    });
-
-    return [...sorted.slice(-MAX_SPRINTS), ...specialRows];
+    return rows; // Keep all rows, visibility controlled by hidden flag
   };
 
   // Helper: check if a slide type uses nested tables
@@ -332,17 +311,17 @@ export default function SprintDashboard() {
         });
         console.log("Parsed data rows:", dataRows);
 
-        // Apply 5-sprint limit (except for slide 0)
-        const limitedRows = maintainSprintLimit(dataRows, currentImportSlideId);
-        console.log("Limited rows (max 5):", limitedRows);
+        // Keep all rows - no limit enforced
+        const allRows = dataRows.map(row => ({ ...row, hidden: false })); // Add hidden flag
+        console.log("All rows:", allRows);
 
         // Update the specific slide with imported data
         if (currentImportSlideId) {
           console.log("Updating slide ID:", currentImportSlideId);
-          importDataToSlide(currentImportSlideId, headers, limitedRows);
+          importDataToSlide(currentImportSlideId, headers, allRows);
         }
 
-        alert(`Table data imported successfully! ${limitedRows.length} row(s) loaded.`);
+        alert(`Table data imported successfully! ${allRows.length} row(s) loaded.`);
         setShowImportModal(false);
         setCurrentImportSlideId(null);
         setPastedData("");
@@ -1127,7 +1106,7 @@ export default function SprintDashboard() {
     if (rowIndex >= 0) {
       targetTable.rows[rowIndex] = { ...targetTable.rows[rowIndex], ...newRow };
     } else {
-      targetTable.rows.push(newRow);
+      targetTable.rows.push({ ...newRow, hidden: false });
       targetTable.rows = maintainSprintLimit(targetTable.rows, slide.id);
     }
 
@@ -1303,11 +1282,11 @@ export default function SprintDashboard() {
             { key: "guestPosts", header: "Guest Posts" },
           ],
           rows: [
-            { sprint: 263, blog: 0, infographics: 0, kb: 0, videos: 0, guestPosts: 0 },
-            { sprint: 264, blog: 2, infographics: 0, kb: 0, videos: 1, guestPosts: 0 },
-            { sprint: 265, blog: 1, infographics: 0, kb: 1, videos: 1, guestPosts: 0 },
-            { sprint: 266, blog: 2, infographics: 0, kb: 6, videos: 0, guestPosts: 0 },
-            { sprint: 267, blog: 2, infographics: 0, kb: 0, videos: 1, guestPosts: 0 },
+            { sprint: 263, blog: 0, infographics: 0, kb: 0, videos: 0, guestPosts: 0, hidden: false },
+            { sprint: 264, blog: 2, infographics: 0, kb: 0, videos: 1, guestPosts: 0, hidden: false },
+            { sprint: 265, blog: 1, infographics: 0, kb: 1, videos: 1, guestPosts: 0, hidden: false },
+            { sprint: 266, blog: 2, infographics: 0, kb: 6, videos: 0, guestPosts: 0, hidden: false },
+            { sprint: 267, blog: 2, infographics: 0, kb: 0, videos: 1, guestPosts: 0, hidden: false },
           ],
         },
       },
@@ -1331,11 +1310,11 @@ export default function SprintDashboard() {
               { key: "pos3_10", header: "Position 3-10" },
             ],
             rows: [
-              { sprint: 263, pos1_2: 15, pos3_10: 45 },
-              { sprint: 264, pos1_2: 18, pos3_10: 42 },
-              { sprint: 265, pos1_2: 15, pos3_10: 49 },
-              { sprint: 266, pos1_2: 17, pos3_10: 47 },
-              { sprint: 267, pos1_2: 16, pos3_10: 49 },
+              { sprint: 263, pos1_2: 15, pos3_10: 45, hidden: false },
+              { sprint: 264, pos1_2: 18, pos3_10: 42, hidden: false },
+              { sprint: 265, pos1_2: 15, pos3_10: 49, hidden: false },
+              { sprint: 266, pos1_2: 17, pos3_10: 47, hidden: false },
+              { sprint: 267, pos1_2: 16, pos3_10: 49, hidden: false },
             ],
           },
           improved: [{ region: "US", count: 0, keywords: "" }],
@@ -1358,10 +1337,10 @@ export default function SprintDashboard() {
             { key: "negative", header: "Negative" },
           ],
           rows: [
-            { sprint: 263, total: 39, social: 13, blogs: 6, youtube: 0, negative: 3 },
-            { sprint: 264, total: 99, social: 9, blogs: 8, youtube: 1, negative: 1 },
-            { sprint: 265, total: 135, social: 8, blogs: 4, youtube: 1, negative: 0 },
-            { sprint: 266, total: 62, social: 7, blogs: 4, youtube: 0, negative: 0 },
+            { sprint: 263, total: 39, social: 13, blogs: 6, youtube: 0, negative: 3, hidden: false },
+            { sprint: 264, total: 99, social: 9, blogs: 8, youtube: 1, negative: 1, hidden: false },
+            { sprint: 265, total: 135, social: 8, blogs: 4, youtube: 1, negative: 0, hidden: false },
+            { sprint: 266, total: 62, social: 7, blogs: 4, youtube: 0, negative: 0, hidden: false },
           ],
         },
       },
@@ -1378,11 +1357,11 @@ export default function SprintDashboard() {
             { key: "position", header: "Plugin Position" },
           ],
           rows: [
-            { sprint: 263, position: 39 },
-            { sprint: 264, position: 39 },
-            { sprint: 265, position: 39 },
-            { sprint: 266, position: 39 },
-            { sprint: 267, position: 39 },
+            { sprint: 263, position: 39, hidden: false },
+            { sprint: 264, position: 39, hidden: false },
+            { sprint: 265, position: 39, hidden: false },
+            { sprint: 266, position: 39, hidden: false },
+            { sprint: 267, position: 39, hidden: false },
           ],
         },
       },
@@ -1399,11 +1378,11 @@ export default function SprintDashboard() {
             { key: "direct", header: "Direct Plans" },
           ],
           rows: [
-            { sprint: 263, total: 142, direct: 96 },
-            { sprint: 264, total: 87, direct: 52 },
-            { sprint: 265, total: 82, direct: 61 },
-            { sprint: 266, total: 83, direct: 55 },
-            { sprint: 267, total: 113, direct: 62 },
+            { sprint: 263, total: 142, direct: 96, hidden: false },
+            { sprint: 264, total: 87, direct: 52, hidden: false },
+            { sprint: 265, total: 82, direct: 61, hidden: false },
+            { sprint: 266, total: 83, direct: 55, hidden: false },
+            { sprint: 267, total: 113, direct: 62, hidden: false },
           ],
         },
       },
@@ -1429,6 +1408,7 @@ export default function SprintDashboard() {
                 avgFirstResponse: "5 hrs",
                 csat: "75% (3:1)",
                 badRating: "Asking for promo code",
+                hidden: false,
               },
               {
                 sprint: 265,
@@ -1436,6 +1416,7 @@ export default function SprintDashboard() {
                 avgFirstResponse: "7.6 hrs",
                 csat: "100% (4:0)",
                 badRating: "-",
+                hidden: false,
               },
               {
                 sprint: 266,
@@ -1443,6 +1424,7 @@ export default function SprintDashboard() {
                 avgFirstResponse: "8.4 hrs",
                 csat: "100% (2:0)",
                 badRating: "-",
+                hidden: false,
               },
               {
                 sprint: 267,
@@ -1450,6 +1432,7 @@ export default function SprintDashboard() {
                 avgFirstResponse: "2.4 hrs",
                 csat: "100% (2:0)",
                 badRating: "-",
+                hidden: false,
               },
               {
                 sprint: 268,
@@ -1457,6 +1440,7 @@ export default function SprintDashboard() {
                 avgFirstResponse: "5.5 hrs",
                 csat: "100% (3:0)",
                 badRating: "-",
+                hidden: false,
               },
             ],
           },
@@ -1469,11 +1453,11 @@ export default function SprintDashboard() {
               { key: "badRating", header: "Bad Rating" },
             ],
             rows: [
-              { sprint: 264, conversations: 2, avgAssignment: "28s", csat: "-", badRating: "-" },
-              { sprint: 265, conversations: "-", avgAssignment: "-", csat: "-", badRating: "-" },
-              { sprint: 266, conversations: 3, avgAssignment: "1 hr 19 m", csat: "100% (2:0)", badRating: "-" },
-              { sprint: 267, conversations: 3, avgAssignment: "1m 8s", csat: "-", badRating: "-" },
-              { sprint: 268, conversations: 1, avgAssignment: "30s", csat: "-", badRating: "-" },
+              { sprint: 264, conversations: 2, avgAssignment: "28s", csat: "-", badRating: "-", hidden: false },
+              { sprint: 265, conversations: "-", avgAssignment: "-", csat: "-", badRating: "-", hidden: false },
+              { sprint: 266, conversations: 3, avgAssignment: "1 hr 19 m", csat: "100% (2:0)", badRating: "-", hidden: false },
+              { sprint: 267, conversations: 3, avgAssignment: "1m 8s", csat: "-", badRating: "-", hidden: false },
+              { sprint: 268, conversations: 1, avgAssignment: "30s", csat: "-", badRating: "-", hidden: false },
             ],
           },
         },
@@ -1542,11 +1526,11 @@ export default function SprintDashboard() {
               { key: "percentage", header: "Percentage" },
             ],
             rows: [
-              { quarter: "Sprint 263", target: 7, achieved: 3, percentage: "43%" },
-              { quarter: "Sprint 264", target: 7, achieved: 1, percentage: "14%" },
-              { quarter: "Sprint 265", target: 7, achieved: 1, percentage: "14%" },
-              { quarter: "Sprint 266", target: 7, achieved: 0, percentage: "0%" },
-              { quarter: "Sprint 267", target: 7, achieved: 1, percentage: "14%" },
+              { quarter: "Sprint 263", target: 7, achieved: 3, percentage: "43%", hidden: false },
+              { quarter: "Sprint 264", target: 7, achieved: 1, percentage: "14%", hidden: false },
+              { quarter: "Sprint 265", target: 7, achieved: 1, percentage: "14%", hidden: false },
+              { quarter: "Sprint 266", target: 7, achieved: 0, percentage: "0%", hidden: false },
+              { quarter: "Sprint 267", target: 7, achieved: 1, percentage: "14%", hidden: false },
             ],
           },
         },
@@ -1569,11 +1553,11 @@ export default function SprintDashboard() {
             { key: "shortfall", header: "Shortfall (Cumulative)" },
           ],
           rows: [
-            { sprint: 263, signups: 34, paid: 8, percentage: 30, shortfall: 19 },
-            { sprint: 264, signups: 28, paid: 8, percentage: 30, shortfall: 38 },
-            { sprint: 265, signups: 26, paid: 6, percentage: 22, shortfall: 59 },
-            { sprint: 266, signups: 23, paid: 7, percentage: 26, shortfall: 79 },
-            { sprint: 267, signups: 22, paid: 7, percentage: 26, shortfall: 99 },
+            { sprint: 263, signups: 34, paid: 8, percentage: 30, shortfall: 19, hidden: false },
+            { sprint: 264, signups: 28, paid: 8, percentage: 30, shortfall: 38, hidden: false },
+            { sprint: 265, signups: 26, paid: 6, percentage: 22, shortfall: 59, hidden: false },
+            { sprint: 266, signups: 23, paid: 7, percentage: 26, shortfall: 79, hidden: false },
+            { sprint: 267, signups: 22, paid: 7, percentage: 26, shortfall: 99, hidden: false },
           ],
           total: { signups: 0, paid: 0 },
         },
@@ -1599,10 +1583,10 @@ export default function SprintDashboard() {
             { key: "payingUsers", header: "Paying Users" },
           ],
           rows: [
-            { sprint: 262, totalAccounts: 135, paidTrials: 134, payingUsers: 36 },
-            { sprint: 263, totalAccounts: 181, paidTrials: 180, payingUsers: 38 },
-            { sprint: 264, totalAccounts: 139, paidTrials: 135, payingUsers: 25 },
-            { sprint: 265, totalAccounts: 156, paidTrials: 146, payingUsers: 30 },
+            { sprint: 262, totalAccounts: 135, paidTrials: 134, payingUsers: 36, hidden: false },
+            { sprint: 263, totalAccounts: 181, paidTrials: 180, payingUsers: 38, hidden: false },
+            { sprint: 264, totalAccounts: 139, paidTrials: 135, payingUsers: 25, hidden: false },
+            { sprint: 265, totalAccounts: 156, paidTrials: 146, payingUsers: 30, hidden: false },
           ],
         },
       },
@@ -1645,10 +1629,10 @@ export default function SprintDashboard() {
             { key: "payingUsers", header: "Paying Users" },
           ],
           rows: [
-            { sprint: 262, totalAccounts: 10, paidTrials: 9, payingUsers: 5 },
-            { sprint: 263, totalAccounts: 10, paidTrials: 9, payingUsers: 0 },
-            { sprint: 264, totalAccounts: 5, paidTrials: 5, payingUsers: 2 },
-            { sprint: 265, totalAccounts: 8, paidTrials: 6, payingUsers: 0 },
+            { sprint: 262, totalAccounts: 10, paidTrials: 9, payingUsers: 5, hidden: false },
+            { sprint: 263, totalAccounts: 10, paidTrials: 9, payingUsers: 0, hidden: false },
+            { sprint: 264, totalAccounts: 5, paidTrials: 5, payingUsers: 2, hidden: false },
+            { sprint: 265, totalAccounts: 8, paidTrials: 6, payingUsers: 0, hidden: false },
           ],
         },
       },
@@ -1667,12 +1651,12 @@ export default function SprintDashboard() {
             { key: "paying", header: "Paying Agencies" },
           ],
           rows: [
-            { sprint: 262, formFills: 18, demos: 0, signups: 0, paying: 0 },
-            { sprint: 263, formFills: 16, demos: 2, signups: 0, paying: 0 },
-            { sprint: 264, formFills: 17, demos: 0, signups: 1, paying: 0 },
-            { sprint: 265, formFills: 14, demos: 0, signups: 4, paying: 0 },
-            { sprint: 266, formFills: 8, demos: 0, signups: 0, paying: 0 },
-            { sprint: 267, formFills: 13, demos: 0, signups: 1, paying: 0 },
+            { sprint: 262, formFills: 18, demos: 0, signups: 0, paying: 0, hidden: false },
+            { sprint: 263, formFills: 16, demos: 2, signups: 0, paying: 0, hidden: false },
+            { sprint: 264, formFills: 17, demos: 0, signups: 1, paying: 0, hidden: false },
+            { sprint: 265, formFills: 14, demos: 0, signups: 4, paying: 0, hidden: false },
+            { sprint: 266, formFills: 8, demos: 0, signups: 0, paying: 0, hidden: false },
+            { sprint: 267, formFills: 13, demos: 0, signups: 1, paying: 0, hidden: false },
           ],
         },
       },
@@ -1691,11 +1675,11 @@ export default function SprintDashboard() {
             { key: "conversions", header: "Conversions" },
           ],
           rows: [
-            { sprint: 263, trials: 6, conversions: 35 },
-            { sprint: 264, trials: 9, conversions: 29 },
-            { sprint: 265, trials: 6, conversions: 34 },
-            { sprint: 266, trials: 17, conversions: 24 },
-            { sprint: 267, trials: 24, conversions: 19 },
+            { sprint: 263, trials: 6, conversions: 35, hidden: false },
+            { sprint: 264, trials: 9, conversions: 29, hidden: false },
+            { sprint: 265, trials: 6, conversions: 34, hidden: false },
+            { sprint: 266, trials: 17, conversions: 24, hidden: false },
+            { sprint: 267, trials: 24, conversions: 19, hidden: false },
           ],
           total: { newAffiliates: 0, trials: 0, conversions: 0 },
         },
@@ -1716,11 +1700,11 @@ export default function SprintDashboard() {
             { key: "paid", header: "Paid Signups" },
           ],
           rows: [
-            { sprint: 263, freeSignups: 97, paid: 9 },
-            { sprint: 264, freeSignups: 90, paid: 16 },
-            { sprint: 265, freeSignups: 98, paid: 16 },
-            { sprint: 266, freeSignups: 88, paid: 8 },
-            { sprint: 267, freeSignups: 75, paid: 8 },
+            { sprint: 263, freeSignups: 97, paid: 9, hidden: false },
+            { sprint: 264, freeSignups: 90, paid: 16, hidden: false },
+            { sprint: 265, freeSignups: 98, paid: 16, hidden: false },
+            { sprint: 266, freeSignups: 88, paid: 8, hidden: false },
+            { sprint: 267, freeSignups: 75, paid: 8, hidden: false },
           ],
           total: { freeSignups: 0, paid: 0 },
         },
@@ -1741,11 +1725,11 @@ export default function SprintDashboard() {
             { key: "referrals", header: "Referrals" },
           ],
           rows: [
-            { sprint: 263, trials: 1, referrals: 2 },
-            { sprint: 264, trials: 2, referrals: 6 },
-            { sprint: 265, trials: 2, referrals: 3 },
-            { sprint: 266, trials: 3, referrals: 1 },
-            { sprint: 267, trials: 8, referrals: 1 },
+            { sprint: 263, trials: 1, referrals: 2, hidden: false },
+            { sprint: 264, trials: 2, referrals: 6, hidden: false },
+            { sprint: 265, trials: 2, referrals: 3, hidden: false },
+            { sprint: 266, trials: 3, referrals: 1, hidden: false },
+            { sprint: 267, trials: 8, referrals: 1, hidden: false },
           ],
           total: { trials: 0, referrals: 0 },
         },
@@ -1758,10 +1742,10 @@ export default function SprintDashboard() {
           "https://docs.google.com/spreadsheets/d/1O0B4EYLHXCs5s0bWuvlH78cp3WllC2I4MpAw1ifSugU/edit?gid=458351126#gid=458351126",
         data: {
           rows: [
-            { channel: "Direct (new subscription)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0 },
-            { channel: "Agency (new subscription)", totalTarget: 315, targetAsOnDate: 0, actual: 0, percentage: 0 },
-            { channel: "Affiliate (paid signups)", totalTarget: 1000, targetAsOnDate: 0, actual: 0, percentage: 0 },
-            { channel: "Ads", totalTarget: 800, targetAsOnDate: 0, actual: 0, percentage: 0 },
+            { channel: "Direct (new subscription)", totalTarget: 11009, targetAsOnDate: 0, actual: 0, percentage: 0, hidden: false },
+            { channel: "Agency (new subscription)", totalTarget: 315, targetAsOnDate: 0, actual: 0, percentage: 0, hidden: false },
+            { channel: "Affiliate (paid signups)", totalTarget: 1000, targetAsOnDate: 0, actual: 0, percentage: 0, hidden: false },
+            { channel: "Ads", totalTarget: 800, targetAsOnDate: 0, actual: 0, percentage: 0, hidden: false },
           ],
         },
       },
@@ -1846,12 +1830,11 @@ export default function SprintDashboard() {
               newRow[col.key] = typeof lastRow[col.key] === "number" ? 0 : "";
             }
           });
-          rows.push(newRow);
+          // Add hidden flag to new rows
+          rows.push({ ...newRow, hidden: false });
 
-          // Maintain sprint limit (except for slide 0)
-          if (targetData.columns.some((c) => c.key === "sprint")) {
-            targetData.rows = maintainSprintLimit(rows, s.id);
-          }
+          // No sprint limit - keep all rows
+          targetData.rows = rows;
 
           // Recalculate stats for all table types
           recalculateSlideStats(newSlide);
@@ -2347,35 +2330,80 @@ export default function SprintDashboard() {
               </tr>
             </thead>
             <tbody>
-              {data.rows.map((row, rowIdx) => (
-                <tr
-                  key={rowIdx}
-                  style={{
-                    backgroundColor: rowIdx % 2 ? "#F8FAFB" : "#fff",
-                    borderBottom: rowIdx === lastIdx ? "3px solid #1863DC" : "1px solid #EAEEF2",
-                    borderTop: rowIdx === lastIdx ? "3px solid #1863DC" : "none",
-                  }}
-                >
-                  {isEditing && (
-                    <td style={{ padding: "12px 8px", textAlign: "center", width: "40px" }}>
-                      {data.rows.length > 1 && (
-                        <button
-                          onClick={() => deleteRow(slide.id, rowIdx)}
-                          style={{
-                            background: "transparent",
-                            border: "none",
-                            cursor: "pointer",
-                            fontSize: "16px",
-                            padding: "0",
-                            color: "#DC2143",
-                          }}
-                          title="Delete row"
-                        >
-                          🗑️
-                        </button>
-                      )}
-                    </td>
-                  )}
+              {data.rows.map((row, rowIdx) => {
+                const isHidden = row.hidden === true;
+                if (isHidden && !isEditing) return null; // Hide row when not in edit mode
+                
+                return (
+                  <tr
+                    key={rowIdx}
+                    style={{
+                      backgroundColor: rowIdx % 2 ? "#F8FAFB" : "#fff",
+                      borderBottom: rowIdx === lastIdx ? "3px solid #1863DC" : "1px solid #EAEEF2",
+                      borderTop: rowIdx === lastIdx ? "3px solid #1863DC" : "none",
+                      opacity: isHidden ? 0.5 : 1,
+                    }}
+                  >
+                    {isEditing && (
+                      <td style={{ padding: "12px 8px", textAlign: "center", width: "40px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "center" }}>
+                          <button
+                            onClick={() => {
+                              preserveScroll();
+                              setSprintData((prev) => ({
+                                ...prev,
+                                slides: prev.slides.map((s) => {
+                                  const actualId = getActualSlideId(slide.id);
+                                  if (s.id !== actualId) return s;
+                                  const newSlide = JSON.parse(JSON.stringify(s));
+                                  
+                                  let targetData = newSlide.data;
+                                  if (s.type === "supportData") {
+                                    targetData = slide.id > 1000 ? newSlide.data.liveChat : newSlide.data.tickets;
+                                  } else if (s.type === "agencyLeads") {
+                                    targetData = slide.id > 2000 ? newSlide.data.q3Performance : newSlide.data.leadsConversion;
+                                  } else if (s.type === "rankings" && slide.id === s.id) {
+                                    targetData = newSlide.data.positionChanges;
+                                  }
+                                  
+                                  if (targetData.rows[rowIdx]) {
+                                    targetData.rows[rowIdx].hidden = !targetData.rows[rowIdx].hidden;
+                                  }
+                                  return newSlide;
+                                }),
+                              }));
+                            }}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              cursor: "pointer",
+                              fontSize: "16px",
+                              padding: "0",
+                              color: isHidden ? "#2DAD70" : "#5A6872",
+                            }}
+                            title={isHidden ? "Show row" : "Hide row"}
+                          >
+                            {isHidden ? "👁️" : "🙈"}
+                          </button>
+                          {data.rows.length > 1 && (
+                            <button
+                              onClick={() => deleteRow(slide.id, rowIdx)}
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                cursor: "pointer",
+                                fontSize: "16px",
+                                padding: "0",
+                                color: "#DC2143",
+                              }}
+                              title="Delete row"
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   {data.columns.map((col, colIdx) => {
                     const currentValue = row[col.key];
                     const isLatestRow = rowIdx === lastIdx;
@@ -2403,13 +2431,14 @@ export default function SprintDashboard() {
                         ) : col.key === "sprint" ? (
                           `Sprint ${currentValue}`
                         ) : (
-                          currentValue
+                       currentValue
                         )}
                       </td>
                     );
                   })}
                 </tr>
-              ))}
+              );
+            })}
             </tbody>
           </table>
         </div>
@@ -2677,8 +2706,8 @@ export default function SprintDashboard() {
                   style={{
                     display: "flex",
                     gap: `${slide.id === 0 
-                      ? Math.max(120 - (slide.data.sprints.length - 2) * 15, 20)
-                      : Math.max(120 - (slide.data.sprints.length - 2) * 20, 40)}px`,
+                      ? Math.max(120 - (slide.data.sprints.filter(s => !s.hidden).length - 2) * 15, 20)
+                      : Math.max(120 - (slide.data.sprints.filter(s => !s.hidden).length - 2) * 20, 40)}px`,
                     alignItems: "flex-end",
                     justifyContent: "center",
                     flex: 1,
@@ -2688,12 +2717,13 @@ export default function SprintDashboard() {
                   }}
                 >
                   {slide.data.sprints.map((sprint, idx) => {
+                    const visibleCount = slide.data.sprints.filter(s => !s.hidden).length;
                     const barWidth = slide.id === 0
-                      ? Math.max(70 - (slide.data.sprints.length - 2) * 6, 30)
-                      : Math.max(70 - (slide.data.sprints.length - 2) * 8, 40);
+                      ? Math.max(70 - (visibleCount - 2) * 6, 30)
+                      : Math.max(70 - (visibleCount - 2) * 8, 40);
                     const barGap = slide.id === 0
-                      ? Math.max(16 - (slide.data.sprints.length - 2) * 1.5, 6)
-                      : Math.max(16 - (slide.data.sprints.length - 2) * 2, 8);
+                      ? Math.max(16 - (visibleCount - 2) * 1.5, 6)
+                      : Math.max(16 - (visibleCount - 2) * 2, 8);
 
                     return (
                       <div
@@ -4423,14 +4453,18 @@ export default function SprintDashboard() {
                 {slide.data.rows.map((row, idx) => (
                   <tr
                     key={idx}
-                    style={{ backgroundColor: idx % 2 ? "#F8FAFB" : "#fff", borderBottom: "1px solid #EAEEF2" }}
-                  >
-                    <td style={{ padding: "12px 16px", fontWeight: "600", color: "#212121" }}>
-                      {isEditMode ? (
-                        <input
-                          key={`channel-${idx}`}
-                          defaultValue={row.channel}
-                          onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "channel"], e.target.value)}
+                     style={{ 
+                       backgroundColor: idx % 2 ? "#F8FAFB" : "#fff", 
+                       borderBottom: "1px solid #EAEEF2",
+                       display: row.hidden ? "none" : "table-row"
+                     }}
+                   >
+                     <td style={{ padding: "12px 16px", fontWeight: "600", color: "#212121" }}>
+                       {isEditMode ? (
+                         <input
+                           key={`channel-${idx}`}
+                           defaultValue={row.channel}
+                           onBlur={(e) => updateSlideData(slide.id, ["rows", idx, "channel"], e.target.value)}
                           style={{
                             width: "100%",
                             padding: "6px 8px",
@@ -4537,13 +4571,13 @@ export default function SprintDashboard() {
                           Delete
                         </button>
                       </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
 
       default:
         return null;
