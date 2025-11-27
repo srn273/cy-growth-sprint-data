@@ -427,6 +427,7 @@ export default function SprintDashboard() {
       infographics: ["infographics", "infographic"],
       kb: ["kb", "kb articles", "kbarticles", "knowledgebase", "knowledge base", "docs", "documentation", "articles"],
       videos: ["videos", "video", "youtube", "yt"],
+      guestPosts: ["guest posts", "guestposts", "guest"],
       total: ["total", "totalpaid", "paidtotal", "totalrevenue", "total paid"],
       direct: ["direct", "directplans", "direct plans"],
       social: ["social", "socialmedia"],
@@ -1135,11 +1136,11 @@ export default function SprintDashboard() {
 
   const downloadSampleCSV = () => {
     // Generate comprehensive CSV with all columns
-    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,Trial Signups,Conversions,Referrals,Free Signups,Paid Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
+    const sampleCSV = `SlideID,TableName,Sprint,Position 1-2,Position 3-10,Blog Posts,Infographics,KB Articles,Videos,Guest Posts,Total,Social,Blogs,YouTube,Negative,Plugin Position,Total Paid,Direct Plans,Total Tickets Solved,Avg First Response Time,CSAT Score,Pre-sales Tickets,Converted Tickets (Unique customers),Total Paid subscriptions (websites),Agency Tickets,Bad Rating,Conversations assigned,Avg teammate assignment to first response,Total Leads Received,Agency Demos,New Agency Signups,Paid Conversions,Total Count,From Tickets,Website Leads (LP),From Ads,Live chat,Web app (Book a call),Target,Achieved,Percentage,Total Accounts,Paid Trials,Paying Users,Form Fills,Demo,Signups,Paying Agencies,Paid,Shortfall,Trial Signups,Conversions,Referrals,Free Signups,Paid Signups,accountsCreated,cardAdded,bannerActive,payingUsers,roas
 1,positionChanges,263,15,45
 1,positionChanges,264,18,42
-2,main,263,5,3,8,2
-2,main,264,6,4,9,3
+2,main,263,5,3,8,2,0
+2,main,264,6,4,9,3,0
 3,main,263,120,45,30,15,5
 3,main,264,125,50,32,18,3
 4,main,263,22
@@ -1191,7 +1192,7 @@ export default function SprintDashboard() {
 #
 # Slide 2: Content Publishing Stats
 #   TableName: main
-#   Columns: Blog Posts, Infographics, KB Articles, Videos
+#   Columns: Blog Posts, Infographics, KB Articles, Videos, Guest Posts
 #
 # Slide 3: Brand Mentions
 #   TableName: main
@@ -1299,13 +1300,14 @@ export default function SprintDashboard() {
             { key: "infographics", header: "Infographics" },
             { key: "kb", header: "KB Articles" },
             { key: "videos", header: "Videos" },
+            { key: "guestPosts", header: "Guest Posts" },
           ],
           rows: [
-            { sprint: 263, blog: 0, infographics: 0, kb: 0, videos: 0 },
-            { sprint: 264, blog: 2, infographics: 0, kb: 0, videos: 1 },
-            { sprint: 265, blog: 1, infographics: 0, kb: 1, videos: 1 },
-            { sprint: 266, blog: 2, infographics: 0, kb: 6, videos: 0 },
-            { sprint: 267, blog: 2, infographics: 0, kb: 0, videos: 1 },
+            { sprint: 263, blog: 0, infographics: 0, kb: 0, videos: 0, guestPosts: 0 },
+            { sprint: 264, blog: 2, infographics: 0, kb: 0, videos: 1, guestPosts: 0 },
+            { sprint: 265, blog: 1, infographics: 0, kb: 1, videos: 1, guestPosts: 0 },
+            { sprint: 266, blog: 2, infographics: 0, kb: 6, videos: 0, guestPosts: 0 },
+            { sprint: 267, blog: 2, infographics: 0, kb: 0, videos: 1, guestPosts: 0 },
           ],
         },
       },
